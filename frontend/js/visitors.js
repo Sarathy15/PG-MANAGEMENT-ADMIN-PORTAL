@@ -131,7 +131,7 @@ function closeVisitorModal() {
 }
 
 async function checkoutVisitor(id) {
-  if (confirm('Confirm guest checkout? This records the departure time.')) {
+  if (await window.UI.confirm('Confirm guest checkout? This records the departure time.', 'Guest Checkout')) {
     try {
       await window.apiRequest(`/visitors/${id}/checkout`, { method: 'POST' });
       window.UI.toast('Visitor logged out successfully', 'success');
@@ -143,7 +143,7 @@ async function checkoutVisitor(id) {
 }
 
 async function deleteVisitorLog(id) {
-  if (confirm('Are you absolutely sure you want to remove this visitor log?')) {
+  if (await window.UI.confirm('Are you absolutely sure you want to remove this visitor log?', 'Delete Visitor Log')) {
     try {
       await window.apiRequest(`/visitors/${id}`, { method: 'DELETE' });
       window.UI.toast('Visitor log removed', 'success');

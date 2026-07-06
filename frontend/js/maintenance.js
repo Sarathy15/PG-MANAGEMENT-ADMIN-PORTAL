@@ -2,8 +2,8 @@
 let maintenanceTasks = [];
 
 async function loadMaintenanceTasks() {
-  const grid = document.getElementById('maint-grid');
-  if (!grid) return;
+  const tbody = document.getElementById('maint-table-body');
+  if (!tbody) return;
   
   const statusFilter = document.getElementById('filter-maint-status').value;
   const activePropId = window.AppState.getActivePropertyId();
@@ -21,21 +21,50 @@ async function loadMaintenanceTasks() {
     }
     
     document.getElementById('maint-count-txt').textContent = `${filtered.length} tasks listed`;
+
+    // Calculate dashboard statistics from all filtered tasks
+    const totalExpenses = filtered.reduce((sum, task) => sum + Number(task.cost || 0), 0);
+    const roomTasks = filtered.filter(task => task.roomId || (task.roomNumber && task.roomNumber !== 'Common Area' && task.roomNumber !== '—'));
+    const roomExpenses = roomTasks.reduce((sum, task) => sum + Number(task.cost || 0), 0);
+    const otherTasks = filtered.filter(task => !task.roomId && (!task.roomNumber || task.roomNumber === 'Common Area' || task.roomNumber === '—'));
+    const otherExpenses = otherTasks.reduce((sum, task) => sum + Number(task.cost || 0), 0);
+
+    // Render stats
+    if (document.getElementById('stats-total-expenses')) {
+      document.getElementById('stats-total-expenses').textContent = `₹${totalExpenses.toLocaleString()}`;
+    }
+    if (document.getElementById('stats-total-count')) {
+      document.getElementById('stats-total-count').textContent = `${filtered.length} maintenance logs`;
+    }
+    if (document.getElementById('stats-room-expenses')) {
+      document.getElementById('stats-room-expenses').textContent = `₹${roomExpenses.toLocaleString()}`;
+    }
+    if (document.getElementById('stats-room-count')) {
+      document.getElementById('stats-room-count').textContent = `${roomTasks.length} room repairs`;
+    }
+    if (document.getElementById('stats-other-expenses')) {
+      document.getElementById('stats-other-expenses').textContent = `₹${otherExpenses.toLocaleString()}`;
+    }
+    if (document.getElementById('stats-other-count')) {
+      document.getElementById('stats-other-count').textContent = `${otherTasks.length} general tasks`;
+    }
     
     if (filtered.length === 0) {
-      grid.innerHTML = `
-        <div class="col-span-full">
-          <div class="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-slate-200 rounded-2xl bg-white text-center">
-            <div class="w-12 h-12 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center mb-3">
-              <i data-lucide="wrench" class="w-6 h-6"></i>
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+            <div class="flex flex-col items-center justify-center">
+              <div class="w-12 h-12 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center mb-3">
+                <i data-lucide="wrench" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-sm font-semibold text-slate-800">No maintenance tasks found</h3>
+              <p class="text-xs text-slate-400 mt-1">Property operates perfectly. Or schedule a new task!</p>
             </div>
-            <h3 class="text-sm font-semibold text-slate-800">No maintenance schedules found</h3>
-            <p class="text-xs text-slate-400 mt-1">Property operates perfectly. Or schedule a new task!</p>
-          </div>
-        </div>
+          </td>
+        </tr>
       `;
     } else {
-      grid.innerHTML = filtered.map(task => {
+      tbody.innerHTML = filtered.map(task => {
         let badge = '';
         if (task.status === 'Completed') {
           badge = `<span class="bg-emerald-50 text-emerald-600 border border-emerald-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Completed</span>`;
@@ -47,38 +76,38 @@ async function loadMaintenanceTasks() {
         
         let actionBtn = '';
         if (task.status !== 'Completed') {
-          actionBtn = `<button onclick="completeMaintenanceTask('${task.id}')" class="px-2.5 py-1 text-[10px] font-bold bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all shadow-sm">Mark Done</button>`;
+          actionBtn = `<button onclick="completeMaintenanceTask('${task.id}')" class="px-2.5 py-1 text-[10px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all shadow-sm focus:outline-none">Mark Done</button>`;
+        } else {
+          actionBtn = `<span class="text-slate-400 text-[10px] font-bold">Logged</span>`;
         }
         
+        const costLabel = task.status === 'Completed' ? 'Resolved Cost' : 'Estimated Cost';
+        
         return `
-          <div class="bento-card p-6 flex flex-col justify-between space-y-4">
-            <div>
-              <div class="flex items-center justify-between">
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${task.date}</span>
-                ${badge}
+          <tr class="hover:bg-slate-50/50 transition-colors">
+            <td class="px-6 py-4.5 text-slate-500 font-medium">${task.date}</td>
+            <td class="px-6 py-4.5">
+              <div class="max-w-xs">
+                <p class="font-bold text-slate-800">${task.title}</p>
+                <p class="text-[10px] text-slate-400 mt-0.5 line-clamp-1" title="${task.description}">${task.description}</p>
               </div>
-              <h3 class="text-base font-bold text-slate-800 mt-2">${task.title}</h3>
-              <p class="text-xs text-slate-400 mt-1">Room Reference: ${task.roomNumber || 'Common Area'}</p>
-              
-              <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100/60 mt-4 text-xs font-semibold text-slate-600">
-                <div>
-                  <p class="text-[9px] text-slate-400 uppercase font-bold">Assigned Helper</p>
-                  <p class="text-slate-800 mt-0.5 truncate">${task.assignedStaffName || 'Unassigned'}</p>
-                </div>
-                <div>
-                  <p class="text-[9px] text-slate-400 uppercase font-bold">Estimated Cost</p>
-                  <p class="text-indigo-600 font-bold mt-0.5">₹${Number(task.cost).toLocaleString()}</p>
-                </div>
+            </td>
+            <td class="px-6 py-4.5 text-slate-600 font-semibold">${task.roomNumber || 'Common Area'}</td>
+            <td class="px-6 py-4.5 text-slate-700 font-semibold">${task.assignedStaffName || 'Unassigned'}</td>
+            <td class="px-6 py-4.5">
+              <div>
+                <p class="text-slate-800 font-bold">₹${Number(task.cost).toLocaleString()}</p>
+                <p class="text-[9px] text-slate-450 uppercase font-bold mt-0.5">${costLabel}</p>
               </div>
-            </div>
-
-            <div class="pt-4 border-t border-slate-50 flex items-center justify-between gap-2">
-              <button onclick="deleteMaintenanceTask('${task.id}')" class="p-2 border border-slate-200 hover:border-slate-300 text-rose-500 rounded-xl hover:bg-rose-50 hover:border-rose-200 transition-all" title="Delete">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
+            </td>
+            <td class="px-6 py-4.5">${badge}</td>
+            <td class="px-6 py-4.5 text-right flex items-center justify-end gap-2.5">
               ${actionBtn}
-            </div>
-          </div>
+              <button onclick="deleteMaintenanceTask('${task.id}')" class="p-1 border border-slate-200 hover:bg-slate-50 rounded-lg text-slate-400 hover:text-rose-500 transition-colors" title="Delete log">
+                <i data-lucide="trash" class="w-4.5 h-4.5"></i>
+              </button>
+            </td>
+          </tr>
         `;
       }).join('');
     }
@@ -87,7 +116,7 @@ async function loadMaintenanceTasks() {
       window.lucide.createIcons();
     }
   } catch (err) {
-    console.error('Failed to load maintenance grid:', err);
+    console.error('Failed to load maintenance table:', err);
     window.UI.toast('Failed to load maintenance board', 'error');
   }
 }
@@ -122,7 +151,10 @@ function closeMaintenanceModal() {
 
 async function completeMaintenanceTask(id) {
   try {
-    await window.apiRequest(`/maintenance/${id}/complete`, { method: 'POST' });
+    await window.apiRequest(`/maintenance/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'Completed' })
+    });
     window.UI.toast('Maintenance task completed successfully', 'success');
     loadMaintenanceTasks();
   } catch (err) {
@@ -131,7 +163,7 @@ async function completeMaintenanceTask(id) {
 }
 
 async function deleteMaintenanceTask(id) {
-  if (confirm('Are you absolutely sure you want to remove this maintenance task?')) {
+  if (await window.UI.confirm('Are you absolutely sure you want to remove this maintenance task?', 'Delete Maintenance Task')) {
     try {
       await window.apiRequest(`/maintenance/${id}`, { method: 'DELETE' });
       window.UI.toast('Maintenance log removed', 'success');

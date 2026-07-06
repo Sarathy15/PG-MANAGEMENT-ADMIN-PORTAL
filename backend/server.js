@@ -92,6 +92,8 @@ app.use((req, res, next) => {
         name: t.full_name || t.name || '',
         email: t.email || '',
         phone: t.phone || '',
+        commonId: t.common_id || '',
+        common_id: t.common_id || '',
         idProofType: t.id_proof_type || t.idProofType || 'Aadhaar Card',
         idProofNumber: t.id_proof_number || t.idProofNumber || t.aadhaar_number || t.pan_number || '',
         docUrl: resolvedDocUrl,
@@ -151,7 +153,8 @@ app.use((req, res, next) => {
         performance: s.performance || 'Good',
         profileImage: s.profile_image || s.profileImage || null,
         idProof: s.id_proof || s.idProof || null,
-        propertyId: s.property_id || s.propertyId || null
+        propertyId: s.property_id || s.propertyId || null,
+        activeStatus: s.active_status || s.activeStatus || 'Active'
       };
     };
 
@@ -183,6 +186,8 @@ app.use((req, res, next) => {
         tenantId: String(c.tenant_id || c.tenantId),
         tenantName: c.tenants?.full_name || c.tenantName || 'Unknown',
         roomNumber: c.tenants?.rooms?.room_number || c.roomNumber || '—',
+        roomId: c.tenants?.room_id ? String(c.tenants.room_id) : (c.roomId ? String(c.roomId) : null),
+        propertyId: String(c.tenants?.property_id || c.propertyId || ''),
         title: c.title,
         description: c.description,
         category: c.category || 'Other',
@@ -269,7 +274,10 @@ app.use('/api/v1/tenants', require('./routes/tenants'));
 app.use('/api/v1/staff', require('./routes/staff'));
 app.use('/api/v1/complaints', require('./routes/complaints'));
 app.use('/api/v1/notices', require('./routes/notices'));
+app.use('/api/v1/audit-logs', require('./routes/auditLogs'));
 app.use('/api/v1/visitors', require('./routes/visitors'));
+app.use('/api/v1/notifications', require('./routes/notifications'));
+app.use('/api/v1/maintenance', require('./routes/maintenance'));
 app.use('/api/v1/rents', require('./routes/rents'));
 app.use('/api/v1/rent', require('./routes/rents'));
 app.use('/api/v1/search', require('./routes/search'));

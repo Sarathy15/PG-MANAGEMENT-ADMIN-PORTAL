@@ -35,17 +35,28 @@
         
         <!-- Tab Selectors -->
         <div class="lg:col-span-1 space-y-2">
-          <button onclick="switchTab('general')" id="tab-btn-general" class="w-full text-left px-4 py-3 bg-white border border-slate-200 rounded-xl font-semibold text-xs text-indigo-600 shadow-sm flex items-center gap-2">
-            <i data-lucide="sliders" class="w-4 h-4"></i>
-            <span>General Setup</span>
+          <button onclick="switchTab('general')" id="tab-btn-general" class="w-full text-left px-5 py-3.5 bg-white border-l-4 border-l-indigo-600 border border-slate-200 rounded-xl font-bold text-xs text-indigo-600 shadow-sm flex items-center justify-between transition-all focus:outline-none cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i data-lucide="sliders" class="w-4 h-4 text-indigo-500"></i>
+              <span>General Setup</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-indigo-400"></i>
           </button>
-          <button onclick="switchTab('finance')" id="tab-btn-finance" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl font-semibold text-xs text-slate-600 flex items-center gap-2">
-            <i data-lucide="indian-rupee" class="w-4 h-4"></i>
-            <span>Financial & Fees Policies</span>
+          
+          <button onclick="switchTab('finance')" id="tab-btn-finance" class="w-full text-left px-5 py-3.5 bg-white border-l-4 border-l-transparent hover:border-l-slate-350 border border-slate-200 rounded-xl font-bold text-xs text-slate-500 flex items-center justify-between transition-all focus:outline-none cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i data-lucide="credit-card" class="w-4 h-4 text-slate-450"></i>
+              <span>Financial & Fees Policies</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-350"></i>
           </button>
-          <button onclick="switchTab('security')" id="tab-btn-security" class="w-full text-left px-4 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl font-semibold text-xs text-slate-600 flex items-center gap-2">
-            <i data-lucide="lock" class="w-4 h-4"></i>
-            <span>Security & Access Logs</span>
+          
+          <button onclick="switchTab('security')" id="tab-btn-security" class="w-full text-left px-5 py-3.5 bg-white border-l-4 border-l-transparent hover:border-l-slate-350 border border-slate-200 rounded-xl font-bold text-xs text-slate-500 flex items-center justify-between transition-all focus:outline-none cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i data-lucide="shield" class="w-4 h-4 text-slate-450"></i>
+              <span>Security & Access Settings</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-350"></i>
           </button>
         </div>
 
@@ -53,81 +64,154 @@
         <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           
           <!-- General Setup Content -->
-          <div id="tab-content-general" class="space-y-6">
-            <h3 class="font-bold text-slate-800 pb-3 border-b border-slate-100 flex items-center gap-2">
-              <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i>
-              <span>General PG Rules Setup</span>
-            </h3>
+          <div id="tab-content-general" class="space-y-6 animate-fade-in">
+            <div class="border-b border-slate-100 pb-4">
+              <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i>
+                <span>General PG Rules Setup</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-1">Configure PG building identities, helpline contact info, and security curfew guidelines.</p>
+            </div>
             
-            <form id="settings-general-form" class="space-y-4">
-              <div class="grid grid-cols-2 gap-4">
+            <form id="settings-general-form" class="space-y-5">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Host Portal Name</label>
-                  <input type="text" id="setting-pg-name" required value="Pleasant Homes Systems" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm">
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Host Portal Name</label>
+                  <input type="text" id="setting-pg-name" required value="Pleasant Homes PG" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Warden Name</label>
-                  <input type="text" id="setting-warden" required value="Suresh Nair" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm">
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Warden Name</label>
+                  <input type="text" id="setting-warden" required value="Suresh Nair" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Contact Help Email</label>
+                  <input type="email" id="setting-email" required value="office@pleasanthomes.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Emergency Helpline</label>
+                  <input type="text" id="setting-helpline" required value="+91 98765 43210" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
                 </div>
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Gate Curfew Hours</label>
-                <input type="text" id="setting-curfew" required value="10:30 PM" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Gate Curfew Hours</label>
+                <input type="text" id="setting-curfew" required value="10:30 PM" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-850 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                <p class="text-[10px] text-slate-400 mt-1">Tenant curfew alerts trigger in the tenant application after this hour.</p>
+              </div>
+
+              <!-- PG Amenities selection -->
+              <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">PG Amenities Provided</label>
+                <div class="flex flex-wrap gap-2.5">
+                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/50 text-indigo-700 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
+                    <span>High-Speed WiFi</span>
+                  </label>
+                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/50 text-indigo-700 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
+                    <span>AC Rooms</span>
+                  </label>
+                  <label class="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer transition-colors">
+                    <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                    <span>Hot Water / Geyser</span>
+                  </label>
+                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/50 text-indigo-700 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
+                    <span>24/7 CCTV Security</span>
+                  </label>
+                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/50 text-indigo-700 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
+                    <span>Daily Housekeeping</span>
+                  </label>
+                  <label class="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer transition-colors">
+                    <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                    <span>Gymnasium</span>
+                  </label>
+                </div>
               </div>
 
               <div class="flex items-center justify-end pt-4 border-t border-slate-100">
-                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-100">Save General Settings</button>
+                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-150 transition-all active:scale-95">Save General Settings</button>
               </div>
             </form>
           </div>
 
           <!-- Financial Setup Content -->
-          <div id="tab-content-finance" class="space-y-6 hidden">
-            <h3 class="font-bold text-slate-800 pb-3 border-b border-slate-100 flex items-center gap-2">
-              <i data-lucide="indian-rupee" class="w-5 h-5 text-indigo-600"></i>
-              <span>Financial & Billing Rules</span>
-            </h3>
+          <div id="tab-content-finance" class="space-y-6 hidden animate-fade-in">
+            <div class="border-b border-slate-100 pb-4">
+              <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                <i data-lucide="credit-card" class="w-5 h-5 text-indigo-600"></i>
+                <span>Financial & Billing Rules</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-1">Define monthly rent cycles, late fines, default billing policies, and deposit refunds.</p>
+            </div>
             
-            <form id="settings-finance-form" class="space-y-4">
-              <div class="grid grid-cols-2 gap-4">
+            <form id="settings-finance-form" class="space-y-5">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Rent Due Date</label>
-                  <input type="number" id="setting-due-day" required value="5" min="1" max="28" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm">
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Rent Due Date</label>
+                  <input type="number" id="setting-due-day" required value="5" min="1" max="28" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
                   <p class="text-[10px] text-slate-400 mt-1">Calendar day of the month rent invoices expire.</p>
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Late Payment Fine (INR)</label>
-                  <input type="number" id="setting-fine" required value="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm">
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Late Payment Fine (₹)</label>
+                  <input type="number" id="setting-fine" required value="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                  <p class="text-[10px] text-slate-400 mt-1">Penalty added to overdue rent invoices.</p>
+                </div>
+              </div>
+
+              <!-- Razorpay Merchant Status -->
+              <div class="p-5 border border-emerald-100 rounded-2xl bg-emerald-50/20 flex items-center justify-between">
+                <div class="space-y-1">
+                  <span class="bg-emerald-100 text-emerald-700 font-bold text-[10px] px-2.5 py-0.5 rounded-full">Razorpay Connected</span>
+                  <h4 class="text-sm font-bold text-slate-850 mt-1.5">Merchant PG Account Integration</h4>
+                  <p class="text-[10px] text-slate-400">Allows occupants to pay monthly dues instantly online via UPI, Card, and Netbanking.</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-emerald-100/25 text-emerald-600 flex items-center justify-center shrink-0">
+                  <i data-lucide="check-circle" class="w-5 h-5"></i>
                 </div>
               </div>
 
               <div class="flex items-center justify-end pt-4 border-t border-slate-100">
-                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-100">Save Financial Policies</button>
+                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-150 transition-all active:scale-95">Save Financial Policies</button>
               </div>
             </form>
           </div>
 
           <!-- Security Content -->
-          <div id="tab-content-security" class="space-y-6 hidden">
-            <h3 class="font-bold text-slate-800 pb-3 border-b border-slate-100 flex items-center gap-2">
-              <i data-lucide="lock" class="w-5 h-5 text-indigo-600"></i>
-              <span>Security, Verification & KYC settings</span>
-            </h3>
+          <div id="tab-content-security" class="space-y-6 hidden animate-fade-in">
+            <div class="border-b border-slate-100 pb-4">
+              <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                <i data-lucide="shield" class="w-5 h-5 text-indigo-600"></i>
+                <span>Security, Verification & KYC settings</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-1">Control background verification requirements, tenant confirmation checks, and alert channels.</p>
+            </div>
             
-            <form id="settings-security-form" class="space-y-4">
-              <div class="space-y-3">
-                <label class="flex items-start gap-3 cursor-pointer">
-                  <input type="checkbox" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 mt-1">
-                  <div>
+            <form id="settings-security-form" class="space-y-5">
+              <div class="space-y-4">
+                <label class="flex items-start gap-3.5 p-4 border border-slate-150 rounded-xl hover:bg-slate-50/40 transition-colors cursor-pointer">
+                  <input type="checkbox" checked class="rounded border-slate-350 text-indigo-600 focus:ring-indigo-500 mt-0.5">
+                  <div class="space-y-0.5">
                     <p class="text-xs font-bold text-slate-700">Require Aadhaar / Government KYC Verification</p>
                     <p class="text-[10px] text-slate-400">Strictly enforce documentation uploads when checking in a new occupant.</p>
                   </div>
                 </label>
 
-                <label class="flex items-start gap-3 cursor-pointer">
-                  <input type="checkbox" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 mt-1">
-                  <div>
+                <label class="flex items-start gap-3.5 p-4 border border-slate-150 rounded-xl hover:bg-slate-50/40 transition-colors cursor-pointer">
+                  <input type="checkbox" checked class="rounded border-slate-350 text-indigo-600 focus:ring-indigo-500 mt-0.5">
+                  <div class="space-y-0.5">
+                    <p class="text-xs font-bold text-slate-700">Resident OTP approval for Visitors</p>
+                    <p class="text-[10px] text-slate-400">Require host tenant confirmation OTP before check-in approval of guests.</p>
+                  </div>
+                </label>
+
+                <label class="flex items-start gap-3.5 p-4 border border-slate-150 rounded-xl hover:bg-slate-50/40 transition-colors cursor-pointer">
+                  <input type="checkbox" checked class="rounded border-slate-350 text-indigo-600 focus:ring-indigo-500 mt-0.5">
+                  <div class="space-y-0.5">
                     <p class="text-xs font-bold text-slate-700">Send WhatsApp / Email Rent Alerts</p>
                     <p class="text-[10px] text-slate-400">Dispatch payment reminders to emergency contacts and tenants dynamically on invoices issuance.</p>
                   </div>
@@ -135,7 +219,7 @@
               </div>
 
               <div class="flex items-center justify-end pt-4 border-t border-slate-100">
-                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-100">Save Security Rules</button>
+                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-150 transition-all active:scale-95">Save Security Rules</button>
               </div>
             </form>
           </div>
@@ -158,21 +242,47 @@
       document.getElementById('tab-content-finance').classList.add('hidden');
       document.getElementById('tab-content-security').classList.add('hidden');
       
-      // Unhighlight all buttons
-      document.getElementById('tab-btn-general').classList.remove('text-indigo-600', 'shadow-sm');
-      document.getElementById('tab-btn-general').classList.add('text-slate-600');
-      document.getElementById('tab-btn-finance').classList.remove('text-indigo-600', 'shadow-sm');
-      document.getElementById('tab-btn-finance').classList.add('text-slate-600');
-      document.getElementById('tab-btn-security').classList.remove('text-indigo-600', 'shadow-sm');
-      document.getElementById('tab-btn-security').classList.add('text-slate-600');
+      const tabs = ['general', 'finance', 'security'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tab-btn-' + t);
+        if (btn) {
+          btn.className = "w-full text-left px-5 py-3.5 bg-white border-l-4 border-l-transparent hover:border-l-slate-350 border border-slate-200 rounded-xl font-bold text-xs text-slate-500 flex items-center justify-between transition-all focus:outline-none cursor-pointer";
+          
+          // Reset first icon (inside flex container)
+          const firstIcon = btn.querySelector('.flex svg, .flex i');
+          if (firstIcon) {
+            firstIcon.classList.remove('text-indigo-500');
+            firstIcon.classList.add('text-slate-450');
+          }
+          // Reset second icon (chevron-right)
+          const lastIcon = btn.querySelector('.lucide-chevron-right, svg:last-child, i:last-child');
+          if (lastIcon) {
+            lastIcon.classList.remove('text-indigo-400');
+            lastIcon.classList.add('text-slate-350');
+          }
+        }
+      });
       
       // Show selected content
-      document.getElementById('tab-content-' + tab).classList.remove('hidden');
+      const targetContent = document.getElementById('tab-content-' + tab);
+      if (targetContent) targetContent.classList.remove('hidden');
       
       // Highlight selected button
       const activeBtn = document.getElementById('tab-btn-' + tab);
-      activeBtn.classList.add('text-indigo-600', 'shadow-sm');
-      activeBtn.classList.remove('text-slate-600');
+      if (activeBtn) {
+        activeBtn.className = "w-full text-left px-5 py-3.5 bg-white border-l-4 border-l-indigo-600 border border-slate-200 rounded-xl font-bold text-xs text-indigo-600 shadow-sm flex items-center justify-between transition-all focus:outline-none cursor-pointer";
+        
+        const firstIcon = activeBtn.querySelector('.flex svg, .flex i');
+        if (firstIcon) {
+          firstIcon.classList.remove('text-slate-450');
+          firstIcon.classList.add('text-indigo-500');
+        }
+        const lastIcon = activeBtn.querySelector('.lucide-chevron-right, svg:last-child, i:last-child');
+        if (lastIcon) {
+          lastIcon.classList.remove('text-slate-350');
+          lastIcon.classList.add('text-indigo-400');
+        }
+      }
     }
 
     // Forms save triggers

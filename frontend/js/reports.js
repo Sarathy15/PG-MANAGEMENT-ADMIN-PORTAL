@@ -8,22 +8,56 @@ async function loadPropertySummaries() {
     const rooms = await window.apiRequest('/rooms');
     const tenants = await window.apiRequest('/tenants');
     
+    let grandTotalBeds = 0;
+    let grandOccupiedBeds = 0;
+    let grandTotalRooms = 0;
+    
     tbody.innerHTML = props.map(p => {
-      const propRooms = rooms.filter(r => r.propertyId === p.id);
-      const totalBeds = propRooms.reduce((acc, curr) => acc + curr.totalBeds, 0);
-      const occupiedBeds = propRooms.reduce((acc, curr) => acc + curr.occupiedBeds, 0);
+      const propRooms = rooms.filter(r => String(r.propertyId) === String(p.id));
+      const totalBeds = propRooms.reduce((acc, curr) => acc + (Number(curr.capacity) || 0), 0);
+      const occupiedBeds = propRooms.reduce((acc, curr) => acc + (Number(curr.occupiedBeds) || 0), 0);
       const occupancyPercent = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
+      
+      grandTotalBeds += totalBeds;
+      grandOccupiedBeds += occupiedBeds;
+      grandTotalRooms += propRooms.length;
       
       return `
         <tr class="hover:bg-slate-50/50 transition-colors">
           <td class="px-6 py-4 font-bold text-slate-800">${p.name}</td>
-          <td class="px-6 py-4 text-slate-500">${p.phone} • ${p.email}</td>
-          <td class="px-6 py-4">${p.totalRooms} Rooms</td>
-          <td class="px-6 py-4">${occupiedBeds} Beds occupied</td>
-          <td class="px-6 py-4 font-bold text-indigo-600">${occupancyPercent}%</td>
+          <td class="px-6 py-4 text-slate-500">${p.phone || '—'} • ${p.email || '—'}</td>
+          <td class="px-6 py-4">${propRooms.length} Rooms</td>
+          <td class="px-6 py-4">${occupiedBeds} / ${totalBeds} Beds</td>
+          <td class="px-6 py-4 font-bold text-slate-800">
+            <div class="flex items-center gap-3">
+              <span class="font-bold text-slate-800">${occupancyPercent}%</span>
+              <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden shrink-0 hidden sm:block">
+                <div class="h-full bg-indigo-500 rounded-full" style="width: ${occupancyPercent}%"></div>
+              </div>
+            </div>
+          </td>
         </tr>
       `;
     }).join('');
+
+    const overallPercent = grandTotalBeds > 0 ? Math.round((grandOccupiedBeds / grandTotalBeds) * 100) : 0;
+    const activeTenantsCount = (tenants || []).filter(t => t.status === 'active').length;
+
+    if (document.getElementById('stats-occupancy-percent')) {
+      document.getElementById('stats-occupancy-percent').textContent = `${overallPercent}%`;
+    }
+    if (document.getElementById('stats-occupancy-ratio')) {
+      document.getElementById('stats-occupancy-ratio').textContent = `(${grandOccupiedBeds}/${grandTotalBeds} beds)`;
+    }
+    if (document.getElementById('stats-total-rooms')) {
+      document.getElementById('stats-total-rooms').textContent = `${grandTotalRooms} Rooms`;
+    }
+    if (document.getElementById('stats-total-tenants')) {
+      document.getElementById('stats-total-tenants').textContent = `${activeTenantsCount} Tenants`;
+    }
+    if (document.getElementById('stats-total-properties')) {
+      document.getElementById('stats-total-properties').textContent = `${props.length} PGs`;
+    }
     
   } catch (err) {
     console.error('Failed to load properties summary logs:', err);

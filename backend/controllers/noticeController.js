@@ -1,4 +1,5 @@
 const supabase = require('../config/supabase');
+const { logAudit } = require('../utils/auditLogger');
 
 exports.getNotices = async (req, res) => {
   try {
@@ -43,10 +44,13 @@ exports.getNotice = async (req, res) => {
 exports.createNotice = async (req, res) => {
   try {
     const { propertyId, title, content, category, targetAudience, publishDate, expiryDate, status } = req.body;
+    
+    const dbPropertyId = (propertyId === 'all' || !propertyId) ? null : Number(propertyId);
+
     const { data, error } = await supabase
       .from('notices')
       .insert([{
-        property_id: propertyId,
+        property_id: dbPropertyId,
         title,
         content,
         category: category || 'General',
@@ -58,7 +62,43 @@ exports.createNotice = async (req, res) => {
       }])
       .select()
       .single();
+
     if (error) throw new Error(error.message);
+
+    // Broadcast notifications to all active tenants under this notice scope
+    try {
+      let tenantQuery = supabase
+        .from('tenants')
+        .select('id')
+        .eq('status', 'active');
+      
+      if (dbPropertyId) {
+        tenantQuery = tenantQuery.eq('property_id', dbPropertyId);
+      }
+      
+      const { data: tenantsList, error: tenantErr } = await tenantQuery;
+      
+      if (!tenantErr && tenantsList && tenantsList.length > 0) {
+        const categoryEmoji = category === 'Food' ? '🍽️' : category === 'Utility' ? '⚡' : category === 'Maintenance' ? '🛠️' : category === 'Warning' ? '⚠️' : '📢';
+        const notificationInserts = tenantsList.map(t => ({
+          tenant_id: t.id,
+          title: `${categoryEmoji} Notice: ${title}`,
+          message: content,
+          is_read: false
+        }));
+        await supabase.from('notifications').insert(notificationInserts);
+      }
+    } catch (notifyErr) {
+      console.error("Notice notification broadcast failed:", notifyErr);
+    }
+
+    // Log system audit trail
+    await logAudit(
+      req.user?.full_name || req.user?.name || 'Admin',
+      'CREATE',
+      `Published announcement: "${title}" (${category || 'General'} notice)`
+    );
+
     res.status(201).json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

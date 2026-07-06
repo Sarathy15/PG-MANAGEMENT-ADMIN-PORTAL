@@ -191,8 +191,11 @@ async function loadTenants() {
                   ${initials}
                 </div>
                 <div>
-                  <p class="font-bold text-slate-800 leading-none">${tenant.name}</p>
-                  <p class="text-[10px] text-slate-400 font-bold mt-1 flex items-center gap-1">
+                  <p class="font-bold text-slate-800 leading-none flex items-center gap-2">
+                    <span>${tenant.name}</span>
+                    ${tenant.commonId || tenant.common_id ? `<span class="px-1.5 py-0.5 text-[9px] font-black text-indigo-600 bg-indigo-50 border border-indigo-100 rounded">${tenant.commonId || tenant.common_id}</span>` : ''}
+                  </p>
+                  <p class="text-[10px] text-slate-400 font-bold mt-1.5 flex items-center gap-1">
                     <span>✉ ${tenant.email}</span>
                     <span class="text-slate-300">•</span>
                     <span>☎ ${tenant.phone}</span>
@@ -502,7 +505,7 @@ async function editTenant(id) {
 window.editTenant = editTenant;
 
 async function checkoutTenant(id) {
-  if (confirm('Confirm checkout for this occupant? This frees their room bed and closes their billing cycle.')) {
+  if (await window.UI.confirm('Confirm checkout for this occupant? This frees their room bed and closes their billing cycle.', 'Occupant Check-Out')) {
     try {
       await window.apiRequest(`/tenants/${id}/checkout`, { method: 'POST' });
       window.UI.toast('Tenant checked-out successfully', 'success');
@@ -515,7 +518,7 @@ async function checkoutTenant(id) {
 }
 
 async function deleteTenant(id) {
-  if (confirm('Are you absolutely sure you want to delete this tenant record? This action is irreversible.')) {
+  if (await window.UI.confirm('Are you absolutely sure you want to delete this tenant record? This action is irreversible.', 'Delete Tenant Record')) {
     try {
       await window.apiRequest(`/tenants/${id}`, { method: 'DELETE' });
       window.UI.toast('Tenant record removed', 'success');
@@ -626,11 +629,16 @@ document.getElementById('tenant-form').addEventListener('submit', async (e) => {
       loaderText.textContent = "4/4: Activating check-in stay...";
       await new Promise(r => setTimeout(r, 450));
 
-      await window.apiRequest('/tenants', {
+      const createdTenant = await window.apiRequest('/tenants', {
         method: 'POST',
         body: JSON.stringify(payload)
       });
       window.UI.toast('Tenant checked-in successfully!', 'success');
+      const cid = createdTenant.commonId || createdTenant.common_id || 'PG-001';
+      const cidEl = document.getElementById('success-common-id');
+      if (cidEl) cidEl.textContent = cid;
+      window.UI.showModal('success-id-modal');
+      if (window.lucide) window.lucide.createIcons();
     }
     closeTenantModal();
     loadTenants();
@@ -787,6 +795,10 @@ async function viewTenantDetail(id, event) {
 
   // Populate basic profile details
   document.getElementById('detail-name').textContent = tenant.name || tenant.full_name || '';
+  const commonIdValEl = document.getElementById('detail-common-id-val');
+  if (commonIdValEl) {
+    commonIdValEl.textContent = tenant.commonId || tenant.common_id || '—';
+  }
   document.getElementById('detail-email-val').textContent = tenant.email || '—';
   document.getElementById('detail-email-val').title = tenant.email || '—';
   document.getElementById('detail-phone-val').textContent = tenant.phone || '—';
@@ -1050,3 +1062,15 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(openAddTenantModal, 500);
   }
 });
+
+function copySuccessCommonId() {
+  const code = document.getElementById('success-common-id').textContent;
+  navigator.clipboard.writeText(code);
+  window.UI.toast('Common ID copied to clipboard!', 'success');
+}
+window.copySuccessCommonId = copySuccessCommonId;
+
+function closeSuccessIdModal() {
+  window.UI.hideModal('success-id-modal');
+}
+window.closeSuccessIdModal = closeSuccessIdModal;

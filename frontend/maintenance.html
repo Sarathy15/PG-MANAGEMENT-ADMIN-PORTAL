@@ -25,13 +25,52 @@
       <!-- Top actions panel -->
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Maintenance Schedule</h2>
-          <p class="text-sm text-slate-500 mt-0.5">Track plumbing, masonry, electrical fixtures repairs, assign staff, and record costs.</p>
+          <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Maintenance & Expenses Dashboard</h2>
+          <p class="text-sm text-slate-500 mt-0.5">Track plumbing, masonry, electrical repairs, assign staff, and audit total PG repair expenditures.</p>
         </div>
-        <button onclick="openMaintenanceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-semibold shadow-md shadow-indigo-150 transition-all flex items-center gap-2 text-sm">
+        <button onclick="openMaintenanceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-semibold shadow-md shadow-indigo-150 transition-all flex items-center gap-2 text-sm focus:outline-none">
           <i data-lucide="plus" class="w-4.5 h-4.5"></i>
-          <span>Schedule Task</span>
+          <span>Add Expense / Task</span>
         </button>
+      </div>
+
+      <!-- Metrics Dashboard Header Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Card 1: Total Expenses -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex items-center justify-between shadow-sm relative overflow-hidden">
+          <div class="space-y-1">
+            <span class="text-xs font-semibold text-slate-450 uppercase tracking-wider">Total Combined Expenses</span>
+            <h4 class="text-2xl font-black text-slate-800" id="stats-total-expenses">₹0</h4>
+            <p class="text-[10px] text-slate-400 font-semibold font-medium" id="stats-total-count">0 maintenance logs</p>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <i data-lucide="indian-rupee" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <!-- Card 2: Room Repair Expenses -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex items-center justify-between shadow-sm relative overflow-hidden">
+          <div class="space-y-1">
+            <span class="text-xs font-semibold text-slate-450 uppercase tracking-wider">Room Resolution Expenses</span>
+            <h4 class="text-2xl font-black text-rose-600" id="stats-room-expenses">₹0</h4>
+            <p class="text-[10px] text-slate-400 font-semibold font-medium" id="stats-room-count">0 room repairs</p>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <i data-lucide="wrench" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <!-- Card 3: Other / General Expenses -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex items-center justify-between shadow-sm relative overflow-hidden">
+          <div class="space-y-1">
+            <span class="text-xs font-semibold text-slate-450 uppercase tracking-wider">Other / General Expenses</span>
+            <h4 class="text-2xl font-black text-amber-600" id="stats-other-expenses">₹0</h4>
+            <p class="text-[10px] text-slate-400 font-semibold font-medium" id="stats-other-count">0 general tasks</p>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <i data-lucide="building" class="w-5 h-5"></i>
+          </div>
+        </div>
       </div>
 
       <!-- Filters Panel -->
@@ -47,9 +86,26 @@
         <span class="text-xs text-slate-400 font-semibold" id="maint-count-txt">0 tasks scheduled</span>
       </div>
 
-      <!-- Maintenance Cards Grid -->
-      <div id="maint-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-        <p class="text-slate-500 text-sm">Loading tasks...</p>
+      <!-- Maintenance Table View -->
+      <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm animate-fade-in">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <th class="px-6 py-4">Date</th>
+              <th class="px-6 py-4">Task Description</th>
+              <th class="px-6 py-4">Room Unit</th>
+              <th class="px-6 py-4">Assigned Helper</th>
+              <th class="px-6 py-4">Cost / Expense</th>
+              <th class="px-6 py-4">Status</th>
+              <th class="px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="maint-table-body" class="divide-y divide-slate-100 text-xs text-slate-700 font-medium">
+            <tr>
+              <td colspan="7" class="px-6 py-12 text-center text-slate-400">Loading maintenance registry...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
     </main>

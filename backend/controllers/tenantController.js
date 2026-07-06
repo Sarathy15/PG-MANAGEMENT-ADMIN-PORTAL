@@ -1,4 +1,6 @@
 const supabase = require('../config/supabase');
+const bcrypt = require('bcryptjs');
+const { logAudit } = require('../utils/auditLogger');
 
 const getDefaultPropertyAndRoom = async () => {
   const { data: property } = await supabase
@@ -182,9 +184,71 @@ exports.createTenant = async (req, res) => {
       }
     }
 
+    // Generate next common_id starting with PG-001
+    let nextCommonId = 'PG-001';
+    try {
+      const { data: lastTenants, error: lastTenantErr } = await supabase
+        .from('tenants')
+        .select('common_id')
+        .like('common_id', 'PG-%')
+        .order('id', { ascending: false })
+        .limit(1);
+
+      if (!lastTenantErr && lastTenants && lastTenants.length > 0 && lastTenants[0].common_id) {
+        const lastId = lastTenants[0].common_id;
+        const match = lastId.match(/^PG-(\d+)$/);
+        if (match) {
+          const num = parseInt(match[1], 10) + 1;
+          nextCommonId = `PG-${String(num).padStart(3, '0')}`;
+        }
+      }
+    } catch (e) {
+      console.error("Error generating next common_id:", e);
+    }
+
+    // Auto-create/link a user record in the users table for the tenant
+    let tenantUserId = null;
+    if (email) {
+      const normalizedEmail = email.toLowerCase().trim();
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', normalizedEmail)
+        .single();
+
+      if (existingUser) {
+        tenantUserId = existingUser.id;
+      } else {
+        try {
+          const salt = await bcrypt.genSalt(10);
+          const passwordHash = await bcrypt.hash('tenant123', salt);
+          
+          const { data: newUser, error: userErr } = await supabase
+            .from('users')
+            .insert([{
+              email: normalizedEmail,
+              password_hash: passwordHash,
+              full_name: tenantName,
+              phone: phone || `9${Date.now().toString().slice(-9)}`,
+              role: 'tenant',
+              is_active: true
+            }])
+            .select()
+            .single();
+
+          if (!userErr && newUser) {
+            tenantUserId = newUser.id;
+          }
+        } catch (uErr) {
+          console.error("Error auto-creating user account for tenant:", uErr);
+        }
+      }
+    }
+
     const { data: tenant, error } = await supabase
       .from('tenants')
       .insert([{
+        user_id: tenantUserId,
         property_id: property?.id || null,
         room_id: room?.id || null,
         bed_id: bedId,
@@ -200,7 +264,8 @@ exports.createTenant = async (req, res) => {
         emergency_contact_phone: emergencyContactPhone,
         aadhaar_pdf_url,
         pan_pdf_url,
-        id_card_pdf_url
+        id_card_pdf_url,
+        common_id: nextCommonId
       }])
       .select()
       .single();
@@ -242,6 +307,13 @@ exports.createTenant = async (req, res) => {
       // Update tenant's payment status to Pending
       await supabase.from('tenants').update({ payment_status: 'pending' }).eq('id', tenant.id);
     }
+
+    // Log system audit trail
+    await logAudit(
+      req.user?.full_name || req.user?.name || 'Admin',
+      'CHECKIN',
+      `Registered and checked in tenant ${tenantName} to Room ${room?.room_number || 'Unassigned'}`
+    );
 
     res.status(201).json({ success: true, data: tenant });
   } catch (error) {
@@ -400,6 +472,58 @@ exports.updateTenant = async (req, res) => {
 
     const { data: tenant, error } = await supabase.from('tenants').update(updateData).eq('id', req.params.id).select().single();
     if (error) throw new Error(error.message);
+
+    // Log system audit trail
+    if (isNewStatusCheckout && isOldStatusActive) {
+      await logAudit(
+        req.user?.full_name || req.user?.name || 'Admin',
+        'CHECKOUT',
+        `Checked out tenant ${tenant.full_name} from Room ID ${oldTenant.room_id || 'N/A'}`
+      );
+    } else if (updateData.room_id !== undefined && String(updateData.room_id || '') !== String(oldTenant.room_id || '')) {
+      await logAudit(
+        req.user?.full_name || req.user?.name || 'Admin',
+        'UPDATE',
+        `Transferred tenant ${tenant.full_name} from Room ID ${oldTenant.room_id || 'None'} to Room ID ${tenant.room_id || 'None'}`
+      );
+    } else {
+      await logAudit(
+        req.user?.full_name || req.user?.name || 'Admin',
+        'UPDATE',
+        `Updated tenant profile details for ${tenant.full_name}`
+      );
+    }
+
+    // Create a notification for the tenant if room has changed
+    if (updateData.room_id !== undefined && String(updateData.room_id || '') !== String(oldTenant.room_id || '')) {
+      try {
+        let oldRoomNum = 'None';
+        let newRoomNum = 'None';
+
+        if (oldTenant.room_id) {
+          const { data: oRoom } = await supabase.from('rooms').select('room_number').eq('id', oldTenant.room_id).single();
+          if (oRoom) oldRoomNum = oRoom.room_number;
+        }
+        if (tenant.room_id) {
+          const { data: nRoom } = await supabase.from('rooms').select('room_number').eq('id', tenant.room_id).single();
+          if (nRoom) newRoomNum = nRoom.room_number;
+        }
+
+        const msg = oldRoomNum === 'None' 
+          ? `Your room has been assigned to Room ${newRoomNum}.`
+          : `Your room assignment has been updated from Room ${oldRoomNum} to Room ${newRoomNum}.`;
+
+        await supabase.from('notifications').insert([{
+          tenant_id: tenant.id,
+          title: 'Room Details Updated',
+          message: msg,
+          is_read: false
+        }]);
+      } catch (err) {
+        console.error("Room update notification error:", err);
+      }
+    }
+
     res.json({ success: true, data: tenant });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -410,6 +534,19 @@ exports.checkinTenant = async (req, res) => {
   try {
     const { data: tenant, error } = await supabase.from('tenants').update({ status: 'active' }).eq('id', req.params.id).select().single();
     if (error || !tenant) return res.status(404).json({ success: false, message: 'Tenant not found' });
+
+    // Create check-in notification
+    try {
+      await supabase.from('notifications').insert([{
+        tenant_id: tenant.id,
+        title: 'Check-In Activated',
+        message: 'Welcome! Your check-in stay has been successfully activated.',
+        is_read: false
+      }]);
+    } catch (err) {
+      console.error("Check-in notification error:", err);
+    }
+
     res.json({ success: true, data: tenant });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -452,6 +589,19 @@ exports.checkoutTenant = async (req, res) => {
       .select()
       .single();
     if (error) throw new Error(error.message);
+
+    // Create checkout notification
+    try {
+      await supabase.from('notifications').insert([{
+        tenant_id: req.params.id,
+        title: 'Check-Out Processed',
+        message: 'Your check-out has been processed successfully. Thank you for staying with us!',
+        is_read: false
+      }]);
+    } catch (err) {
+      console.error("Checkout notification error:", err);
+    }
+
     res.json({ success: true, data: updated });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

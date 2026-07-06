@@ -1,11 +1,16 @@
+const { logAudit } = require('../utils/auditLogger');
+
 exports.getComplaints = async (req, res) => {
   try {
-    const { propertyId } = req.query;
+    const { propertyId, tenantId } = req.query;
     let query = supabase
       .from('complaints')
-      .select('*, tenants(full_name, rooms(room_number), properties(property_name))')
+      .select('*, tenants(full_name, property_id, room_id, rooms(room_number), properties(property_name))')
       .order('created_at', { ascending: false });
-    if (propertyId) {
+      
+    if (tenantId) {
+      query = query.eq('tenant_id', tenantId);
+    } else if (propertyId) {
       const { data: ids } = await supabase.from('tenants').select('id').eq('property_id', propertyId);
       const tenantIds = (ids || []).map(t => t.id);
       if (tenantIds.length > 0) query = query.in('tenant_id', tenantIds);
@@ -20,6 +25,7 @@ exports.getComplaints = async (req, res) => {
       property: c.tenants?.properties?.property_name || 'Unknown',
       room: c.tenants?.rooms?.room_number || '—',
       tenantId: c.tenant_id,
+      propertyId: c.tenants?.property_id || null,
       raisedDate: c.created_at?.split('T')[0] || '',
       resolvedDate: c.resolved_at?.split('T')[0] || null
     }));
@@ -33,11 +39,11 @@ exports.getComplaint = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('complaints')
-      .select('*, tenants(full_name, rooms(room_number), properties(property_name))')
+      .select('*, tenants(full_name, property_id, room_id, rooms(room_number), properties(property_name))')
       .eq('id', req.params.id)
       .single();
     if (error || !data) return res.status(404).json({ success: false, message: 'Complaint not found' });
-    res.json({ success: true, data: { ...data, tenant: data.tenants?.full_name || 'Unknown', property: data.tenants?.properties?.property_name || 'Unknown', room: data.tenants?.rooms?.room_number || '—' } });
+    res.json({ success: true, data: { ...data, tenant: data.tenants?.full_name || 'Unknown', property: data.tenants?.properties?.property_name || 'Unknown', room: data.tenants?.rooms?.room_number || '—', propertyId: data.tenants?.property_id || null, roomId: data.tenants?.room_id || null } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -45,14 +51,17 @@ exports.getComplaint = async (req, res) => {
 
 exports.createComplaint = async (req, res) => {
   try {
-    const { tenantId, category, priority, title, description, assignedTo } = req.body;
+    const { tenantId, category, priority, title, description, assignedTo, assignedStaffId } = req.body;
     const { data, error } = await supabase
       .from('complaints')
       .insert([{
         tenant_id: tenantId,
         title,
         description: description || null,
-        status: 'in_progress'
+        status: 'in_progress',
+        category: category || 'Other',
+        priority: priority || 'Medium',
+        assigned_staff_id: assignedStaffId || assignedTo || null
       }])
       .select()
       .single();
@@ -72,6 +81,11 @@ exports.updateComplaint = async (req, res) => {
     }
     if (req.body.title !== undefined) updateData.title = req.body.title;
     if (req.body.description !== undefined) updateData.description = req.body.description;
+    if (req.body.category !== undefined) updateData.category = req.body.category;
+    if (req.body.priority !== undefined) updateData.priority = req.body.priority;
+    if (req.body.assignedStaffId !== undefined || req.body.assignedTo !== undefined) {
+      updateData.assigned_staff_id = req.body.assignedStaffId ?? req.body.assignedTo;
+    }
 
     const { data, error } = await supabase
       .from('complaints')
@@ -80,6 +94,16 @@ exports.updateComplaint = async (req, res) => {
       .select()
       .single();
     if (error || !data) return res.status(404).json({ success: false, message: 'Complaint not found' });
+
+    // Log system audit trail
+    if (req.body.status === 'Resolved') {
+      await logAudit(
+        req.user?.full_name || req.user?.name || 'Admin',
+        'STATUS_CHANGE',
+        `Resolved complaint ID ${req.params.id}: "${data.title}"`
+      );
+    }
+
     res.json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

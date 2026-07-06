@@ -128,12 +128,33 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, common_id, commonId } = req.body;
+  const inputCommonId = common_id || commonId;
   try {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // If common_id is provided, verify tenant mapping
+    if (inputCommonId) {
+      const { data: tenant, error: tenantErr } = await supabase
+        .from('tenants')
+        .select('*')
+        .eq('common_id', inputCommonId.trim())
+        .single();
+
+      if (tenantErr || !tenant) {
+        return res.status(401).json({ success: false, message: 'Invalid Common ID' });
+      }
+
+      // Check if the tenant email matches the login email
+      if (!tenant.email || tenant.email.toLowerCase().trim() !== normalizedEmail) {
+        return res.status(401).json({ success: false, message: 'Email does not match the registered Tenant ID' });
+      }
+    }
+
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
-      .eq('email', email.toLowerCase().trim())
+      .eq('email', normalizedEmail)
       .single();
 
     if (error || !user) {
@@ -152,10 +173,39 @@ exports.login = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
+    // Check if the user is a tenant and if a Common ID was required but not provided
+    if (user.role === 'tenant' && !inputCommonId) {
+      return res.status(400).json({ success: false, message: 'Common ID is required for tenant login' });
+    }
+
+    // Fetch tenant details to attach to the login response if user is a tenant
+    let tenantInfo = null;
+    if (user.role === 'tenant') {
+      const { data: tenant } = await supabase
+        .from('tenants')
+        .select('*, properties(property_name), rooms(room_number)')
+        .eq('email', normalizedEmail)
+        .single();
+      tenantInfo = tenant;
+    }
+
     res.json({
       success: true,
       token: generateToken(user.id),
-      user: { id: user.id, email: user.email, role: user.role, status: user.is_active ? 'Active' : 'Inactive' }
+      user: { 
+        id: user.id, 
+        email: user.email, 
+        role: user.role, 
+        status: user.is_active ? 'Active' : 'Inactive',
+        name: user.full_name || user.email.split('@')[0],
+        tenant: tenantInfo ? {
+          id: tenantInfo.id,
+          commonId: tenantInfo.common_id,
+          name: tenantInfo.full_name,
+          propertyName: tenantInfo.properties?.property_name,
+          roomNumber: tenantInfo.rooms?.room_number
+        } : null
+      }
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

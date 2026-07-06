@@ -14,8 +14,19 @@ async function loadDashboardData() {
     document.getElementById('stat-pending').textContent = `₹${stats.pendingRent.toLocaleString()}`;
     document.getElementById('stat-visitors-today').textContent = `${stats.visitorCount} Logged Today`;
     
-    // Render chart
-    renderOccupancyChart(stats.occupiedBeds, stats.totalBeds - stats.occupiedBeds);
+    // Update occupied / available counts in bento cards
+    const dashOccupied = document.getElementById('dash-occupied-count');
+    const dashAvailable = document.getElementById('dash-available-count');
+    const dashBedsTotal = document.getElementById('dash-beds-total');
+    if (dashOccupied) dashOccupied.textContent = stats.occupiedBeds;
+    if (dashAvailable) dashAvailable.textContent = Math.max(0, stats.totalBeds - stats.occupiedBeds);
+    if (dashBedsTotal) dashBedsTotal.textContent = `${stats.totalBeds} Beds`;
+
+    // Update dashboard progress bar
+    const bar = document.getElementById('dash-occupancy-bar');
+    const barTxt = document.getElementById('dash-occupancy-bar-percent');
+    if (bar) bar.style.width = `${stats.occupancyRate}%`;
+    if (barTxt) barTxt.textContent = `${stats.occupancyRate}%`;
     
     // Fill Notices Board
     const noticesList = document.getElementById('dashboard-notices-list');
@@ -84,42 +95,7 @@ async function loadDashboardData() {
   }
 }
 
-function renderOccupancyChart(occupied, available) {
-  const ctx = document.getElementById('occupancyChart');
-  if (!ctx) return;
-  
-  if (occupancyChartInstance) {
-    occupancyChartInstance.destroy();
-  }
-  
-  occupancyChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Occupied Beds', 'Available Beds'],
-      datasets: [{
-        data: [occupied, available],
-        backgroundColor: ['#4f46e5', '#f1f5f9'],
-        borderWidth: 2,
-        borderColor: '#ffffff'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            boxWidth: 12,
-            font: { size: 11, weight: 'bold', family: 'Inter' },
-            color: '#475569'
-          }
-        }
-      },
-      cutout: '70%'
-    }
-  });
-}
+
 
 // Subscribe to property filter changes
 window.addEventListener('propertyChanged', () => {
@@ -130,7 +106,8 @@ window.addEventListener('propertyChanged', () => {
 document.addEventListener('DOMContentLoaded', () => {
   const currentUser = window.Auth.getCurrentUser();
   if (currentUser) {
-    document.getElementById('welcome-title').textContent = `Welcome back, ${currentUser.name}`;
+    const displayName = currentUser.name || currentUser.full_name || currentUser.email?.split('@')[0] || 'Admin';
+    document.getElementById('welcome-title').textContent = `Welcome back, ${displayName}`;
   }
   
   // Realtime clock

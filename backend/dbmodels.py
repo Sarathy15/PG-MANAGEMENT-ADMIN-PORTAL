@@ -35,6 +35,7 @@ class Tenant(Base):
     aadhaar_pdf_url = Column(String, nullable=True)
     pan_pdf_url = Column(String, nullable=True)
     id_card_pdf_url = Column(String, nullable=True)
+    common_id = Column(String(50), unique=True, nullable=True)
 
     # Missing database columns
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
@@ -90,6 +91,7 @@ class Visitor(Base):
     visitor_phone = Column(String(15))
     address = Column(Text)
     purpose = Column(Text)
+    relation = Column(String(50), nullable=True)
 
     entry_time = Column(DateTime, default=datetime.utcnow)
     exit_time = Column(DateTime)
@@ -109,6 +111,10 @@ class Feedback(Base):
     description = Column(Text, nullable=False)
 
     status = Column(String(50), default="in_progress")
+
+    category = Column(String(100), nullable=True)
+    priority = Column(String(50), nullable=True)
+    assigned_staff_id = Column(Integer, ForeignKey("staff.id"), nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
     resolved_at = Column(DateTime, nullable=True)
@@ -182,5 +188,31 @@ class Bed(Base):
     room_id = Column(Integer, ForeignKey("rooms.id"), nullable=False)
     bed_number = Column(String, nullable=False)
     status = Column(String, default="available")
+
+
+class MaintenanceTask(Base):
+    __tablename__ = "maintenance_tasks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    property_id = Column(Integer, ForeignKey("properties.id"), nullable=False)
+    room_id = Column(Integer, ForeignKey("rooms.id"), nullable=True)
+    complaint_id = Column(Integer, ForeignKey("complaints.id"), nullable=True)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    assigned_staff_id = Column(Integer, ForeignKey("staff.id"), nullable=True)
+    cost = Column(Numeric, default=0)
+    status = Column(String, default="Pending")
+    date = Column(Date, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AuditLog(Base):
+    __tablename__ = "audit_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    operator = Column(String, default="System")
+    action = Column(String, nullable=False)
+    details = Column(Text, nullable=True)
+    date = Column(DateTime, default=datetime.utcnow)
 
 

@@ -51,12 +51,35 @@
       </div>
       
       <form id="notice-form" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Property Scope</label>
+            <select id="notice-property-id" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold cursor-pointer">
+              <option value="all">🌐 All Properties</option>
+              <!-- Loaded dynamically -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Notice Category</label>
+            <select id="notice-category" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold cursor-pointer">
+              <option value="General">📢 General Announcement</option>
+              <option value="Food">🍽️ Food & Meals Notice</option>
+              <option value="Utility">⚡ Rent & Utility Update</option>
+              <option value="Maintenance">🛠️ Repairs & Maintenance</option>
+              <option value="Warning">⚠️ Warnings & Alerts</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Preset Templates -->
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Property Scope</label>
-          <select id="notice-property-id" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm">
-            <option value="all">🌐 All Properties</option>
-            <!-- Loaded dynamically -->
-          </select>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Quick Presets / Templates</label>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="applyNoticeTemplate('food')" class="px-2.5 py-1 text-[10px] font-bold border border-slate-200 bg-slate-50 text-slate-600 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-colors focus:outline-none cursor-pointer">🍽️ Dinner Change</button>
+            <button type="button" onclick="applyNoticeTemplate('rent')" class="px-2.5 py-1 text-[10px] font-bold border border-slate-200 bg-slate-50 text-slate-600 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-colors focus:outline-none cursor-pointer">⚡ Electricity Bill</button>
+            <button type="button" onclick="applyNoticeTemplate('water')" class="px-2.5 py-1 text-[10px] font-bold border border-slate-200 bg-slate-50 text-slate-600 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-colors focus:outline-none cursor-pointer">🛠️ Water Cleaning</button>
+            <button type="button" onclick="applyNoticeTemplate('pest')" class="px-2.5 py-1 text-[10px] font-bold border border-slate-200 bg-slate-50 text-slate-600 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-colors focus:outline-none cursor-pointer">📢 Pest Control</button>
+          </div>
         </div>
 
         <div>

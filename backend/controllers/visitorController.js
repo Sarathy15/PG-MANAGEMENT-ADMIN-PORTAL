@@ -1,11 +1,14 @@
 exports.getVisitors = async (req, res) => {
   try {
-    const { propertyId } = req.query;
+    const { propertyId, tenantId } = req.query;
     let query = supabase
       .from('visitors')
       .select('*, tenants(full_name, room_id, property_id, rooms(room_number), properties(property_name))')
       .order('entry_time', { ascending: false });
-    if (propertyId) {
+    
+    if (tenantId) {
+      query = query.eq('tenant_id', tenantId);
+    } else if (propertyId) {
       const { data: ids } = await supabase.from('tenants').select('id').eq('property_id', propertyId);
       const tenantIds = (ids || []).map(t => t.id);
       if (tenantIds.length > 0) query = query.in('tenant_id', tenantIds);
@@ -164,7 +167,7 @@ exports.checkoutVisitor = async (req, res) => {
       .from('visitors')
       .update({
         exit_time: new Date().toISOString(),
-        status: 'Checked Out'
+        status: 'exited'
       })
       .eq('id', id)
       .select()
