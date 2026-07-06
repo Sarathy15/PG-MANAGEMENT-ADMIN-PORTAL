@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pleasant Homes - Tenants Directory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <style>
+    /* Premium visual styling and micro-interactions */
+    .saas-row {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .saas-row:hover {
+      background-color: #f8fafc !important;
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+      cursor: pointer;
+    }
+
+    .avatar-pill {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+    }
+
+    .saas-stat-card {
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      display: flex !important;
+      align-items: center !important;
+      gap: 1.25rem !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+    }
+
+    .saas-stat-card:hover {
+      border-color: rgba(99, 102, 241, 0.2);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.05);
+      transform: translateY(-1.5px);
+    }
+
+    .saas-stat-icon {
+      width: 2.75rem !important;
+      height: 2.75rem !important;
+      border-radius: 0.75rem;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0 !important;
+    }
+
+    .saas-filter-panel {
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 1rem;
+      padding: 1rem;
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 1rem !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .saas-filter-left {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      gap: 1rem !important;
+      flex: 1 !important;
+      min-width: 260px;
+    }
+
+    .saas-search-input-wrapper {
+      position: relative !important;
+      width: 280px !important;
+      max-width: 100% !important;
+    }
+
+    .saas-filter-right {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 0.75rem !important;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen flex overflow-hidden">
+
+  <div id="sidebar-container" class="h-screen sticky top-0 hidden md:block"></div>
+
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto h-screen">
+    <div id="header-container"></div>
+
+    <main class="flex-1 p-6 space-y-6">
+
+      <!-- Top actions panel -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-black text-slate-900 tracking-tight">Tenants</h1>
+          <p class="text-xs text-slate-500 font-semibold mt-1.5 flex items-center gap-2" id="header-stats-badges">
+            <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> <span
+                id="header-active-count">0</span> Active</span>
+            <span class="text-slate-355">•</span>
+            <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> <span
+                id="header-checkout-count">0</span> Checked Out</span>
+            <span class="text-slate-355">•</span>
+            <span id="header-last-updated" class="text-slate-400 font-medium italic">Last updated just now</span>
+            <span id="tenants-count-txt" class="hidden"></span>
+          </p>
+        </div>
+        <button onclick="openAddTenantModal()"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl font-bold shadow-md shadow-indigo-100 transition-all flex items-center gap-2 text-sm shrink-0">
+          <i data-lucide="plus" class="w-4.5 h-4.5"></i>
+          <span>Check-In Tenant</span>
+        </button>
+      </div>
+
+      <!-- Quick Stats Row -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="saas-stat-card">
+          <div class="saas-stat-icon bg-indigo-50 border border-indigo-100 text-indigo-600">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Registered</p>
+            <h4 class="text-lg font-black text-slate-800 mt-0.5" id="stats-total">0</h4>
+          </div>
+        </div>
+        <div class="saas-stat-card">
+          <div class="saas-stat-icon bg-emerald-50 border border-emerald-100 text-emerald-600">
+            <i data-lucide="user-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active Occupants</p>
+            <h4 class="text-lg font-black text-slate-800 mt-0.5" id="stats-active">0</h4>
+          </div>
+        </div>
+        <div class="saas-stat-card">
+          <div class="saas-stat-icon bg-slate-50 border border-slate-150 text-slate-600">
+            <i data-lucide="user-minus" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Checked Out</p>
+            <h4 class="text-lg font-black text-slate-800 mt-0.5" id="stats-checkout">0</h4>
+          </div>
+        </div>
+        <div class="saas-stat-card">
+          <div class="saas-stat-icon bg-amber-50 border border-amber-100 text-amber-600">
+            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Pending KYC</p>
+            <h4 class="text-lg font-black text-slate-800 mt-0.5" id="stats-missing-kyc">0</h4>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Panel -->
+      <div class="saas-filter-panel">
+        <div class="saas-filter-left">
+          <!-- Search input -->
+          <div class="saas-search-input-wrapper">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </span>
+            <input type="text" id="search-tenant" placeholder="Search name, phone, room, ID..."
+              class="w-full bg-slate-50 border border-slate-250/70 focus:border-indigo-400 rounded-xl pl-9 pr-4 py-2.5 text-slate-700 text-xs font-semibold focus:ring-0 transition-all">
+          </div>
+
+          <!-- Status sliding tabs -->
+          <div class="flex bg-slate-100/90 rounded-xl p-1 border border-slate-200/50">
+            <button onclick="setStatusFilter('all')" id="tab-status-all"
+              class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-slate-800 shadow-sm border border-slate-200/50">All</button>
+            <button onclick="setStatusFilter('Active')" id="tab-status-active"
+              class="px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-755">Active</button>
+            <button onclick="setStatusFilter('Checked Out')" id="tab-status-checkout"
+              class="px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-755">Checked
+              Out</button>
+          </div>
+        </div>
+
+        <!-- Date & Reset Actions -->
+        <div class="saas-filter-right">
+          <!-- Date selector -->
+          <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-450"></i>
+            <input type="date" id="filter-tenant-date"
+              class="bg-transparent border-0 p-0 text-slate-700 text-xs font-bold focus:ring-0 cursor-pointer">
+            <button onclick="clearDateFilter()" id="clear-date-btn"
+              class="hidden text-rose-500 hover:text-rose-600 ml-1">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <!-- Sort selector -->
+          <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl">
+            <i data-lucide="arrow-up-down" class="w-3.5 h-3.5 text-slate-450"></i>
+            <select id="filter-tenant-sort" onchange="loadTenants()"
+              class="bg-transparent border-0 p-0 text-slate-700 text-xs font-bold focus:ring-0 cursor-pointer">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="name_asc">Name A-Z</option>
+              <option value="room_asc">Room Number</option>
+            </select>
+          </div>
+
+          <!-- Reset Filter -->
+          <button onclick="resetFilters()"
+            class="text-xs text-slate-550 hover:text-indigo-600 font-bold px-3 py-2 flex items-center gap-1 transition-colors">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Table View of Tenants -->
+      <div class="overflow-x-auto rounded-2xl border border-slate-200/80 bg-white shadow-sm animate-fade-in">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr
+              class="bg-slate-50/70 border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              <th class="px-5 py-3">Occupant</th>
+              <th class="px-5 py-3">Allocation</th>
+              <th class="px-5 py-3">Rent Details</th>
+              <th class="px-5 py-3">Check In Date</th>
+              <th class="px-5 py-3">KYC Status</th>
+              <th class="px-5 py-3">Status</th>
+              <th class="px-5 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tenants-table-body" class="divide-y divide-slate-100 text-xs text-slate-750 font-semibold">
+            <tr>
+              <td colspan="7" class="px-5 py-12 text-center text-slate-400">Loading directory...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ADD TENANT MODAL (STEPPER REGISTRATION) -->
+  <div id="tenant-modal"
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div
+      class="bg-white rounded-3xl w-full max-w-xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all p-6 max-h-[92vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div>
+          <h3 id="tenant-modal-title" class="font-black text-xl text-slate-900">New Occupant Registration</h3>
+          <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">SaaS Check-In Stepper</p>
+        </div>
+        <button type="button" onclick="closeTenantModal()"
+          class="text-slate-400 hover:text-slate-600 transition-colors text-base font-bold">✕</button>
+      </div>
+
+      <!-- Stepper Progress Header -->
+      <div
+        class="py-3.5 border-b border-slate-50 flex items-center justify-between text-[10px] font-bold text-slate-450 uppercase tracking-widest px-3 bg-slate-50/50 rounded-2xl my-3">
+        <div id="step-indicator-1" class="flex items-center gap-1.5 text-indigo-600 font-extrabold">
+          <span
+            class="w-5 h-5 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center">1</span>
+          <span>Personal</span>
+        </div>
+        <div class="h-px bg-slate-200 flex-1 mx-3"></div>
+        <div id="step-indicator-2" class="flex items-center gap-1.5 text-slate-400">
+          <span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center">2</span>
+          <span>Stay</span>
+        </div>
+        <div class="h-px bg-slate-200 flex-1 mx-3"></div>
+        <div id="step-indicator-3" class="flex items-center gap-1.5 text-slate-400">
+          <span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center">3</span>
+          <span>KYC</span>
+        </div>
+        <div class="h-px bg-slate-200 flex-1 mx-3"></div>
+        <div id="step-indicator-4" class="flex items-center gap-1.5 text-slate-400">
+          <span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center">4</span>
+          <span>Contact</span>
+        </div>
+      </div>
+
+      <!-- Stepper Form Content -->
+      <form id="tenant-form" class="flex-1 flex flex-col justify-between overflow-y-auto pr-1">
+        <input type="hidden" id="tenant-id">
+
+        <!-- STEP 1: Personal Details -->
+        <div id="step-1-content" class="space-y-4 py-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Full Name</label>
+            <input type="text" id="tenant-name" placeholder="e.g. Rohan Sharma"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 transition-colors">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Email Address</label>
+            <input type="email" id="tenant-email" placeholder="e.g. rohan@gmail.com"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 transition-colors">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Mobile Number</label>
+            <input type="text" id="tenant-phone" placeholder="e.g. +91 99988 77766"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 transition-colors">
+          </div>
+        </div>
+
+        <!-- STEP 2: Accommodation Details -->
+        <div id="step-2-content" class="space-y-4 py-2 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Select Room Unit</label>
+            <select id="tenant-room-id"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 cursor-pointer">
+              <!-- Loaded dynamically -->
+            </select>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bed Number</label>
+              <input type="number" id="tenant-bed-number" placeholder="e.g. 1"
+                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">Rent (INR/mo)</label>
+              <input type="number" id="tenant-rent" placeholder="8000"
+                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">Deposit (INR)</label>
+              <input type="number" id="tenant-deposit" placeholder="15000"
+                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: KYC Documents -->
+        <div id="step-3-content" class="space-y-4 py-2 hidden">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">ID Proof Type</label>
+              <select id="tenant-id-type"
+                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 cursor-pointer">
+                <option value="Aadhaar Card">Aadhaar Card</option>
+                <option value="Passport">Passport</option>
+                <option value="PAN Card">PAN Card</option>
+                <option value="Driving License">Driving License</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">ID Number</label>
+              <input type="text" id="tenant-id-number" placeholder="e.g. 1234-5678-9012"
+                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+            </div>
+          </div>
+          <!-- Premium Document Upload File Area -->
+          <input type="file" id="tenant-doc-file" accept=".pdf,.jpg,.jpeg,.png" class="hidden"
+            onchange="handleDocUpload(event)">
+          <div onclick="document.getElementById('tenant-doc-file').click()" id="doc-upload-zone"
+            class="border-2 border-dashed border-slate-200/85 rounded-2xl p-6 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-slate-50 hover:border-slate-350 transition-all cursor-pointer">
+            <div id="doc-upload-status" class="flex flex-col items-center justify-center text-center">
+              <i data-lucide="cloud-upload" class="w-8 h-8 text-slate-400 mb-2" id="doc-upload-icon"></i>
+              <span class="text-xs font-bold text-slate-700" id="doc-upload-title">Upload ID Document
+                (Compulsory)</span>
+              <span class="text-[10px] text-slate-400 font-semibold mt-1" id="doc-upload-sub">PDF, JPG, or PNG up to
+                5MB</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Emergency Contacts & Check-in Date -->
+        <div id="step-4-content" class="space-y-4 py-2 hidden">
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Emergency Contact Person</p>
+            <div class="grid grid-cols-3 gap-3">
+              <input type="text" id="contact-name" placeholder="Name"
+                class="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-850 focus:ring-0">
+              <input type="text" id="contact-relation" placeholder="Relation"
+                class="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-855 focus:ring-0">
+              <input type="text" id="contact-phone" placeholder="Phone"
+                class="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-855 focus:ring-0">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Check-In Date</label>
+            <input type="date" id="tenant-checkin"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+          </div>
+        </div>
+
+        <!-- Stepper Dynamic Loader / Progress State Indicator -->
+        <div id="stepper-loader" class="hidden py-6 flex flex-col items-center justify-center space-y-3">
+          <div class="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          <span id="stepper-loader-text" class="text-xs font-bold text-slate-700">Creating Tenant Record...</span>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex items-center justify-between pt-6 border-t border-slate-100 mt-6" id="stepper-actions-bar">
+          <button type="button" id="prev-step-btn" onclick="goToPrevStep()"
+            class="px-5 py-3 border border-slate-200 text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors hidden">Back</button>
+          <div class="flex-1"></div>
+          <button type="button" id="next-step-btn" onclick="goToNextStep()"
+            class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-150 transition-all">Next
+            Step</button>
+          <button type="submit" id="submit-step-btn"
+            class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-150 transition-all hidden w-full sm:w-auto">Complete
+            Check-In</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- OCCUPANT DETAILS VIEW MODAL -->
+  <div id="tenant-detail-modal"
+    class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div
+      class="bg-slate-50 rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-200/80 overflow-hidden transform transition-all max-h-[90vh] flex flex-col details-modal-container">
+
+      <!-- Left Panel: Profile Summary Card (Sidebar) -->
+      <div
+        class="w-full bg-white border-b p-6 flex flex-col justify-between shrink-0 details-modal-sidebar">
+        <div class="flex flex-col items-center w-full">
+          <!-- Colored Initials Avatar -->
+          <div id="detail-avatar"
+            class="w-24 h-24 rounded-full font-black text-4xl flex items-center justify-center border-2 border-white shadow-md avatar-pill mb-4 mt-2">
+            T
+          </div>
+
+          <h3 id="detail-name" class="font-black text-2xl text-slate-800 text-center tracking-tight leading-tight">
+            Tenant Name</h3>
+          <div id="detail-status" class="mt-2.5"></div>
+
+          <div class="w-full border-t border-slate-100 my-5"></div>
+
+          <!-- Quick Metrics (Room & Bed, Rent) -->
+          <div class="w-full space-y-4 text-xs font-bold text-slate-500">
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="home" class="w-3.5 h-3.5 text-slate-400"></i>
+                Allocation</span>
+              <span id="detail-room-bed-badge"
+                class="font-extrabold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg">Room —</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="indian-rupee"
+                  class="w-3.5 h-3.5 text-slate-400"></i> Rent</span>
+              <span id="detail-sidebar-rent" class="font-extrabold text-indigo-650 text-indigo-600">₹0/mo</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="shield-alert"
+                  class="w-3.5 h-3.5 text-slate-400"></i> Rent Status</span>
+              <span id="detail-sidebar-rent-status" class="font-extrabold text-xs text-slate-500">—</span>
+            </div>
+
+            <div class="w-full border-t border-slate-100 my-4"></div>
+
+            <!-- Contact & Checkin Info -->
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i>
+                Phone</span>
+              <span id="detail-phone-val" class="text-slate-800 font-extrabold">—</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400"></i>
+                Email</span>
+              <span id="detail-email-val" class="text-slate-800 font-extrabold text-right truncate max-w-[140px]"
+                title="">—</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+                Check-In</span>
+              <span id="detail-checkin" class="text-slate-800 font-extrabold">01 Jul, 2026</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="hourglass" class="w-3.5 h-3.5 text-slate-400"></i>
+                Duration</span>
+              <span id="detail-duration" class="text-slate-800 font-extrabold">0 Days</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Left Actions (Edit, Check Out) -->
+        <div class="mt-6 space-y-2.5 w-full">
+          <button type="button" id="detail-btn-edit"
+            class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-2xl text-xs transition-all shadow-md shadow-indigo-100 flex items-center justify-center gap-2">
+            <i data-lucide="edit" class="w-4 h-4"></i> Edit Details
+          </button>
+          <button type="button" id="detail-btn-checkout"
+            class="w-full py-3 bg-rose-50 hover:bg-rose-100 border border-rose-100 text-rose-600 font-extrabold rounded-2xl text-xs transition-all flex items-center justify-center gap-2">
+            <i data-lucide="log-out" class="w-4 h-4"></i> Check Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Panel: Information Cards & Timeline (Scrollable area) -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+
+          <!-- STAY INFORMATION CARD -->
+          <div class="bg-white rounded-3xl border border-slate-200/60 p-6 shadow-sm">
+            <h4 class="font-black text-sm text-slate-800 tracking-tight flex items-center gap-2 mb-4">
+              <i data-lucide="home" class="w-4 h-4 text-slate-500"></i> Accommodation Info
+            </h4>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Room Sub-card -->
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-[9px] uppercase font-black text-slate-400 flex items-center gap-1.5"><i
+                    data-lucide="door-closed" class="w-3 h-3"></i> Room</span>
+                <p id="detail-card-room" class="text-lg font-black text-slate-800 mt-2">Room —</p>
+              </div>
+              <!-- Bed Sub-card -->
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-[9px] uppercase font-black text-slate-400 flex items-center gap-1.5"><i
+                    data-lucide="bed" class="w-3 h-3"></i> Bed</span>
+                <p id="detail-card-bed" class="text-lg font-black text-slate-800 mt-2">Bed —</p>
+              </div>
+              <!-- Rent Sub-card -->
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-[9px] uppercase font-black text-slate-400 flex items-center gap-1.5"><i
+                    data-lucide="indian-rupee" class="w-3 h-3"></i> Rent</span>
+                <p id="detail-card-rent" class="text-lg font-black text-indigo-600 mt-2">₹0/mo</p>
+              </div>
+              <!-- Deposit Sub-card -->
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-[9px] uppercase font-black text-slate-400 flex items-center gap-1.5"><i
+                    data-lucide="wallet" class="w-3 h-3"></i> Deposit</span>
+                <p id="detail-card-deposit" class="text-lg font-black text-slate-800 mt-2">₹0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- IDENTITY & KYC VERIFICATION CARD -->
+          <div class="bg-white rounded-3xl border border-slate-200/60 p-6 shadow-sm">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <h4 class="font-black text-sm text-slate-800 tracking-tight flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4 text-slate-500"></i> Identity & KYC Verification
+              </h4>
+              <div id="detail-kyc-status-badge"></div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-[9px] uppercase font-black text-slate-400" id="detail-card-id-label">Identity Document
+                  </p>
+                  <p id="detail-card-id-number" class="text-sm font-bold text-slate-800 mt-1">1234-XXXX-XXXX</p>
+                </div>
+              </div>
+
+              <!-- Embedded Document Preview area -->
+              <div class="space-y-2 mt-2">
+                <p class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Uploaded Identity
+                  Document Proof</p>
+                <div id="detail-doc-preview-box" class="w-full">
+                  <!-- Embed dynamically via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- EMERGENCY CONTACT CARD -->
+          <div class="bg-white rounded-3xl border border-slate-200/60 p-6 shadow-sm">
+            <h4 class="font-black text-sm text-slate-800 tracking-tight flex items-center gap-2 mb-4">
+              <i data-lucide="phone-call" class="w-4 h-4 text-slate-500"></i> Emergency Contact
+            </h4>
+            <div class="grid grid-cols-1 gap-4 emergency-contact-grid">
+              <div class="bg-slate-50/50 border border-slate-100 rounded-2xl p-4 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500"><i
+                    data-lucide="user" class="w-4 h-4"></i></div>
+                <div>
+                  <p class="text-[9px] uppercase font-black text-slate-400">Contact Person</p>
+                  <p id="detail-card-emergency-name"
+                    class="text-xs font-extrabold text-slate-800 mt-0.5">—</p>
+                </div>
+              </div>
+              <div class="bg-slate-50/50 border border-slate-100 rounded-2xl p-4 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500"><i
+                    data-lucide="heart" class="w-4 h-4"></i></div>
+                <div>
+                  <p class="text-[9px] uppercase font-black text-slate-400">Relationship</p>
+                  <p id="detail-card-emergency-relation" class="text-xs font-bold text-slate-500 mt-0.5">—</p>
+                </div>
+              </div>
+              <div class="bg-slate-50/50 border border-slate-100 rounded-2xl p-4 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500"><i
+                    data-lucide="phone" class="w-4 h-4"></i></div>
+                <div>
+                  <p class="text-[9px] uppercase font-black text-slate-400">Contact Number</p>
+                  <p id="detail-card-emergency-phone" class="text-xs font-extrabold text-slate-800 mt-0.5">—</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTIVITY TIMELINE CARD -->
+          <div class="bg-white rounded-3xl border border-slate-200/60 p-6 shadow-sm">
+            <h4 class="font-black text-sm text-slate-800 tracking-tight flex items-center gap-2 mb-4">
+              <i data-lucide="history" class="w-4 h-4 text-slate-500"></i> Occupant Activity Timeline
+            </h4>
+            <div id="detail-card-timeline"
+              class="space-y-4 relative before:absolute before:inset-y-0 before:left-3.5 before:w-0.5 before:bg-slate-100 pl-2">
+              <!-- Generated dynamically via Javascript -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Static Sticky Footer Actions -->
+        <div class="flex items-center justify-end border-t border-slate-200 bg-white p-4 shrink-0">
+          <button type="button" onclick="window.UI.hideModal('tenant-detail-modal')"
+            class="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-extrabold transition-colors">Close
+            Profile View</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/state.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/router.js"></script>
+  <script src="/js/tenants.js"></script>
+</body>
+
+</html>

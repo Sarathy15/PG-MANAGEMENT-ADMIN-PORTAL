@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pleasant Homes - Property Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body class="bg-slate-50 min-h-screen flex overflow-hidden">
+
+  <!-- Sidebar Container -->
+  <div id="sidebar-container" class="h-screen sticky top-0 hidden md:block"></div>
+
+  <!-- Content Container -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto h-screen">
+    <!-- Header Container -->
+    <div id="header-container"></div>
+
+    <main class="flex-1 p-6 space-y-6">
+      
+      <!-- Back navigation & Edit actions -->
+      <div class="flex items-center justify-between">
+        <a href="/properties.html" class="flex items-center gap-2 text-slate-500 hover:text-slate-700 font-semibold text-sm transition-colors">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>Back to Properties</span>
+        </a>
+        <button id="edit-property-detail-btn" onclick="triggerEditProperty()" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-775 px-4 py-2 rounded-xl font-semibold shadow-sm transition-all flex items-center gap-2 text-xs">
+          <i data-lucide="edit-3" class="w-4 h-4 text-slate-500"></i>
+          <span>Edit Details</span>
+        </button>
+      </div>
+
+      <!-- PROPERTY BANNER / HEADER -->
+      <div id="detail-banner-card" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm animate-fade-in relative group/banner">
+        <div class="h-64 w-full bg-slate-100 relative overflow-hidden">
+          <!-- Slider wrapper -->
+          <div id="banner-slider-wrapper" class="w-full h-full flex transition-transform duration-500" style="transform: translateX(0%)">
+            <img id="detail-cover-img" src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80" alt="Property Cover" class="w-full h-full object-cover shrink-0 select-none">
+          </div>
+          
+          <!-- Gradient overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/20 to-transparent pointer-events-none"></div>
+          
+          <!-- Slide Indicators / Dots -->
+          <div id="banner-dots" class="absolute bottom-16 right-6 flex items-center gap-1.5 z-10">
+            <!-- Populated dynamically -->
+          </div>
+
+          <!-- Slider Navigation Arrows -->
+          <button id="banner-prev-btn" onclick="prevBannerSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-2.5 rounded-full backdrop-blur-sm opacity-0 group-hover/banner:opacity-100 transition-opacity z-10">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <button id="banner-next-btn" onclick="nextBannerSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-2.5 rounded-full backdrop-blur-sm opacity-0 group-hover/banner:opacity-100 transition-opacity z-10">
+            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+          </button>
+          
+          <!-- Text Overlay -->
+          <div class="absolute bottom-6 left-6 text-white space-y-1.5 z-10 pointer-events-none">
+            <div class="flex items-center gap-2">
+              <span id="detail-type-badge" class="text-[10px] font-extrabold bg-indigo-600 text-white uppercase tracking-wider px-2.5 py-1 rounded-md">Boys PG</span>
+              <span id="detail-code-badge" class="text-[10px] font-mono bg-slate-800/80 text-indigo-300 font-extrabold tracking-wider px-2.5 py-1 rounded-md">—</span>
+              <span id="detail-status-badge" class="text-[10px] font-extrabold bg-emerald-600 text-white uppercase tracking-wider px-2.5 py-1 rounded-md">ACTIVE</span>
+            </div>
+            <h2 id="detail-name" class="text-3xl font-black leading-tight">Pleasant Homes</h2>
+            <p id="detail-location-header" class="text-xs font-semibold text-slate-200 flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-200"></i>
+              <span>12, Cathedral Road, Chennai</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- METRICS GRID -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
+        <!-- Active Tenants -->
+        <div class="bento-card p-5 flex items-center gap-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
+          <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="users" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs font-semibold text-slate-400">Active Tenants</span>
+            <h3 id="metric-tenants" class="text-xl font-bold text-slate-800 mt-0.5">0</h3>
+          </div>
+        </div>
+
+        <!-- Total Rooms -->
+        <div class="bento-card p-5 flex items-center gap-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
+          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="door-closed" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs font-semibold text-slate-400">Rooms (Occupied/Total)</span>
+            <h3 id="metric-rooms" class="text-xl font-bold text-slate-800 mt-0.5">0 / 0</h3>
+          </div>
+        </div>
+
+        <!-- Occupancy Rate -->
+        <div class="bento-card p-5 flex items-center gap-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
+          <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="percent" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs font-semibold text-slate-400">Bed Occupancy Rate</span>
+            <h3 id="metric-occupancy" class="text-xl font-bold text-slate-800 mt-0.5">0%</h3>
+          </div>
+        </div>
+
+        <!-- Monthly Revenue -->
+        <div class="bento-card p-5 flex items-center gap-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
+          <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="indian-rupee" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs font-semibold text-slate-400">Monthly Revenue (Potential)</span>
+            <h3 id="metric-revenue" class="text-xl font-bold text-slate-800 mt-0.5">₹0</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN DETAIL CONTENT -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left 2-Column: Room summaries, description, location details -->
+        <div class="lg:col-span-2 space-y-6">
+          
+          <!-- Rooms by Floor -->
+          <div class="bento-card p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 class="font-bold text-slate-800">Building Layout</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Occupancy and structures grouped floor-wise.</p>
+              </div>
+              <i data-lucide="layers" class="w-5 h-5 text-slate-400"></i>
+            </div>
+            
+            <div id="floor-list-container" class="space-y-4 pt-1">
+              <!-- Dynamically populated progress indicators -->
+              <p class="text-slate-400 text-xs">Loading building layout...</p>
+            </div>
+          </div>
+
+          <!-- Description and Amenities -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Details & Metadata -->
+            <div class="bento-card p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800">Property Details</h3>
+                <i data-lucide="info" class="w-5 h-5 text-slate-400"></i>
+              </div>
+              
+              <div class="space-y-3.5 text-xs text-slate-600">
+                <div class="flex justify-between">
+                  <span class="font-semibold text-slate-400">Property Code</span>
+                  <span id="meta-code" class="font-mono bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-bold">—</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold text-slate-400">Property Type</span>
+                  <span id="meta-type" class="font-semibold text-slate-800">—</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold text-slate-400">Floors</span>
+                  <span id="meta-floors" class="font-semibold text-slate-800">—</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold text-slate-400">Pincode</span>
+                  <span id="meta-pincode" class="font-semibold text-slate-800">—</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold text-slate-400">Opening Date</span>
+                  <span id="meta-opening" class="font-semibold text-slate-800">—</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold text-slate-400">Created At</span>
+                  <span id="meta-created" class="font-semibold text-slate-800">—</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold text-slate-400">Contact Phone</span>
+                  <span id="meta-phone" class="font-semibold text-slate-800">—</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold text-slate-400">Nearby Landmarks</span>
+                  <span id="meta-landmarks" class="font-semibold text-slate-800 truncate max-w-[150px]">—</span>
+                </div>
+                <div id="maps-link-container" class="pt-2 border-t border-slate-100 flex justify-between items-center" style="display: none;">
+                  <span class="font-semibold text-slate-400">Google Maps Navigation</span>
+                  <a id="meta-maps-btn" href="#" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1">
+                    <span>View Map</span>
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Amenities active checklist -->
+            <div class="bento-card p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800">Active Amenities</h3>
+                <i data-lucide="award" class="w-5 h-5 text-indigo-500"></i>
+              </div>
+              
+              <div id="detail-amenities-list" class="grid grid-cols-2 gap-2 text-xs">
+                <!-- Dynamically loaded amenities badges -->
+                <p class="text-slate-400 text-xs col-span-2">Loading amenities...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description Text Area -->
+          <div class="bento-card p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-3">
+            <h3 class="font-bold text-slate-800">About Property</h3>
+            <p id="detail-description" class="text-sm text-slate-600 leading-relaxed font-medium">
+              No description details listed for this property host.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Column: Financial health and active tenants list -->
+        <div class="space-y-6">
+          
+          <!-- Revenue metrics breakdown -->
+          <div class="bento-card p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="font-bold text-slate-800">Financial Overview</h3>
+              <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-500"></i>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100/50">
+                  <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider">Collected Rent</span>
+                  <h4 id="fin-collected" class="text-lg font-bold text-slate-800 mt-0.5">₹0</h4>
+                </div>
+                <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100/50">
+                  <span class="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Pending Dues</span>
+                  <h4 id="fin-pending" class="text-lg font-bold text-slate-800 mt-0.5">₹0</h4>
+                </div>
+              </div>
+              
+              <div class="space-y-3 text-xs pt-1">
+                <div class="flex justify-between items-center text-slate-600">
+                  <span class="font-semibold text-slate-400">Monthly Target Rent</span>
+                  <span id="fin-target" class="font-bold text-slate-800">₹0</span>
+                </div>
+                <div class="flex justify-between items-center text-slate-600">
+                  <span class="font-semibold text-slate-400">Security Deposits Held</span>
+                  <span id="fin-deposits" class="font-bold text-slate-800">₹0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recently Joined Tenants -->
+          <div class="bento-card p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="font-bold text-slate-800">Recently Joined</h3>
+              <i data-lucide="user-plus-2" class="w-5 h-5 text-indigo-500"></i>
+            </div>
+            
+            <div id="recent-tenants-container" class="space-y-3">
+              <!-- Dynamically render tenants -->
+              <p class="text-slate-400 text-xs">No active tenants assigned yet.</p>
+            </div>
+            
+            <div class="pt-3 border-t border-slate-100 text-center">
+              <a href="/tenants.html" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                View All Tenants
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Floating Bottom Action Bar -->
+      <div class="fixed bottom-6 right-6 z-40 flex items-center gap-3 animate-fade-in shadow-xl bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-200/80 hover:border-slate-350 transition-all">
+        <a href="/properties.html" class="flex items-center gap-1.5 text-slate-650 hover:text-slate-850 font-bold text-xs px-3.5 py-2.5 rounded-xl hover:bg-slate-100 transition-all">
+          <i data-lucide="arrow-left" class="w-4 h-4 text-slate-500"></i>
+          <span>Back to List</span>
+        </a>
+        <div class="w-px h-5 bg-slate-200"></div>
+        <button id="floating-edit-btn" onclick="triggerEditProperty()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4.5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 text-xs hover:scale-[1.03] active:scale-[0.98] shadow-md shadow-indigo-200">
+          <i data-lucide="edit-3" class="w-4 h-4"></i>
+          <span>Edit Property</span>
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/state.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/router.js"></script>
+  <script src="/js/property-detail.js"></script>
+</body>
+</html>

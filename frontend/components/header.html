@@ -1,0 +1,57 @@
+<header class="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between">
+  <!-- Left Header Search / Info -->
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-600">
+      <span class="text-sm font-medium">Select Active Property:</span>
+      <select id="property-select" class="bg-transparent border-none text-slate-800 font-semibold text-sm focus:ring-0 cursor-pointer">
+        <option value="all">🏢 All Properties</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Right Header Icons / Profiling -->
+  <div class="flex items-center gap-4">
+    <!-- Current date tag -->
+    <div class="text-sm font-medium text-slate-500 hidden md:block" id="header-date">
+      July 3, 2026
+    </div>
+
+    <!-- Divider -->
+    <div class="h-6 w-px bg-slate-200 hidden md:block"></div>
+
+    <!-- Notification Bell -->
+    <button class="text-slate-400 hover:text-slate-600 transition-colors relative">
+      <i data-lucide="bell" class="w-5 h-5"></i>
+      <span class="absolute top-0 right-0 w-2 h-2 rounded-full bg-indigo-600 ring-2 ring-white"></span>
+    </button>
+
+    <!-- User Trigger -->
+    <div class="relative">
+      <button id="user-menu-button" class="flex items-center gap-2 focus:outline-none">
+        <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden ring-2 ring-indigo-50/50">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Profile" class="w-full h-full object-cover">
+        </div>
+      </button>
+
+      <!-- Dropdown -->
+      <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-1 hidden z-50">
+        <a href="/settings.html" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </a>
+        <hr class="border-slate-100">
+        <button id="logout-menu-item" onclick="window.Auth.logout()" class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-slate-50">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+<script>
+  // Hydrate current date simple script
+  const d = new Date();
+  const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+  const dateEl = document.getElementById('header-date');
+  if (dateEl) dateEl.textContent = d.toLocaleDateString('en-US', options);
+</script>

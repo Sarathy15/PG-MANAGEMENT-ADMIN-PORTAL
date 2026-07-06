@@ -1,0 +1,271 @@
+/* ============================================
+   PLEASANT HOMES — Premium Component Library
+   ============================================ */
+
+/* ------------------------------------
+   BENTO CARDS  (primary card surface)
+   ------------------------------------ */
+.bento-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.04),
+    0 4px 16px rgba(0,0,0,0.04);
+  transition:
+    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.24s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* shimmer highlight on top edge */
+.bento-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9) 50%, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bento-card:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 4px 6px rgba(0,0,0,0.04),
+    0 20px 40px rgba(99, 102, 241, 0.08),
+    0 0 0 1px rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.bento-card:hover::before {
+  opacity: 1;
+}
+
+/* ------------------------------------
+   SIDEBAR — Navigation
+   ------------------------------------ */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #64748b;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s cubic-bezier(0.16,1,0.3,1),
+    box-shadow 0.2s ease;
+  position: relative;
+}
+
+.sidebar-link i {
+  flex-shrink: 0;
+  transition: color 0.2s ease, transform 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+
+.sidebar-link:hover {
+  background-color: #f1f5f9;
+  color: #4f46e5;
+  transform: translateX(2px);
+}
+
+.sidebar-link:hover i {
+  color: #6366f1;
+  transform: scale(1.12);
+}
+
+/* Active state set by JS (bg-slate-100 text-indigo-600) */
+.sidebar-link.active-page,
+.sidebar-link.bg-slate-100 {
+  background: linear-gradient(135deg, #eef2ff 0%, #f0f5ff 100%) !important;
+  color: #4338ca !important;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.15);
+}
+
+.sidebar-link.active-page i {
+  color: #6366f1 !important;
+}
+
+/* Sidebar active left indicator bar */
+.sidebar-link.active-page::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: #6366f1;
+  border-radius: 2px;
+}
+
+/* ------------------------------------
+   BUTTONS — Premium tactile actions
+   ------------------------------------ */
+button:not([disabled]),
+.btn {
+  transition:
+    transform 0.18s cubic-bezier(0.16,1,0.3,1),
+    box-shadow 0.18s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+button:not([disabled]):hover {
+  transform: translateY(-1px);
+}
+
+button:not([disabled]):active {
+  transform: scale(0.96) translateY(0px);
+}
+
+/* ------------------------------------
+   INPUTS — Smooth focus states
+   ------------------------------------ */
+input:not([type=checkbox]):not([type=radio]),
+select,
+textarea {
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    background-color 0.22s ease;
+}
+
+input:not([type=checkbox]):not([type=radio]):focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: #6366f1 !important;
+  background-color: #ffffff !important;
+  box-shadow:
+    0 0 0 3px rgba(99, 102, 241, 0.14),
+    0 1px 4px rgba(99, 102, 241, 0.08) !important;
+}
+
+/* ------------------------------------
+   TABLE ROWS — Hover highlight
+   ------------------------------------ */
+tr {
+  transition: background-color 0.15s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(99, 102, 241, 0.025) !important;
+}
+
+/* ------------------------------------
+   STATUS BADGES — Colored tags
+   ------------------------------------ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.badge-green  { background: #dcfce7; color: #166534; }
+.badge-yellow { background: #fef9c3; color: #854d0e; }
+.badge-red    { background: #fee2e2; color: #991b1b; }
+.badge-blue   { background: #dbeafe; color: #1e40af; }
+.badge-indigo { background: #e0e7ff; color: #3730a3; }
+.badge-slate  { background: #f1f5f9; color: #475569; }
+
+/* ------------------------------------
+   MODAL / DRAWER — Slide + fade
+   ------------------------------------ */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: opacity 0.25s ease;
+}
+
+.modal-panel {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+
+/* ------------------------------------
+   SCROLLBAR — Slim custom
+   ------------------------------------ */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+/* ------------------------------------
+   STAT ICON BUBBLES
+   ------------------------------------ */
+.stat-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+
+.bento-card:hover .stat-icon {
+  transform: scale(1.1) rotate(-3deg);
+}
+
+/* ------------------------------------
+   SECTION HEADINGS gradient underline
+   ------------------------------------ */
+.section-heading {
+  display: inline-block;
+  position: relative;
+}
+
+.section-heading::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 32px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+}
+
+/* ------------------------------------
+   QUICK ACTION LINKS
+   ------------------------------------ */
+.quick-action-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s cubic-bezier(0.16,1,0.3,1),
+    box-shadow 0.2s ease;
+}
+
+.quick-action-link:hover {
+  transform: translateX(4px);
+}

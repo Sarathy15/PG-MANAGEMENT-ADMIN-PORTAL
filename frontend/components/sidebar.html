@@ -1,0 +1,109 @@
+<div class="h-full flex flex-col w-64" style="background:linear-gradient(180deg,#ffffff 0%,#fafbff 100%); border-right:1px solid rgba(226,232,240,0.8);">
+
+  <!-- Brand / Logo -->
+  <div style="padding:1.25rem 1.25rem 1rem; border-bottom:1px solid rgba(226,232,240,0.7);">
+    <div class="flex items-center gap-3">
+      <!-- Circular logo with ring glow -->
+      <div style="
+        width:44px; height:44px; border-radius:50%;
+        background:#fff;
+        border:2px solid rgba(99,102,241,0.18);
+        box-shadow:0 0 0 4px rgba(99,102,241,0.06), 0 2px 8px rgba(0,0,0,0.08);
+        overflow:hidden; flex-shrink:0;
+        transition:box-shadow 0.3s ease;
+      ">
+        <img src="/assets/logo.jpeg" alt="Pleasant Homes" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <div>
+        <h1 style="font-size:0.9375rem; font-weight:700; color:#1e293b; line-height:1.2; letter-spacing:-0.01em; font-family:'Outfit',sans-serif;">Pleasant Homes</h1>
+        <span style="font-size:0.625rem; font-weight:700; color:#94a3b8; letter-spacing:0.1em; text-transform:uppercase; display:block; margin-top:1px;">Management Portal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="flex-1 scrollbar-hide" style="padding:1rem 0.75rem; overflow-y:auto; overflow-x:hidden;">
+
+    <p style="padding:0 0.625rem; font-size:0.625rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.5rem;">Main Menu</p>
+
+    <a href="/management-dashboard.html" class="sidebar-link">
+      <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+      <span>Dashboard</span>
+    </a>
+
+    <a href="/properties.html" class="sidebar-link">
+      <i data-lucide="building-2" class="w-4 h-4"></i>
+      <span>Properties</span>
+    </a>
+
+    <a href="/room-management.html" class="sidebar-link">
+      <i data-lucide="door-closed" class="w-4 h-4"></i>
+      <span>Rooms</span>
+    </a>
+
+    <a href="/tenants.html" class="sidebar-link">
+      <i data-lucide="users" class="w-4 h-4"></i>
+      <span>Tenants</span>
+    </a>
+
+    <p style="padding:0 0.625rem; font-size:0.625rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; margin-top:1.5rem; margin-bottom:0.5rem;">Finance &amp; Operations</p>
+
+    <a href="/rent.html" class="sidebar-link">
+      <i data-lucide="indian-rupee" class="w-4 h-4"></i>
+      <span>Rent &amp; Invoices</span>
+    </a>
+
+    <a href="/staff.html" class="sidebar-link">
+      <i data-lucide="briefcase" class="w-4 h-4"></i>
+      <span>Staff Management</span>
+    </a>
+
+    <a href="/visitors.html" class="sidebar-link">
+      <i data-lucide="contact" class="w-4 h-4"></i>
+      <span>Visitor Logs</span>
+    </a>
+
+    <p style="padding:0 0.625rem; font-size:0.625rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; margin-top:1.5rem; margin-bottom:0.5rem;">Services &amp; Notices</p>
+
+    <a href="/complaints.html" class="sidebar-link">
+      <i data-lucide="message-square-warning" class="w-4 h-4"></i>
+      <span>Complaints</span>
+    </a>
+
+    <a href="/maintenance.html" class="sidebar-link">
+      <i data-lucide="wrench" class="w-4 h-4"></i>
+      <span>Maintenance</span>
+    </a>
+
+    <a href="/notices.html" class="sidebar-link">
+      <i data-lucide="megaphone" class="w-4 h-4"></i>
+      <span>Notices</span>
+    </a>
+
+    <p style="padding:0 0.625rem; font-size:0.625rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; margin-top:1.5rem; margin-bottom:0.5rem;">System</p>
+
+    <a href="/reports.html" class="sidebar-link">
+      <i data-lucide="file-bar-chart" class="w-4 h-4"></i>
+      <span>Reports &amp; Analytics</span>
+    </a>
+
+    <a href="/settings.html" class="sidebar-link">
+      <i data-lucide="settings" class="w-4 h-4"></i>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <!-- Bottom User Profile -->
+  <div style="padding:0.875rem 1rem; border-top:1px solid rgba(226,232,240,0.7); background:rgba(248,250,252,0.6); display:flex; align-items:center; gap:0.75rem;">
+    <div style="width:36px;height:36px;border-radius:50%;background:#e2e8f0;overflow:hidden;flex-shrink:0;border:2px solid rgba(99,102,241,0.12);">
+      <img id="header-user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">
+    </div>
+    <div style="flex:1; min-width:0;">
+      <p id="header-user-name" style="font-size:0.8125rem; font-weight:600; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Property Admin</p>
+      <p id="header-user-role" style="font-size:0.6875rem; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Property Admin</p>
+    </div>
+    <button id="logout-button" title="Logout" style="color:#94a3b8; padding:0.25rem; border-radius:0.5rem; border:none; background:transparent; cursor:pointer; transition:color 0.2s ease, background-color 0.2s ease;" onmouseover="this.style.color='#ef4444';this.style.backgroundColor='rgba(239,68,68,0.08)';" onmouseout="this.style.color='#94a3b8';this.style.backgroundColor='transparent';">
+      <i data-lucide="log-out" class="w-4 h-4"></i>
+    </button>
+  </div>
+</div>

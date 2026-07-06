@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pleasant Homes - Reports & Logs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body class="bg-slate-50 min-h-screen flex overflow-hidden">
+
+  <div id="sidebar-container" class="h-screen sticky top-0 hidden md:block"></div>
+
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto h-screen">
+    <div id="header-container"></div>
+
+    <main class="flex-1 p-6 space-y-6">
+      
+      <!-- Top actions panel -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Reports & System Audits</h2>
+          <p class="text-sm text-slate-500 mt-0.5">Audit property breakdowns, track vacancy percentages, and review system audit ledgers.</p>
+        </div>
+      </div>
+
+      <!-- Occupancy Breakdown by Property -->
+      <div class="bento-card p-6 space-y-4">
+        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+          <i data-lucide="building-2" class="w-5 h-5 text-indigo-600"></i>
+          <span>Property Inventory Audits</span>
+        </h3>
+        
+        <div class="overflow-x-auto border border-slate-100 rounded-xl">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <th class="px-6 py-3.5">Property Name</th>
+                <th class="px-6 py-3.5">Contact Detail</th>
+                <th class="px-6 py-3.5">Registered Rooms</th>
+                <th class="px-6 py-3.5">Occupied Beds</th>
+                <th class="px-6 py-3.5">Occupancy %</th>
+              </tr>
+            </thead>
+            <tbody id="property-breakdowns-tbody" class="divide-y divide-slate-100 text-xs text-slate-700 font-medium">
+              <tr>
+                <td colspan="5" class="px-6 py-4 text-center text-slate-400">Loading audit records...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Full Audit Trail Logs -->
+      <div class="bento-card p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="shield-check" class="w-5 h-5 text-indigo-600"></i>
+            <span>System Audit Ledger Trail</span>
+          </h3>
+          <span class="text-xs text-slate-400 font-semibold" id="audit-logs-count">0 operations logged</span>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-100 rounded-xl">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <th class="px-6 py-3.5">Warden Name / Operator</th>
+                <th class="px-6 py-3.5">Operation Type</th>
+                <th class="px-6 py-3.5">Detailed Payload Description</th>
+                <th class="px-6 py-3.5">Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="audit-logs-tbody" class="divide-y divide-slate-100 text-xs font-medium">
+              <tr>
+                <td colspan="4" class="px-6 py-4 text-center text-slate-400">Loading ledger logs...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/state.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/router.js"></script>
+  <script src="/js/reports.js"></script>
+</body>
+</html>

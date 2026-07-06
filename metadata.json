@@ -1,0 +1,6 @@
+{
+  "name": "PG Management System",
+  "description": "An enterprise-grade Paying Guest (PG) Management System for managing properties, rooms, tenants, rent, complaints, and analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

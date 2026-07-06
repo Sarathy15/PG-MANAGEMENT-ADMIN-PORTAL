@@ -1,0 +1,209 @@
+/* ============================================
+   PLEASANT HOMES — Global App Styles
+   ============================================ */
+
+/* ------------------------------------
+   TYPOGRAPHY — Google Fonts: Inter + Outfit
+   ------------------------------------ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+h1, h2, h3, h4, h5, .font-heading {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* ------------------------------------
+   SELECTION
+   ------------------------------------ */
+::selection {
+  background: rgba(99, 102, 241, 0.18);
+  color: #3730a3;
+}
+
+/* ------------------------------------
+   SCROLLBAR — Slim indigo tinted
+   ------------------------------------ */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: #c7d2e0; }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ------------------------------------
+   FOCUS VISIBLE — keyboard users
+   ------------------------------------ */
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ------------------------------------
+   MAIN LAYOUT tweaks
+   ------------------------------------ */
+main {
+  animation: fadeInUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);     }
+}
+
+/* ------------------------------------
+   SMOOTH IMAGE LOAD
+   ------------------------------------ */
+img {
+  transition: opacity 0.3s ease;
+}
+
+/* ------------------------------------
+   LINK — Hover underline slide-in
+   ------------------------------------ */
+a.underline-hover {
+  position: relative;
+  text-decoration: none;
+}
+
+a.underline-hover::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -1px;
+  width: 0; height: 1px;
+  background: currentColor;
+  transition: width 0.25s ease;
+}
+
+a.underline-hover:hover::after {
+  width: 100%;
+}
+
+/* ------------------------------------
+   FORM LABELS
+   ------------------------------------ */
+label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: none; /* Changed from uppercase to none for sentence case */
+  letter-spacing: 0.025em;
+}
+
+/* ------------------------------------
+   TENANT PREVIEW MODAL CUSTOM STYLES
+   ------------------------------------ */
+#detail-avatar {
+  width: 6rem !important;
+  height: 6rem !important;
+  min-width: 6rem !important;
+  min-height: 6rem !important;
+}
+
+/* Timeline alignment & spacing (fixes icon-text overlap) */
+#detail-card-timeline {
+  position: relative;
+  padding-left: 0.5rem;
+}
+
+#detail-card-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 1.625rem; /* matches center of timeline-icon-box */
+  width: 2px;
+  background-color: #e2e8f0;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 3.5rem !important;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-icon-box {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* Compact Document Preview */
+.preview-iframe {
+  width: 100%;
+  height: 240px !important;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.preview-image-container {
+  width: 100%;
+  max-height: 240px;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+
+.preview-image {
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.preview-image:hover {
+  transform: scale(1.02);
+}
+
+/* Responsive Modal Layout Rules (MD query fallback) */
+@media (min-width: 768px) {
+  .details-modal-container {
+    flex-direction: row !important;
+  }
+  
+  .details-modal-sidebar {
+    width: 18rem !important; /* 288px (same as md:w-72) */
+    border-right: 1px solid #e2e8f0 !important;
+    border-bottom: 0 !important;
+  }
+  
+  .emergency-contact-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+

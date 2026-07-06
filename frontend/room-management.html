@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pleasant Homes - Rooms Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;850&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Outfit', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50/50 min-h-screen flex overflow-hidden">
+
+  <div id="sidebar-container" class="h-screen sticky top-0 hidden md:block"></div>
+
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto h-screen">
+    <div id="header-container"></div>
+
+    <main class="flex-1 p-8 space-y-8">
+      
+      <!-- Top actions panel -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-black text-slate-900 tracking-tight">Room Operations</h1>
+          <p class="text-xs text-slate-400 mt-1">Manage physical room layouts, pricing configurations, and daily tenant allocations.</p>
+        </div>
+        <button onclick="openAddRoomModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-150 transition-all flex items-center gap-2 text-xs">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Register New Room</span>
+        </button>
+      </div>
+
+      <!-- Filters Panel -->
+      <div class="bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col sm:flex-row gap-4 items-center justify-between shadow-sm">
+        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <!-- Search Rooms -->
+          <div class="relative w-full sm:w-48">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </span>
+            <input type="text" id="filter-search" placeholder="Search Rooms..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-slate-700 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+          </div>
+
+          <!-- Floor Filter -->
+          <select id="filter-floor" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-700 text-xs font-bold cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            <option value="all">🏢 All Floors</option>
+            <option value="0">Ground Floor</option>
+            <option value="1">Floor 1</option>
+            <option value="2">Floor 2</option>
+            <option value="3">Floor 3</option>
+            <option value="4">Floor 4</option>
+          </select>
+
+          <!-- Sharing Filter -->
+          <select id="filter-type" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-700 text-xs font-bold cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            <option value="all">👥 All Sharing Types</option>
+            <option value="Single">Private Room</option>
+            <option value="Double">Double Sharing</option>
+            <option value="Triple">Triple Sharing</option>
+            <option value="Four-Sharing">Four Sharing</option>
+          </select>
+
+          <!-- Status Filter -->
+          <select id="filter-status" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-700 text-xs font-bold cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            <option value="all">🟢 All Statuses</option>
+            <option value="Available">Available</option>
+            <option value="Partially Occupied">Partially Occupied</option>
+            <option value="Full">Full</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Closed">Closed</option>
+          </select>
+
+          <!-- Room Type Filter -->
+          <select id="filter-ac" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-700 text-xs font-bold cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            <option value="all">❄️ All Room Types</option>
+            <option value="AC">AC Rooms</option>
+            <option value="Non-AC">Non-AC Rooms</option>
+          </select>
+        </div>
+        <span class="text-xs text-slate-400 font-bold uppercase tracking-wider" id="rooms-count-txt">0 units listed</span>
+      </div>
+
+      <!-- Rooms Grid -->
+      <div id="rooms-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in pb-12">
+        <p class="text-slate-500 text-sm">Loading units...</p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ==================== ROOM DETAILS OVERLAY DRAWER ==================== -->
+  <div id="room-details-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-40 flex justify-end hidden transition-all duration-300">
+    <div class="bg-white w-full max-w-2xl h-full shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 overflow-hidden" id="details-drawer-content">
+      
+      <!-- Header -->
+      <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div>
+          <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest" id="detail-header-floor">Floor 1 • Standard</span>
+          <h2 class="text-2xl font-black text-slate-900 mt-0.5" id="detail-header-title">Room Unit 101</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="detail-header-status-badge"></span>
+          <button onclick="closeRoomDetails()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all">✕</button>
+        </div>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="flex border-b border-slate-100 px-6 bg-white shrink-0 overflow-x-auto gap-6">
+        <button onclick="switchTab('overview')" id="tab-btn-overview" class="py-4 text-xs font-bold uppercase tracking-wider border-b-2 border-indigo-600 text-indigo-600">Overview</button>
+        <button onclick="switchTab('tenants')" id="tab-btn-tenants" class="py-4 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-slate-600">Tenants & Beds</button>
+        <button onclick="switchTab('payments')" id="tab-btn-payments" class="py-4 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-slate-600">Payments</button>
+        <button onclick="switchTab('maintenance')" id="tab-btn-maintenance" class="py-4 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-slate-600">Complaints</button>
+        <button onclick="switchTab('history')" id="tab-btn-history" class="py-4 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-slate-600">Stays Timeline</button>
+      </div>
+
+      <!-- Content Container -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6" id="details-content-container">
+        
+        <!-- OVERVIEW TAB -->
+        <div id="tab-content-overview" class="space-y-6">
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Property Host -->
+            <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="building" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Property Host</span>
+                <p class="text-sm font-bold text-slate-800 mt-0.5" id="detail-property">Grand Heights PG</p>
+              </div>
+            </div>
+            
+            <!-- Category & Sharing -->
+            <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="users" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Category & Sharing</span>
+                <p class="text-sm font-bold text-slate-800 mt-0.5" id="detail-category-sharing">Standard • Single Sharing</p>
+              </div>
+            </div>
+            
+            <!-- AC Type -->
+            <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="wind" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">AC Type</span>
+                <p class="text-sm font-bold text-slate-800 mt-0.5" id="detail-ac-type">Non-AC</p>
+              </div>
+            </div>
+            
+            <!-- Monthly Rent -->
+            <div class="bg-emerald-50/30 border border-emerald-100/65 p-4 rounded-2xl flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                <i data-lucide="indian-rupee" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider block">Monthly Rent</span>
+                <p class="text-sm font-black text-emerald-700 mt-0.5" id="detail-rent">₹8,000 / Bed</p>
+              </div>
+            </div>
+            
+            <!-- Security Deposit -->
+            <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="shield" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Security Deposit</span>
+                <p class="text-sm font-bold text-slate-800 mt-0.5" id="detail-deposit">₹10,000</p>
+              </div>
+            </div>
+            
+            <!-- Beds Occupancy -->
+            <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="bed" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Beds Occupancy</span>
+                <p class="text-sm font-bold text-slate-800 mt-0.5" id="detail-occupancy">2 / 3 Beds Occupied</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Facilities -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Room Facilities</h4>
+            <div class="flex flex-wrap gap-2" id="detail-facilities-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Internal Notes -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Internal Notes</h4>
+            <div class="bg-slate-50 border border-slate-150 p-4 rounded-2xl text-xs text-slate-600 italic leading-relaxed" id="detail-notes">
+              No notes written for this unit.
+            </div>
+          </div>
+        </div>
+
+        <!-- TENANTS & BEDS TAB -->
+        <div id="tab-content-tenants" class="space-y-6 hidden">
+          <div class="space-y-4" id="detail-beds-list-container">
+            <!-- Dynamic Bed Cards (Bed A, Bed B, Bed C) -->
+          </div>
+        </div>
+
+        <!-- PAYMENTS TAB -->
+        <div id="tab-content-payments" class="space-y-6 hidden">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-emerald-50/50 border border-emerald-100 p-4 rounded-2xl">
+              <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Current Monthly Revenue</span>
+              <p class="text-lg font-black text-emerald-700 mt-1" id="detail-payments-revenue">₹16,000</p>
+            </div>
+            <div class="bg-amber-50/50 border border-amber-100 p-4 rounded-2xl">
+              <span class="text-[9px] font-bold text-amber-600 uppercase tracking-wider">Pending Rent</span>
+              <p class="text-lg font-black text-amber-700 mt-1" id="detail-payments-pending">₹0</p>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Invoices & Payments History</h4>
+            <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                    <th class="p-3">Tenant</th>
+                    <th class="p-3">Billing Period</th>
+                    <th class="p-3">Amount</th>
+                    <th class="p-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="detail-payments-history-rows">
+                  <!-- Dynamic Rent Rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAINTENANCE TAB -->
+        <div id="tab-content-maintenance" class="space-y-6 hidden">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Open Complaints & Issues</h4>
+            <button onclick="openComplaintModal()" class="text-xs bg-indigo-50 text-indigo-600 border border-indigo-150 px-3 py-1.5 rounded-xl font-bold hover:bg-indigo-100 transition-all flex items-center gap-1">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Raise Complaint
+            </button>
+          </div>
+          <div class="space-y-3" id="detail-complaints-list-container">
+            <!-- Dynamic Complaints -->
+          </div>
+        </div>
+
+        <!-- HISTORY TAB -->
+        <div id="tab-content-history" class="space-y-6 hidden">
+          <h4 class="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Check-in / Check-out Logs</h4>
+          <div class="relative pl-6 border-l-2 border-slate-200 space-y-6" id="detail-stays-timeline">
+            <!-- Stay timeline events -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Actions Footer Bar -->
+      <div class="p-5 border-t border-slate-100 bg-slate-50/50 flex flex-wrap gap-3 items-center shrink-0">
+        <button onclick="triggerAssignTenant()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-md shadow-indigo-100 flex items-center gap-1.5">
+          <i data-lucide="user-plus" class="w-4 h-4"></i> Assign Tenant
+        </button>
+        <button onclick="triggerRoomComplaint()" class="bg-white border border-slate-200 text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-1.5">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i> Raise Issue
+        </button>
+        <button onclick="triggerEditRoom()" class="bg-indigo-50/70 hover:bg-indigo-100/80 border border-indigo-100/80 text-indigo-600 text-xs font-black px-4 py-2.5 rounded-xl transition-all ml-auto flex items-center gap-1.5">
+          <i data-lucide="edit-3" class="w-4 h-4"></i> Edit Room
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== EDIT ROOM (CONFIGURATION ONLY) MODAL ==================== -->
+  <div id="room-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center hidden transition-opacity duration-300">
+    <div class="bg-white rounded-2xl w-full max-w-xl shadow-xl border border-slate-200 overflow-hidden transform transition-all p-6 flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+        <h3 id="room-modal-title" class="font-extrabold text-lg text-slate-950">Add New Room</h3>
+        <button onclick="closeRoomModal()" class="text-slate-400 hover:text-slate-600 transition-colors">✕</button>
+      </div>
+      
+      <form id="room-form" class="space-y-4 overflow-y-auto pr-1 flex-1">
+        <input type="hidden" id="room-id">
+        
+        <!-- SECTION 1: Basic Information -->
+        <div class="space-y-3">
+          <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">1. Basic Information</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Property Host</label>
+              <select id="room-property-id" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                <!-- Loaded dynamically -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Number</label>
+              <input type="text" id="room-number" required placeholder="e.g. 101" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Floor Level</label>
+              <input type="number" id="room-floor" required placeholder="e.g. 1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Configuration & Category -->
+        <div class="space-y-3 pt-3 border-t border-slate-100">
+          <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">2. Room Configuration</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Category</label>
+              <select id="room-category" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                <option value="Standard">Standard</option>
+                <option value="Deluxe">Deluxe</option>
+                <option value="Suite">Suite</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Sharing Type</label>
+              <select id="room-type" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                <option value="Single">Single Sharing</option>
+                <option value="Double">Double Sharing</option>
+                <option value="Triple">Triple Sharing</option>
+                <option value="Four-Sharing">Four Sharing</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Total Bed Capacity</label>
+              <input type="number" id="room-total-beds" required placeholder="e.g. 2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Type</label>
+              <select id="room-ac-type" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                <option value="Non-AC">Non-AC</option>
+                <option value="AC">AC</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: Facilities -->
+        <div class="space-y-3 pt-3 border-t border-slate-100">
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Facilities</label>
+          <div class="flex flex-wrap gap-4 pt-1">
+            <label class="flex items-center gap-2 text-xs text-slate-700 font-medium cursor-pointer">
+              <input type="checkbox" id="facility-wifi" value="WiFi" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20"> WiFi
+            </label>
+            <label class="flex items-center gap-2 text-xs text-slate-700 font-medium cursor-pointer">
+              <input type="checkbox" id="facility-ac" value="AC" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20"> Air Conditioning
+            </label>
+            <label class="flex items-center gap-2 text-xs text-slate-700 font-medium cursor-pointer">
+              <input type="checkbox" id="facility-bathroom" value="Attached Bathroom" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20"> Attached Bathroom
+            </label>
+            <label class="flex items-center gap-2 text-xs text-slate-700 font-medium cursor-pointer">
+              <input type="checkbox" id="facility-balcony" value="Balcony" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20"> Private Balcony
+            </label>
+            <label class="flex items-center gap-2 text-xs text-slate-700 font-medium cursor-pointer">
+              <input type="checkbox" id="facility-tv" value="Smart TV" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20"> Smart TV
+            </label>
+          </div>
+        </div>
+
+        <!-- SECTION 4: Pricing -->
+        <div class="space-y-3 pt-3 border-t border-slate-100">
+          <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">3. Pricing Configuration</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Monthly Rent (INR)</label>
+              <input type="number" id="room-price" required placeholder="e.g. 8000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Security Deposit</label>
+              <input type="number" id="room-deposit" required placeholder="e.g. 10000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: Operational & Status -->
+        <div class="space-y-3 pt-3 border-t border-slate-100">
+          <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">4. Operational Settings</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Room Status</label>
+              <select id="room-status" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                <option value="Available">Active (Available)</option>
+                <option value="Full">Active (Fully Booked)</option>
+                <option value="Maintenance">Maintenance</option>
+              </select>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Internal Notes</label>
+              <textarea id="room-notes" placeholder="Any internal configuration notes, key locations, codes..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 h-20 resize-none"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="pt-3 border-t border-slate-100" id="danger-zone-container" style="display: none;">
+          <h4 class="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Danger Zone</h4>
+          <div class="flex items-center justify-between p-4 bg-rose-50 border border-rose-100 rounded-2xl mt-2">
+            <div>
+              <p class="text-xs font-bold text-rose-700">Delete Room Unit</p>
+              <p class="text-[10px] text-rose-500 mt-0.5">This will remove this unit and reduce host capacity aggregates.</p>
+            </div>
+            <button type="button" onclick="triggerDeleteRoom()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md shadow-rose-100 transition-all">Delete Unit</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 mt-6 shrink-0">
+          <button type="button" onclick="closeRoomModal()" class="px-4 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-sm font-semibold hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-100">Save Configuration</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== SUB-MODAL: ASSIGN TENANT ==================== -->
+  <div id="assign-tenant-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-2xl w-full max-w-sm shadow-xl border border-slate-200 overflow-hidden transform transition-all p-6">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+        <h3 class="font-extrabold text-md text-slate-900">Assign Tenant to Bed <span id="assign-bed-label">A</span></h3>
+        <button onclick="closeAssignModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form id="assign-tenant-form" class="space-y-4">
+        <input type="hidden" id="assign-room-id">
+        <input type="hidden" id="assign-bed-id">
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Select Tenant</label>
+          <select id="assign-tenant-select" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Rent Start Date</label>
+          <input type="date" id="assign-start-date" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+        </div>
+        
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeAssignModal()" class="px-4 py-2 border border-slate-200 text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100">Assign Tenant</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== SUB-MODAL: TRANSFER TENANT ==================== -->
+  <div id="transfer-tenant-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-2xl w-full max-w-sm shadow-xl border border-slate-200 overflow-hidden transform transition-all p-6">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+        <h3 class="font-extrabold text-md text-slate-900">Transfer Tenant</h3>
+        <button onclick="closeTransferModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form id="transfer-tenant-form" class="space-y-4">
+        <input type="hidden" id="transfer-tenant-id">
+        <input type="hidden" id="transfer-from-room-id">
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Transferring Tenant</label>
+          <p class="text-sm font-bold text-slate-850" id="transfer-tenant-name">Siva Sai Ram</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Target Room Host</label>
+          <select id="transfer-room-select" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeTransferModal()" class="px-4 py-2 border border-slate-200 text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100">Confirm Transfer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== SUB-MODAL: COMPLAINT/ISSUE ==================== -->
+  <div id="room-complaint-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-2xl w-full max-w-sm shadow-xl border border-slate-200 overflow-hidden transform transition-all p-6">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+        <h3 class="font-extrabold text-md text-slate-900">Raise Room Complaint</h3>
+        <button onclick="closeRoomComplaintModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form id="room-complaint-form" class="space-y-4">
+        <input type="hidden" id="complaint-room-id">
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Select Tenant Reporter</label>
+          <select id="complaint-tenant-select" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Issue Title</label>
+          <input type="text" id="complaint-title" required placeholder="e.g. WiFi issue, Fan broken" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+        </div>
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Description</label>
+          <textarea id="complaint-desc" required placeholder="Describe the issue in detail..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 h-24 resize-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeRoomComplaintModal()" class="px-4 py-2 border border-slate-200 text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100">Submit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/state.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/router.js"></script>
+  <script src="/js/rooms.js"></script>
+</body>
+</html>
