@@ -157,12 +157,12 @@ window.UI = {
       const properties = await window.apiRequest('/properties');
       
       // Clear existing except first option "All Properties"
-      selector.innerHTML = '<option value="all">🏢 All Properties</option>';
+      selector.innerHTML = '<option value="all">All Properties</option>';
       
       properties.forEach(prop => {
         const option = document.createElement('option');
         option.value = prop.id;
-        option.textContent = `🏢 ${prop.name}`;
+        option.textContent = prop.name;
         selector.appendChild(option);
       });
       

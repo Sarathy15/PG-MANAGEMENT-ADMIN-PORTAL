@@ -1,0 +1,21 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://YOUR-RENDER-BACKEND-URL.onrender.com/api/v1/:path*"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/login.html"
+    },
+    {
+      "source": "/(css|js|assets|components)/:path*",
+      "destination": "/frontend/$1/$2"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/frontend/:path*"
+    }
+  ]
+}
