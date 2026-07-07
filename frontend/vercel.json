@@ -4,6 +4,10 @@
     {
       "source": "/api/v1/:path*",
       "destination": "https://pg-management-admin-portal.onrender.com/api/v1/:path*"
+    },
+    {
+      "source": "/",
+      "destination": "/login.html"
     }
   ]
 }

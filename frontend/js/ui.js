@@ -166,7 +166,13 @@ window.UI = {
         selector.appendChild(option);
       });
       
-      selector.value = window.AppState.getActivePropertyId();
+      let activeId = window.AppState.getActivePropertyId();
+      if (activeId === 'all' && properties.length > 0) {
+        activeId = properties[0].id;
+        window.AppState.setActivePropertyId(activeId);
+      }
+      
+      selector.value = activeId;
       
       selector.addEventListener('change', (e) => {
         window.AppState.setActivePropertyId(e.target.value);
