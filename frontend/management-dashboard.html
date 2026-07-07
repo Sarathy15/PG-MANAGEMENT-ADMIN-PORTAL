@@ -4,66 +4,63 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pleasant Homes - Management Dashboard</title>
+  <meta name="description" content="Pleasant Homes PG Management Dashboard — real-time occupancy, rent, and operations overview.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Chart.js for beautiful bento analytics -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="/css/tailwind.css">
   <link rel="stylesheet" href="/css/app.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/animations.css">
 </head>
-<body class="bg-slate-50 min-h-screen flex overflow-hidden">
+<body class="min-h-screen flex overflow-hidden">
 
-  <!-- Sidebar Component -->
+  <!-- Sidebar -->
   <div id="sidebar-container" class="h-screen sticky top-0 hidden md:block"></div>
 
-  <!-- Main Content Wrapper -->
+  <!-- Main Wrapper -->
   <div class="flex-1 flex flex-col min-w-0 overflow-y-auto h-screen">
-    <!-- Header Component -->
     <div id="header-container"></div>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 p-6 space-y-6">
-      
-      <!-- Welcome Section -->
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <main class="flex-1 p-6 space-y-5">
+
+      <!-- ── PAGE HEADER ── -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 class="text-2xl font-bold text-slate-800 tracking-tight" id="welcome-title">Good morning, Warden</h2>
-          <p class="text-sm text-slate-500 mt-0.5">Here is your hostel's activity and status overview for today.</p>
+          <h1 id="welcome-title" class="font-heading text-2xl font-bold text-slate-900 tracking-tight">Good morning, Admin 👋</h1>
+          <p class="text-sm text-slate-500 mt-0.5">Here's your hostel activity and status overview for today.</p>
         </div>
-        <!-- Time Badge -->
-        <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-4 py-2 rounded-xl text-indigo-700 font-semibold text-sm">
-          <i data-lucide="clock" class="w-4 h-4"></i>
-          <span id="current-time-txt">10:45 AM UTC</span>
+        <!-- Live clock -->
+        <div style="display:flex;align-items:center;gap:0.5rem;background:#f2fbea;border:1.5px solid rgba(125,194,66,0.3);border-radius:10px;padding:0.5rem 1rem;">
+          <i data-lucide="clock" style="width:15px;height:15px;color:#7DC242;"></i>
+          <span id="current-time-txt" style="font-size:0.8125rem;font-weight:700;color:#276314;">—</span>
         </div>
       </div>
 
-      <!-- BENTO STATS GRID -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 stagger-grid">
+      <!-- ── KPI STAT CARDS ── -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 stagger-grid">
 
         <!-- Occupancy Rate -->
-        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #6366f1;">
+        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #7DC242;">
           <div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Occupancy Rate</span>
-            <h3 class="text-3xl font-bold text-slate-900 mt-1 font-heading" id="stat-occupancy">—</h3>
-            <span class="text-xs font-medium text-slate-400 mt-1 block" id="stat-beds-occupied">— beds occupied</span>
+            <span style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Occupancy Rate</span>
+            <h3 class="font-heading text-3xl font-bold text-slate-900 mt-1" id="stat-occupancy">—</h3>
+            <span style="font-size:0.75rem;color:#64748b;margin-top:2px;display:block;" id="stat-beds-occupied">— beds occupied</span>
           </div>
-          <div class="stat-icon" style="background:linear-gradient(135deg,#eef2ff,#e0e7ff); color:#6366f1;">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#f2fbea,#e4f5c8);color:#5fa832;">
             <i data-lucide="percent" class="w-5 h-5"></i>
           </div>
         </div>
 
         <!-- Total Rooms -->
-        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #8b5cf6;">
+        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #3b82f6;">
           <div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Rooms</span>
-            <h3 class="text-3xl font-bold text-slate-900 mt-1 font-heading" id="stat-rooms">—</h3>
-            <span class="text-xs font-medium text-slate-400 mt-1 block">Active across units</span>
+            <span style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Total Rooms</span>
+            <h3 class="font-heading text-3xl font-bold text-slate-900 mt-1" id="stat-rooms">—</h3>
+            <span style="font-size:0.75rem;color:#64748b;margin-top:2px;display:block;">Active across units</span>
           </div>
-          <div class="stat-icon" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe); color:#8b5cf6;">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);color:#3b82f6;">
             <i data-lucide="door-closed" class="w-5 h-5"></i>
           </div>
         </div>
@@ -71,188 +68,186 @@
         <!-- Collected Revenue -->
         <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #10b981;">
           <div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Collected Revenue</span>
-            <h3 class="text-3xl font-bold text-emerald-600 mt-1 font-heading" id="stat-revenue">—</h3>
-            <span class="text-xs font-medium text-slate-400 mt-1 block">This month's ledger</span>
+            <span style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Collected Revenue</span>
+            <h3 class="font-heading text-3xl font-bold text-emerald-600 mt-1" id="stat-revenue">—</h3>
+            <span style="font-size:0.75rem;color:#64748b;margin-top:2px;display:block;">This month's ledger</span>
           </div>
-          <div class="stat-icon" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5); color:#10b981;">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:#10b981;">
             <i data-lucide="indian-rupee" class="w-5 h-5"></i>
           </div>
         </div>
 
         <!-- Pending Rent -->
-        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #f43f5e;">
+        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #ef4444;">
           <div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pending Rent</span>
-            <h3 class="text-3xl font-bold text-rose-500 mt-1 font-heading" id="stat-pending">—</h3>
-            <span class="text-xs font-medium text-slate-400 mt-1 block">Outstanding dues</span>
+            <span style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Pending Rent</span>
+            <h3 class="font-heading text-3xl font-bold text-red-500 mt-1" id="stat-pending">—</h3>
+            <span style="font-size:0.75rem;color:#64748b;margin-top:2px;display:block;">Outstanding dues</span>
           </div>
-          <div class="stat-icon" style="background:linear-gradient(135deg,#fff1f2,#ffe4e6); color:#f43f5e;">
+          <div class="stat-icon" style="background:linear-gradient(135deg,#fef2f2,#fecaca);color:#ef4444;">
             <i data-lucide="alert-circle" class="w-5 h-5"></i>
           </div>
         </div>
 
       </div>
 
-      <!-- BENTO ANALYTICS & DETAILS GRID -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 stagger-grid">
-        
-        <!-- Bento 1: Occupancy Details (2 Cols on desktop) -->
-        <div class="bento-card p-6 lg:col-span-2 flex flex-col justify-start gap-5">
+      <!-- ── BENTO ROW 2: Bed Inventory + Quick Actions ── -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 stagger-grid">
+
+        <!-- Bed Inventory (2/3 width) -->
+        <div class="bento-card p-6 lg:col-span-2 flex flex-col gap-5">
           <div class="flex items-center justify-between">
-            <h3 class="font-bold text-slate-800 flex items-center gap-2">
-              <i data-lucide="bed" class="w-5 h-5 text-indigo-600"></i>
-              <span>Bed Inventory Breakdown</span>
+            <h3 class="font-semibold text-slate-800 flex items-center gap-2 text-sm">
+              <i data-lucide="bed" style="width:18px;height:18px;color:#7DC242;"></i>
+              Bed Inventory Breakdown
             </h3>
-            <span class="text-xs font-medium text-indigo-650 bg-indigo-50 px-2.5 py-1 rounded-full">Real-time</span>
+            <span style="font-size:0.6875rem;font-weight:700;color:#5fa832;background:#f2fbea;border:1px solid rgba(125,194,66,0.25);padding:0.25rem 0.75rem;border-radius:99px;">● Live</span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Occupied Beds Card -->
-            <div class="p-4 bg-indigo-50/40 border border-indigo-100 rounded-2xl flex items-center gap-4 transition-all hover:bg-indigo-50/70">
-              <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-                <i data-lucide="users" class="w-6 h-6"></i>
+            <!-- Occupied -->
+            <div style="padding:1rem;background:rgba(125,194,66,0.06);border:1.5px solid rgba(125,194,66,0.15);border-radius:16px;display:flex;align-items:center;gap:1rem;transition:background 0.2s;" onmouseover="this.style.background='rgba(125,194,66,0.12)';" onmouseout="this.style.background='rgba(125,194,66,0.06)';">
+              <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#f2fbea,#dff2bf);color:#5fa832;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i data-lucide="users" style="width:22px;height:22px;"></i>
               </div>
               <div>
-                <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider block">Occupied Beds</span>
-                <span class="text-2xl font-black text-slate-800" id="dash-occupied-count">0</span>
-                <span class="text-[10px] text-slate-405 block mt-0.5">Checked-in residents</span>
+                <span style="font-size:0.625rem;font-weight:800;color:#5fa832;text-transform:uppercase;letter-spacing:0.1em;display:block;">Occupied Beds</span>
+                <span class="font-heading text-2xl font-black text-slate-800" id="dash-occupied-count">0</span>
+                <span style="font-size:0.6875rem;color:#94a3b8;display:block;margin-top:1px;">Checked-in residents</span>
               </div>
             </div>
 
-            <!-- Free Beds Card -->
-            <div class="p-4 bg-emerald-50/30 border border-emerald-100 rounded-2xl flex items-center gap-4 transition-all hover:bg-emerald-50/65">
-              <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                <i data-lucide="door-open" class="w-6 h-6"></i>
+            <!-- Available -->
+            <div style="padding:1rem;background:rgba(59,130,246,0.05);border:1.5px solid rgba(59,130,246,0.15);border-radius:16px;display:flex;align-items:center;gap:1rem;transition:background 0.2s;" onmouseover="this.style.background='rgba(59,130,246,0.10)';" onmouseout="this.style.background='rgba(59,130,246,0.05)';">
+              <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#dbeafe);color:#3b82f6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i data-lucide="door-open" style="width:22px;height:22px;"></i>
               </div>
               <div>
-                <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Available Beds</span>
-                <span class="text-2xl font-black text-slate-800" id="dash-available-count">0</span>
-                <span class="text-[10px] text-slate-405 block mt-0.5">Vacant & ready to occupy</span>
+                <span style="font-size:0.625rem;font-weight:800;color:#3b82f6;text-transform:uppercase;letter-spacing:0.1em;display:block;">Available Beds</span>
+                <span class="font-heading text-2xl font-black text-slate-800" id="dash-available-count">0</span>
+                <span style="font-size:0.6875rem;color:#94a3b8;display:block;margin-top:1px;">Vacant &amp; ready</span>
               </div>
             </div>
           </div>
 
-          <!-- Occupancy Progress Bar -->
-          <div class="space-y-2 mt-1">
-            <div class="flex items-center justify-between text-[11px] font-bold text-slate-400">
-              <span>Overall Bed Occupancy Rate</span>
-              <span id="dash-occupancy-bar-percent" class="text-indigo-600">0%</span>
+          <!-- Progress Bar -->
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.6875rem;font-weight:700;color:#94a3b8;margin-bottom:6px;">
+              <span>Overall Bed Occupancy</span>
+              <span id="dash-occupancy-bar-percent" style="color:#5fa832;">0%</span>
             </div>
-            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-              <div id="dash-occupancy-bar" class="h-full bg-indigo-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            <div style="width:100%;height:10px;background:#f1f5f9;border-radius:99px;overflow:hidden;">
+              <div id="dash-occupancy-bar" style="height:100%;background:linear-gradient(90deg,#7DC242,#a8e063);border-radius:99px;transition:width 0.6s ease;width:0%;"></div>
             </div>
           </div>
 
-          <!-- Card Footer -->
-          <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+          <!-- Footer -->
+          <div style="padding-top:1rem;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;">
             <div>
-              <p class="text-[10px] text-slate-400 font-medium">Registered Beds</p>
-              <h4 class="text-xs font-bold text-slate-800 mt-0.5" id="dash-beds-total">— Beds</h4>
+              <p style="font-size:0.6875rem;color:#94a3b8;font-weight:500;">Registered Beds</p>
+              <h4 class="font-heading text-sm font-bold text-slate-800 mt-0.5" id="dash-beds-total">— Beds</h4>
             </div>
-            <a href="/room-management.html" class="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-0.5">
+            <a href="/room-management.html" style="font-size:0.75rem;font-weight:700;color:#5fa832;text-decoration:none;display:flex;align-items:center;gap:3px;transition:gap 0.2s;" onmouseover="this.style.gap='6px';" onmouseout="this.style.gap='3px';">
               <span>Manage Rooms</span>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
             </a>
           </div>
         </div>
 
-        <!-- Bento 2: Quick Operations Control -->
+        <!-- Quick Actions (1/3 width) -->
         <div class="bento-card p-6 flex flex-col justify-between">
           <div>
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                <i data-lucide="zap" class="w-5 h-5 text-indigo-600"></i>
-                <span>Quick Actions</span>
-              </h3>
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+              <i data-lucide="zap" style="width:17px;height:17px;color:#7DC242;"></i>
+              <h3 class="font-semibold text-slate-800 text-sm">Quick Actions</h3>
             </div>
-            <p class="text-xs text-slate-400 mb-6">Common operations for Warden & Administrator tasks.</p>
-            <div class="space-y-3">
-              <a href="/tenants.html?action=add" class="flex items-center justify-between px-4 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl font-medium text-sm transition-all">
+            <p style="font-size:0.75rem;color:#94a3b8;margin-bottom:1.25rem;">Common operations for administrators.</p>
+            <div style="display:flex;flex-direction:column;gap:0.625rem;">
+              <a href="/tenants.html?action=add" style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;background:#f2fbea;border:1.5px solid rgba(125,194,66,0.25);border-radius:12px;font-weight:600;font-size:0.8125rem;color:#276314;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#eaf6d6';this.style.borderColor='rgba(125,194,66,0.45)';" onmouseout="this.style.background='#f2fbea';this.style.borderColor='rgba(125,194,66,0.25)';">
                 <span>Check-in New Tenant</span>
-                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                <i data-lucide="user-plus" style="width:15px;height:15px;"></i>
               </a>
-              <a href="/complaints.html?action=add" class="flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-medium text-sm transition-all border border-slate-200">
-                <span>File Tenant Complaint</span>
-                <i data-lucide="message-square-plus" class="w-4 h-4"></i>
+              <a href="/complaints.html?action=add" style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-weight:600;font-size:0.8125rem;color:#475569;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8fafc';">
+                <span>File Complaint</span>
+                <i data-lucide="message-square-plus" style="width:15px;height:15px;"></i>
               </a>
-              <a href="/visitors.html?action=add" class="flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-medium text-sm transition-all border border-slate-200">
-                <span>Log New Visitor</span>
-                <i data-lucide="contact" class="w-4 h-4"></i>
+              <a href="/visitors.html?action=add" style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-weight:600;font-size:0.8125rem;color:#475569;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8fafc';">
+                <span>Log Visitor</span>
+                <i data-lucide="contact" style="width:15px;height:15px;"></i>
+              </a>
+              <a href="/rent.html?action=add" style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-weight:600;font-size:0.8125rem;color:#475569;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8fafc';">
+                <span>Record Payment</span>
+                <i data-lucide="indian-rupee" style="width:15px;height:15px;"></i>
               </a>
             </div>
           </div>
-          
-          <div class="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between">
+          <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;">
             <div>
-              <p class="text-xs text-slate-400 font-medium">Logged visitors today</p>
-              <h4 class="text-lg font-bold text-slate-800 mt-0.5" id="stat-visitors-today">0 Active</h4>
+              <p style="font-size:0.6875rem;color:#94a3b8;font-weight:500;">Today's visitors</p>
+              <h4 class="font-heading text-lg font-bold text-slate-800 mt-0.5" id="stat-visitors-today">— Active</h4>
             </div>
-            <a href="/visitors.html" class="text-xs font-semibold text-indigo-600 hover:underline">View logs →</a>
+            <a href="/visitors.html" style="font-size:0.75rem;font-weight:700;color:#5fa832;text-decoration:none;">View logs →</a>
           </div>
         </div>
 
       </div>
 
-      <!-- THREE BENTO LOWER SLATES -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 stagger-grid">
-        
-        <!-- Bento Lower 1: Notices Board -->
-        <div class="bento-card p-6 flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <i data-lucide="megaphone" class="w-5 h-5 text-indigo-600"></i>
-              <span>Active Announcements</span>
-            </h3>
-            <div id="dashboard-notices-list" class="space-y-4">
-              <!-- Notice elements will be loaded here -->
-              <p class="text-xs text-slate-400">Loading notices...</p>
+      <!-- ── BENTO ROW 3: Notices, Complaints, Audit Log ── -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 stagger-grid">
+
+        <!-- Notices Board -->
+        <div class="bento-card p-6 flex flex-col">
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;">
+            <div style="width:32px;height:32px;border-radius:10px;background:#f2fbea;display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="megaphone" style="width:16px;height:16px;color:#7DC242;"></i>
             </div>
+            <h3 class="font-semibold text-slate-800 text-sm">Active Announcements</h3>
           </div>
-          <div class="mt-4 pt-4 border-t border-slate-100">
-            <a href="/notices.html" class="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1">
+          <div id="dashboard-notices-list" class="space-y-3 flex-1">
+            <p class="text-xs text-slate-400">Loading notices…</p>
+          </div>
+          <div style="margin-top:1rem;padding-top:0.875rem;border-top:1px solid #f1f5f9;">
+            <a href="/notices.html" style="font-size:0.75rem;font-weight:700;color:#5fa832;text-decoration:none;display:flex;align-items:center;gap:4px;" onmouseover="this.style.gap='7px';" onmouseout="this.style.gap='4px';">
               <span>View Notices Bulletin</span>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              <i data-lucide="chevron-right" style="width:13px;height:13px;"></i>
             </a>
           </div>
         </div>
 
-        <!-- Bento Lower 2: Urgent Complaints -->
-        <div class="bento-card p-6 flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <i data-lucide="message-square-warning" class="w-5 h-5 text-indigo-600"></i>
-              <span>Active Complaints</span>
-            </h3>
-            <div id="dashboard-complaints-list" class="space-y-4">
-              <!-- Complaints will be loaded here -->
-              <p class="text-xs text-slate-400">Loading complaints...</p>
+        <!-- Active Complaints -->
+        <div class="bento-card p-6 flex flex-col">
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;">
+            <div style="width:32px;height:32px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="message-square-warning" style="width:16px;height:16px;color:#ef4444;"></i>
             </div>
+            <h3 class="font-semibold text-slate-800 text-sm">Active Complaints</h3>
           </div>
-          <div class="mt-4 pt-4 border-t border-slate-100">
-            <a href="/complaints.html" class="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1">
+          <div id="dashboard-complaints-list" class="space-y-3 flex-1">
+            <p class="text-xs text-slate-400">Loading complaints…</p>
+          </div>
+          <div style="margin-top:1rem;padding-top:0.875rem;border-top:1px solid #f1f5f9;">
+            <a href="/complaints.html" style="font-size:0.75rem;font-weight:700;color:#5fa832;text-decoration:none;display:flex;align-items:center;gap:4px;" onmouseover="this.style.gap='7px';" onmouseout="this.style.gap='4px';">
               <span>View Complaints Portal</span>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              <i data-lucide="chevron-right" style="width:13px;height:13px;"></i>
             </a>
           </div>
         </div>
 
-        <!-- Bento Lower 3: Recent Activities Logs -->
-        <div class="bento-card p-6 flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <i data-lucide="history" class="w-5 h-5 text-indigo-600"></i>
-              <span>Audit Ledger Logs</span>
-            </h3>
-            <div id="dashboard-logs-list" class="space-y-3 font-mono text-[11px] text-slate-600">
-              <!-- Logs loaded here -->
-              <p class="text-xs text-slate-400">Loading audit log trail...</p>
+        <!-- Audit Log -->
+        <div class="bento-card p-6 flex flex-col">
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;">
+            <div style="width:32px;height:32px;border-radius:10px;background:#fffbeb;display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="history" style="width:16px;height:16px;color:#d97706;"></i>
             </div>
+            <h3 class="font-semibold text-slate-800 text-sm">Audit Ledger</h3>
           </div>
-          <div class="mt-4 pt-4 border-t border-slate-100">
-            <a href="/reports.html" class="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1">
+          <div id="dashboard-logs-list" class="space-y-2 flex-1 font-mono text-[11px] text-slate-600">
+            <p class="text-xs text-slate-400">Loading audit log…</p>
+          </div>
+          <div style="margin-top:1rem;padding-top:0.875rem;border-top:1px solid #f1f5f9;">
+            <a href="/reports.html" style="font-size:0.75rem;font-weight:700;color:#5fa832;text-decoration:none;display:flex;align-items:center;gap:4px;" onmouseover="this.style.gap='7px';" onmouseout="this.style.gap='4px';">
               <span>View Full Audit Reports</span>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              <i data-lucide="chevron-right" style="width:13px;height:13px;"></i>
             </a>
           </div>
         </div>

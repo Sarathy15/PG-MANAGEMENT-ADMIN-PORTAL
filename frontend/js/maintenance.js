@@ -69,7 +69,7 @@ async function loadMaintenanceTasks() {
         if (task.status === 'Completed') {
           badge = `<span class="bg-emerald-50 text-emerald-600 border border-emerald-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Completed</span>`;
         } else if (task.status === 'Scheduled') {
-          badge = `<span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Scheduled</span>`;
+          badge = `<span class="bg-green-50 text-green-600 border border-green-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Scheduled</span>`;
         } else {
           badge = `<span class="bg-amber-50 text-amber-600 border border-amber-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Pending</span>`;
         }

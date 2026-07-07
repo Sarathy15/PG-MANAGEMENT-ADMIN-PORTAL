@@ -1,70 +1,224 @@
-<header class="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between">
-  <!-- Left Header Search / Info -->
-  <div class="flex items-center gap-4">
-    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-slate-600">
-      <span class="text-sm font-medium">Select Active Property:</span>
-      <select id="property-select" class="bg-transparent border-none text-slate-800 font-semibold text-sm focus:ring-0 cursor-pointer">
-        <option value="all">🏢 All Properties</option>
+<style>
+  .app-header {
+    height: 64px;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(28px) saturate(1.6);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    border-bottom: 1px solid rgba(125,194,66,0.15);
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    box-shadow: 0 1px 0 rgba(125,194,66,0.08), 0 4px 24px rgba(0,0,0,0.04);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  body.theme-ocean .app-header {
+    background: rgba(11,15,25,0.85) !important;
+    border-bottom-color: rgba(14,165,233,0.18) !important;
+    box-shadow: 0 1px 0 rgba(14,165,233,0.1), 0 4px 24px rgba(0,0,0,0.3) !important;
+  }
+  body.theme-ocean .app-header select {
+    color: #e2e8f0 !important;
+    background: transparent !important;
+  }
+  .app-header-pill {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: rgba(125,194,66,0.06);
+    border: 1.5px solid rgba(125,194,66,0.2);
+    border-radius: 10px;
+    padding: 0.45rem 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .app-header-pill:hover {
+    border-color: rgba(125,194,66,0.5);
+    box-shadow: 0 0 0 3px rgba(125,194,66,0.09);
+    background: rgba(125,194,66,0.1);
+  }
+  body.theme-ocean .app-header-pill {
+    background: rgba(255,255,255,0.04) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+  }
+  body.theme-ocean .app-header-pill:hover {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(14,165,233,0.3) !important;
+  }
+</style>
+<header class="app-header">
+
+  <!-- ===== LEFT: Property Selector ===== -->
+  <div style="display:flex; align-items:center; gap:1rem;">
+    <div class="app-header-pill">
+      <i data-lucide="building-2" style="width:15px;height:15px;color:#7DC242;flex-shrink:0;"></i>
+      <span style="font-size:0.8125rem; font-weight:500; color:#64748b;">Property:</span>
+      <select id="property-select" style="
+        background:transparent; border:none;
+        color:#1e293b; font-weight:700; font-size:0.8125rem;
+        cursor:pointer; outline:none; padding:0; font-family:inherit; max-width:160px;
+      ">
+        <option value="all">All Properties</option>
       </select>
+      <i data-lucide="chevron-down" style="width:12px;height:12px;color:#94a3b8;pointer-events:none;"></i>
     </div>
   </div>
 
-  <!-- Right Header Icons / Profiling -->
-  <div class="flex items-center gap-4">
-    <!-- Current date tag -->
-    <div class="text-sm font-medium text-slate-500 hidden md:block" id="header-date">
-      July 3, 2026
+  <!-- ===== RIGHT: Date + Actions ===== -->
+  <div style="display:flex; align-items:center; gap:0.625rem;">
+
+    <!-- Date Pill -->
+    <div id="header-date" style="
+      display:flex; align-items:center; gap:0.375rem;
+      font-size:0.8125rem; font-weight:500; color:#475569;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      padding: 0.45rem 0.875rem;
+      border-radius: 9px;
+    ">
+      <i data-lucide="calendar" style="width:13px;height:13px;color:#7DC242;"></i>
+      <span id="header-date-text">Loading…</span>
     </div>
 
     <!-- Divider -->
-    <div class="h-6 w-px bg-slate-200 hidden md:block"></div>
+    <div style="height:28px; width:1.5px; background: linear-gradient(180deg, transparent, rgba(125,194,66,0.2), transparent); flex-shrink:0;"></div>
 
-    <!-- Notification Bell -->
-    <div class="relative">
-      <button id="notification-button" class="text-slate-400 hover:text-slate-600 transition-colors relative focus:outline-none flex items-center justify-center p-1.5 rounded-xl hover:bg-slate-50">
-        <i data-lucide="bell" class="w-5 h-5"></i>
-        <span id="notification-badge" class="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-indigo-600 ring-2 ring-white hidden"></span>
+    <!-- ===== Notification Button ===== -->
+    <div style="position:relative;">
+      <button id="notification-button" style="
+        display:flex; align-items:center; gap:0.5rem;
+        height: 42px;
+        padding: 0 1rem;
+        border-radius: 10px;
+        border: 1.5px solid rgba(125,194,66,0.22);
+        background: #f9fdf4;
+        color: #334155;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        font-family: inherit;
+        position: relative;
+      " onmouseover="this.style.borderColor='rgba(125,194,66,0.5)';this.style.background='#f2fbea';this.style.color='#3a7c1a';this.style.boxShadow='0 0 0 3px rgba(125,194,66,0.10)';" onmouseout="this.style.borderColor='rgba(125,194,66,0.22)';this.style.background='#f9fdf4';this.style.color='#334155';this.style.boxShadow='none';">
+        <i data-lucide="bell" style="width:17px;height:17px;flex-shrink:0;"></i>
+        <span>Notifications</span>
+        <!-- Badge -->
+        <span id="notification-badge" style="
+          display: none;
+          min-width: 18px; height: 18px;
+          border-radius: 99px;
+          background: #ef4444;
+          color: #fff;
+          font-size: 0.625rem;
+          font-weight: 800;
+          line-height: 18px;
+          text-align: center;
+          padding: 0 4px;
+          border: 2px solid #fff;
+        ">0</span>
       </button>
-      
-      <!-- Notifications Dropdown -->
-      <div id="notification-dropdown" class="absolute right-0 mt-2.5 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 hidden z-50">
-        <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
-          <span class="font-extrabold text-sm text-slate-800">Recent Activity Feed</span>
-          <button onclick="window.UI.clearAllNotifications(event)" class="text-[10px] text-indigo-600 font-bold hover:underline">Dismiss All</button>
+
+      <!-- Notification Dropdown -->
+      <div id="notification-dropdown" style="
+        position:absolute; right:0; top:calc(100% + 10px);
+        width:340px;
+        background: rgba(255,255,255,0.98);
+        backdrop-filter: blur(20px);
+        border: 1.5px solid rgba(125,194,66,0.18);
+        border-radius: 16px;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+        display:none; z-index:50; overflow:hidden;
+      ">
+        <div style="padding:1rem 1.125rem; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:0.5rem;">
+            <i data-lucide="bell" style="width:15px;height:15px;color:#7DC242;"></i>
+            <span style="font-weight:700; font-size:0.9rem; color:#1e293b;">Activity Feed</span>
+          </div>
+          <button onclick="window.UI && window.UI.clearAllNotifications(event)" style="font-size:0.6875rem; color:#7DC242; font-weight:700; background:none; border:none; cursor:pointer; padding:0.25rem 0.625rem; border-radius:6px; transition:background 0.15s; font-family:inherit;" onmouseover="this.style.background='#f2fbea';" onmouseout="this.style.background='none';">Dismiss All</button>
         </div>
-        <div id="notification-items" class="max-h-64 overflow-y-auto divide-y divide-slate-100/50">
-          <div class="px-4 py-3 text-center text-xs text-slate-450 font-semibold font-medium">No new activity</div>
+        <div id="notification-items" style="max-height:300px; overflow-y:auto;">
+          <div style="padding:1.25rem; text-align:center; font-size:0.8125rem; color:#94a3b8; font-weight:500;">
+            <i data-lucide="bell-off" style="width:28px;height:28px;color:#cbd5e1;display:block;margin:0 auto 0.5rem;"></i>
+            No new notifications
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- User Trigger -->
-    <div class="relative">
-      <button id="user-menu-button" class="flex items-center gap-2 focus:outline-none">
-        <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden ring-2 ring-indigo-50/50">
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Profile" class="w-full h-full object-cover">
+    <!-- ===== Avatar Button ===== -->
+    <div style="position:relative;">
+      <button id="user-menu-button" style="
+        display:flex; align-items:center; gap:0.625rem;
+        height: 42px;
+        padding: 0 0.875rem 0 0.375rem;
+        background: #f9fdf4;
+        border: 1.5px solid rgba(125,194,66,0.22);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      " onmouseover="this.style.borderColor='rgba(125,194,66,0.5)';this.style.background='#f2fbea';this.style.boxShadow='0 0 0 3px rgba(125,194,66,0.10)';" onmouseout="this.style.borderColor='rgba(125,194,66,0.22)';this.style.background='#f9fdf4';this.style.boxShadow='none';">
+        <!-- Avatar circle -->
+        <div style="
+          width: 32px; height: 32px;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 2px solid rgba(125,194,66,0.4);
+          background: #e9f5d8;
+          flex-shrink: 0;
+        ">
+          <img id="header-avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Profile" style="width:100%;height:100%;object-fit:cover;">
         </div>
+        <!-- Name + Role -->
+        <div style="text-align:left; line-height:1.2;">
+          <p id="header-user-name" style="font-size:0.8125rem; font-weight:700; color:#1e293b; white-space:nowrap;">Admin</p>
+          <p id="header-user-role" style="font-size:0.6rem; font-weight:600; color:#7DC242; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap;">Property Manager</p>
+        </div>
+        <i data-lucide="chevron-down" style="width:13px;height:13px;color:#94a3b8;"></i>
       </button>
 
-      <!-- Dropdown -->
-      <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-1 hidden z-50">
-        <a href="/settings.html" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
-          <i data-lucide="settings" class="w-4 h-4"></i>
+      <!-- User Dropdown -->
+      <div id="user-menu-dropdown" style="
+        position:absolute; right:0; top:calc(100% + 10px);
+        width:210px;
+        background: rgba(255,255,255,0.98);
+        backdrop-filter: blur(20px);
+        border: 1.5px solid rgba(125,194,66,0.18);
+        border-radius: 14px;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+        display:none; z-index:50; overflow:hidden; padding:0.375rem;
+      ">
+        <a href="/settings.html" style="
+          display:flex; align-items:center; gap:0.625rem;
+          padding:0.625rem 0.875rem; font-size:0.8125rem; color:#334155; font-weight:500;
+          border-radius:10px; text-decoration:none; transition:background 0.15s;
+        " onmouseover="this.style.background='#f2fbea';" onmouseout="this.style.background='none';">
+          <i data-lucide="settings" style="width:15px;height:15px;color:#7DC242;"></i>
           <span>Settings</span>
         </a>
-        <hr class="border-slate-100">
-        <button id="logout-menu-item" onclick="window.Auth.logout()" class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-slate-50">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
+        <div style="height:1px; background:#f1f5f9; margin:0.25rem 0;"></div>
+        <button id="logout-menu-item" onclick="window.Auth && window.Auth.logout()" style="
+          display:flex; align-items:center; gap:0.625rem; width:100%;
+          padding:0.625rem 0.875rem; font-size:0.8125rem; color:#dc2626; font-weight:600;
+          border-radius:10px; background:none; border:none; cursor:pointer; text-align:left;
+          transition:background 0.15s; font-family:inherit;
+        " onmouseover="this.style.background='#fef2f2';" onmouseout="this.style.background='none';">
+          <i data-lucide="log-out" style="width:15px;height:15px;"></i>
           <span>Logout</span>
         </button>
       </div>
     </div>
   </div>
 </header>
+
 <script>
-  // Hydrate current date simple script
-  const d = new Date();
-  const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-  const dateEl = document.getElementById('header-date');
-  if (dateEl) dateEl.textContent = d.toLocaleDateString('en-US', options);
+  // Hydrate date
+  (function() {
+    const el = document.getElementById('header-date-text');
+    if (el) {
+      const d = new Date();
+      el.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    }
+  })();
 </script>

@@ -16,7 +16,7 @@ async function loadProperties() {
     if (allPropertiesData.length === 0) {
       grid.innerHTML = `
         <div class="col-span-3 flex flex-col items-center justify-center py-24 text-center">
-          <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-5">
+          <div class="w-16 h-16 rounded-2xl bg-green-50 text-green-500 flex items-center justify-center mb-5">
             <i data-lucide="building-2" class="w-8 h-8"></i>
           </div>
           <h3 class="text-lg font-extrabold text-slate-800">No Properties Yet</h3>
@@ -62,7 +62,7 @@ function buildPropertyCard(p) {
           <span class="text-[9px] font-extrabold uppercase tracking-widest ${statusColor} px-2.5 py-1 rounded-full">${p.status || 'active'}</span>
         </div>
         <div class="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onclick="event.stopPropagation(); openEditPropertyWizard(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="bg-white text-slate-600 p-1.5 rounded-lg shadow hover:bg-indigo-50 hover:text-indigo-600 text-[11px] font-bold transition-all" title="Edit">
+          <button onclick="event.stopPropagation(); openEditPropertyWizard(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="bg-white text-slate-600 p-1.5 rounded-lg shadow hover:bg-green-50 hover:text-green-600 text-[11px] font-bold transition-all" title="Edit">
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
           </button>
           <button onclick="event.stopPropagation(); deleteProperty('${p.id}', '${(p.propertyName || p.name || '').replace(/'/g, "\\'")}')" class="bg-white text-slate-600 p-1.5 rounded-lg shadow hover:bg-rose-50 hover:text-rose-600 text-[11px] font-bold transition-all" title="Delete">
@@ -93,14 +93,14 @@ function buildPropertyCard(p) {
           </div>
         </div>
         <div class="w-full bg-slate-100 rounded-full h-1.5">
-          <div class="bg-indigo-500 h-1.5 rounded-full transition-all" style="width:${occupancy}%"></div>
+          <div class="bg-green-500 h-1.5 rounded-full transition-all" style="width:${occupancy}%"></div>
         </div>
         ${amenitiesArr.length > 0 ? `
         <div class="flex flex-wrap gap-1 pt-1">
           ${amenitiesArr.slice(0, 4).map(a => `<span class="bg-slate-50 border border-slate-100 text-slate-500 text-[9px] font-bold px-2 py-0.5 rounded-full">${a}</span>`).join('')}
           ${amenitiesArr.length > 4 ? `<span class="text-[9px] text-slate-400 font-bold px-1">+${amenitiesArr.length - 4}</span>` : ''}
         </div>` : ''}
-        <button onclick="event.stopPropagation(); openPropertyDetail('${p.id}')" class="w-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold py-2.5 rounded-xl hover:bg-indigo-100 transition-all mt-1">
+        <button onclick="event.stopPropagation(); openPropertyDetail('${p.id}')" class="w-full bg-green-50 border border-green-100 text-green-700 text-xs font-bold py-2.5 rounded-xl hover:bg-green-100 transition-all mt-1">
           View Details →
         </button>
       </div>
@@ -367,7 +367,7 @@ function generateFloorInputsFromData(floors) {
     <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 space-y-3" id="floor-card-${f.floor}">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 text-[10px] font-extrabold flex items-center justify-center shrink-0">
+          <div class="w-8 h-8 rounded-xl bg-green-50 border border-green-100 text-green-600 text-[10px] font-extrabold flex items-center justify-center shrink-0">
             ${isGround ? 'G' : f.floor}
           </div>
           <span class="text-sm font-extrabold text-slate-700">${floorLabel}</span>
@@ -470,17 +470,17 @@ function renderFloorRooms(floorNum, count, existingRooms = []) {
     const rentValue = existing ? (existing.rent || existing.monthlyRent || existing.monthly_rent || 6000) : 6000;
     
     html += `
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col gap-3 hover:shadow-md hover:border-indigo-300 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/10 transition-all duration-200" data-room-row="${roomNum}">
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col gap-3 hover:shadow-md hover:border-green-300 focus-within:border-green-500 focus-within:ring-2 focus-within:ring-indigo-500/10 transition-all duration-200" data-room-row="${roomNum}">
         <div class="flex items-center justify-between border-b border-slate-100 pb-2">
           <span class="text-xs font-black text-slate-800 tracking-wider flex items-center gap-1.5 uppercase">
-            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500/80"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500/80"></span>
             Room ${roomNum}
           </span>
         </div>
         <div class="space-y-3">
           <div>
             <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Sharing Type</label>
-            <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-slate-700 font-bold focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-all cursor-pointer" 
+            <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-slate-700 font-bold focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-green-500 focus:outline-none transition-all cursor-pointer" 
               data-room-num="${roomNum}" data-floor="${floorNum}" data-field="type">
               <option value="Single sharing" ${selectedType === 'Single sharing' ? 'selected' : ''}>Single sharing</option>
               <option value="Double sharing" ${selectedType === 'Double sharing' ? 'selected' : ''}>Double sharing</option>
@@ -490,7 +490,7 @@ function renderFloorRooms(floorNum, count, existingRooms = []) {
           </div>
           <div>
             <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Monthly Rent</label>
-            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all">
+            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-green-500 transition-all">
               <span class="text-xs text-slate-400 font-extrabold">₹</span>
               <input type="number" value="${rentValue}" placeholder="Rent" 
                 class="w-full bg-transparent border-0 p-0 text-xs text-slate-800 font-black focus:outline-none focus:ring-0" 
@@ -739,7 +739,7 @@ async function searchAddress(query) {
       const display = item.display_name;
       const escapedItem = JSON.stringify(item).replace(/"/g, '&quot;');
       return `
-        <div onclick="selectSuggestedAddress(${escapedItem})" class="px-4 py-2.5 text-xs text-slate-700 hover:bg-indigo-50 hover:text-indigo-650 cursor-pointer font-semibold transition-all">
+        <div onclick="selectSuggestedAddress(${escapedItem})" class="px-4 py-2.5 text-xs text-slate-700 hover:bg-green-50 hover:text-green-650 cursor-pointer font-semibold transition-all">
           ${display}
         </div>
       `;
@@ -832,7 +832,7 @@ async function handleWizardImageUpload(input) {
   let originalHtml = '';
   if (uploadText) {
     originalHtml = uploadText.innerHTML;
-    uploadText.innerHTML = '<p class="text-xs font-bold text-indigo-600 animate-pulse">Uploading cover image...</p>';
+    uploadText.innerHTML = '<p class="text-xs font-bold text-green-600 animate-pulse">Uploading cover image...</p>';
   }
 
   try {
@@ -910,8 +910,8 @@ async function handleWizardGalleryUpload(input) {
   const dropzoneContent = dropzone.innerHTML;
   dropzone.innerHTML = `
     <div class="flex flex-col items-center justify-center gap-2">
-      <div class="w-8 h-8 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
-      <p class="text-xs font-bold text-indigo-650 animate-pulse">Uploading ${files.length} photo(s)...</p>
+      <div class="w-8 h-8 rounded-full border-4 border-green-500 border-t-transparent animate-spin"></div>
+      <p class="text-xs font-bold text-green-650 animate-pulse">Uploading ${files.length} photo(s)...</p>
     </div>
   `;
 
@@ -961,13 +961,13 @@ function setupDragDropZones() {
     ['dragenter', 'dragover'].forEach(eventName => {
       coverZone.addEventListener(eventName, () => {
         coverZone.classList.remove('border-slate-200');
-        coverZone.classList.add('border-indigo-500', 'bg-indigo-50/10');
+        coverZone.classList.add('border-green-500', 'bg-green-50/10');
       }, false);
     });
 
     ['dragleave', 'drop'].forEach(eventName => {
       coverZone.addEventListener(eventName, () => {
-        coverZone.classList.remove('border-indigo-500', 'bg-indigo-50/10');
+        coverZone.classList.remove('border-green-500', 'bg-green-50/10');
         coverZone.classList.add('border-slate-200');
       }, false);
     });
@@ -996,13 +996,13 @@ function setupDragDropZones() {
     ['dragenter', 'dragover'].forEach(eventName => {
       galleryZone.addEventListener(eventName, () => {
         galleryZone.classList.remove('border-slate-200');
-        galleryZone.classList.add('border-indigo-500', 'bg-indigo-50/10');
+        galleryZone.classList.add('border-green-500', 'bg-green-50/10');
       }, false);
     });
 
     ['dragleave', 'drop'].forEach(eventName => {
       galleryZone.addEventListener(eventName, () => {
-        galleryZone.classList.remove('border-indigo-500', 'bg-indigo-50/10');
+        galleryZone.classList.remove('border-green-500', 'bg-green-50/10');
         galleryZone.classList.add('border-slate-200');
       }, false);
     });

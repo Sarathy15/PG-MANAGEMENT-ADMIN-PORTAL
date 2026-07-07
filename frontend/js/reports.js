@@ -32,7 +32,7 @@ async function loadPropertySummaries() {
             <div class="flex items-center gap-3">
               <span class="font-bold text-slate-800">${occupancyPercent}%</span>
               <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden shrink-0 hidden sm:block">
-                <div class="h-full bg-indigo-500 rounded-full" style="width: ${occupancyPercent}%"></div>
+                <div class="h-full bg-green-500 rounded-full" style="width: ${occupancyPercent}%"></div>
               </div>
             </div>
           </td>
@@ -85,7 +85,7 @@ async function loadAuditLedger() {
         let actionColor = 'text-slate-600 bg-slate-100 border border-slate-200';
         if (log.action === 'CREATE' || log.action === 'CHECKIN') actionColor = 'text-emerald-600 bg-emerald-50 border border-emerald-150';
         if (log.action === 'DELETE' || log.action === 'CHECKOUT') actionColor = 'text-rose-600 bg-rose-50 border border-rose-150';
-        if (log.action === 'UPDATE' || log.action === 'STATUS_CHANGE') actionColor = 'text-indigo-600 bg-indigo-50 border border-indigo-150';
+        if (log.action === 'UPDATE' || log.action === 'STATUS_CHANGE') actionColor = 'text-green-600 bg-green-50 border border-green-150';
         
         return `
           <tr class="hover:bg-slate-50/50 transition-colors">

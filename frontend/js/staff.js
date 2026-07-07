@@ -103,7 +103,7 @@ async function handleStaffDocUpload(event) {
   const iconEl = document.getElementById('staff-doc-icon');
   const zoneEl = document.getElementById('staff-doc-zone');
 
-  if (titleEl) titleEl.innerHTML = '<span class="text-indigo-600 animate-pulse">Uploading file...</span>';
+  if (titleEl) titleEl.innerHTML = '<span class="text-green-600 animate-pulse">Uploading file...</span>';
 
   try {
     const formData = new FormData();
@@ -176,11 +176,11 @@ async function loadStaff() {
         let avatarContent = '';
         const photoUrl = staff.profile_image || staff.profileImage;
         if (photoUrl) {
-          avatarContent = `<img src="${photoUrl}" class="w-11 h-11 rounded-xl object-cover border border-indigo-100 flex-shrink-0">`;
+          avatarContent = `<img src="${photoUrl}" class="w-11 h-11 rounded-xl object-cover border border-green-100 flex-shrink-0">`;
         } else {
           let avatarText = staff.name.substring(0, 2).toUpperCase();
           avatarContent = `
-            <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 flex items-center justify-center text-sm flex-shrink-0">
+            <div class="w-11 h-11 rounded-xl bg-green-50 text-green-700 font-bold border border-green-100 flex items-center justify-center text-sm flex-shrink-0">
               ${avatarText}
             </div>
           `;
@@ -210,7 +210,7 @@ async function loadStaff() {
                 <div>
                   <h3 class="font-bold text-slate-800 leading-tight text-sm">${staff.name}</h3>
                   <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                    <span class="text-[9px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100/50 px-2 py-0.5 rounded-md">${staff.role}</span>
+                    <span class="text-[9px] font-bold text-green-600 bg-green-50 border border-green-100/50 px-2 py-0.5 rounded-md">${staff.role}</span>
                     ${kycBadge}
                   </div>
                 </div>
@@ -219,7 +219,7 @@ async function loadStaff() {
               <!-- Info grid wrapper -->
               <div class="grid grid-cols-1 gap-2 pt-4 border-t border-slate-100 mt-4 text-[11px] font-semibold text-slate-600">
                 <div class="flex items-center gap-2.5 bg-slate-50/50 p-2 rounded-xl border border-slate-100/30">
-                  <div class="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
+                  <div class="w-6 h-6 rounded-lg bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
                     <i data-lucide="phone" class="w-3.5 h-3.5"></i>
                   </div>
                   <span class="text-slate-700 font-bold">${staff.phone}</span>
@@ -247,7 +247,7 @@ async function loadStaff() {
 
             <!-- Card Actions -->
             <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2 bg-slate-50/10">
-              <button onclick="editStaff('${staff.id}', '${encodeURIComponent(JSON.stringify(staff))}'); event.stopPropagation();" class="p-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl hover:scale-105 transition-all" title="Edit Profile">
+              <button onclick="editStaff('${staff.id}', '${encodeURIComponent(JSON.stringify(staff))}'); event.stopPropagation();" class="p-1.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl hover:scale-105 transition-all" title="Edit Profile">
                 <i data-lucide="edit-3" class="w-4 h-4"></i>
               </button>
               <button onclick="deleteStaff('${staff.id}'); event.stopPropagation();" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl hover:scale-105 transition-all" title="Delete Profile">

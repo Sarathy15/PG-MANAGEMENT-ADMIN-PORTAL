@@ -119,7 +119,7 @@ async function loadRooms() {
           
           const statusColorClass = 
             room.status === 'Available' ? 'bg-emerald-50 text-emerald-600 border-emerald-100/80' :
-            room.status === 'Full' ? 'bg-indigo-50 text-indigo-600 border-indigo-100/80' :
+            room.status === 'Full' ? 'bg-green-50 text-green-600 border-green-100/80' :
             'bg-slate-50 text-slate-500 border-slate-100/80';
 
           const statusDropdown = `
@@ -133,7 +133,7 @@ async function loadRooms() {
           const acText = room.acType === 'AC' ? 'AC' : 'Non-AC';
           
           return `
-            <div onclick="openRoomDetails('${room.id}')" class="bento-card p-6 flex flex-col justify-between space-y-4 cursor-pointer hover:border-indigo-200/50 hover:shadow-md transition-all duration-300">
+            <div onclick="openRoomDetails('${room.id}')" class="bento-card p-6 flex flex-col justify-between space-y-4 cursor-pointer hover:border-green-200/50 hover:shadow-md transition-all duration-300">
               <div>
                 <div class="flex items-center justify-between">
                   <div>
@@ -161,7 +161,7 @@ async function loadRooms() {
                   </div>
                   <div>
                     <p class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Monthly Rent</p>
-                    <p class="text-indigo-600 mt-0.5 font-extrabold">₹${room.price.toLocaleString()} / Bed</p>
+                    <p class="text-green-600 mt-0.5 font-extrabold">₹${room.price.toLocaleString()} / Bed</p>
                   </div>
                 </div>
               </div>
@@ -236,7 +236,7 @@ async function openRoomDetails(roomId) {
     
     const statusColorClass = 
       currentRoomData.status === 'Available' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
-      currentRoomData.status === 'Full' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
+      currentRoomData.status === 'Full' ? 'bg-green-50 text-green-600 border border-green-100' :
       'bg-slate-50 text-slate-500 border border-slate-100';
     
     document.getElementById('detail-header-status-badge').className = `${statusColorClass} text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider`;
@@ -265,7 +265,7 @@ async function openRoomDetails(roomId) {
     // Facilities list
     const facs = currentRoomData.facilities ? currentRoomData.facilities.split(',').map(f => f.trim()) : [];
     document.getElementById('detail-facilities-list').innerHTML = facs.length > 0
-      ? facs.map(f => `<span class="bg-indigo-50 border border-indigo-100/50 text-indigo-600 px-3 py-1 rounded-xl text-xs font-bold">${f}</span>`).join('')
+      ? facs.map(f => `<span class="bg-green-50 border border-green-100/50 text-green-600 px-3 py-1 rounded-xl text-xs font-bold">${f}</span>`).join('')
       : `<span class="text-xs text-slate-400 font-bold italic">No facilities added.</span>`;
       
     // Notes
@@ -320,7 +320,7 @@ async function openRoomDetails(roomId) {
       ? stays.map(t => {
           const type = t.status === 'Active' ? 'Check-in' : 'Checked Out';
           const icon = t.status === 'Active' ? 'user-plus' : 'user-minus';
-          const color = t.status === 'Active' ? 'text-indigo-600 bg-indigo-50 border-indigo-100' : 'text-slate-400 bg-slate-50 border-slate-100';
+          const color = t.status === 'Active' ? 'text-green-600 bg-green-50 border-green-100' : 'text-slate-400 bg-slate-50 border-slate-100';
           const date = t.status === 'Active' ? t.checkInDate : (t.checkOutDate || '—');
           
           return `
@@ -370,7 +370,7 @@ function switchTab(tabName) {
     const btn = document.getElementById(`tab-btn-${t}`);
     const pane = document.getElementById(`tab-content-${t}`);
     if (t === tabName) {
-      btn.className = "py-4 text-xs font-bold uppercase tracking-wider border-b-2 border-indigo-600 text-indigo-600";
+      btn.className = "py-4 text-xs font-bold uppercase tracking-wider border-b-2 border-green-600 text-green-600";
       pane.classList.remove('hidden');
     } else {
       btn.className = "py-4 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-slate-600";
@@ -408,9 +408,9 @@ function populateBedsMap(activeTenants, roomRents = []) {
 
       // Occupied Bed
       html += `
-        <div class="bg-indigo-50/30 border border-indigo-100 rounded-2xl p-5 flex items-center justify-between">
+        <div class="bg-green-50/30 border border-green-100 rounded-2xl p-5 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-150 text-indigo-600 font-extrabold flex items-center justify-center text-xs shrink-0">Bed ${bedLetter}</span>
+            <span class="w-10 h-10 rounded-xl bg-green-50 border border-green-150 text-green-600 font-extrabold flex items-center justify-center text-xs shrink-0">Bed ${bedLetter}</span>
             <div>
               <div class="flex items-center gap-2">
                 <span class="text-sm font-bold text-slate-800">${tenant.name}</span>
@@ -440,7 +440,7 @@ function populateBedsMap(activeTenants, roomRents = []) {
               <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Available for tenant check-in</p>
             </div>
           </div>
-          <button onclick="triggerAssignTenant('${bedLetter}', ${bedIndex})" class="bg-white border border-indigo-200 text-indigo-600 font-bold text-xs px-4 py-2 rounded-xl hover:bg-indigo-50/50 transition-all flex items-center gap-1.5">
+          <button onclick="triggerAssignTenant('${bedLetter}', ${bedIndex})" class="bg-white border border-green-200 text-green-600 font-bold text-xs px-4 py-2 rounded-xl hover:bg-green-50/50 transition-all flex items-center gap-1.5">
             <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Assign Bed
           </button>
         </div>

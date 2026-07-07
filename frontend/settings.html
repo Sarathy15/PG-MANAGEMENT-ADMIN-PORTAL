@@ -35,9 +35,9 @@
         
         <!-- Tab Selectors -->
         <div class="lg:col-span-1 space-y-2">
-          <button onclick="switchTab('general')" id="tab-btn-general" class="w-full text-left px-5 py-3.5 bg-white border-l-4 border-l-indigo-600 border border-slate-200 rounded-xl font-bold text-xs text-indigo-600 shadow-sm flex items-center justify-between transition-all focus:outline-none cursor-pointer">
+          <button onclick="switchTab('general')" id="tab-btn-general" class="w-full text-left px-5 py-3.5 bg-white border-l-4 border-l-indigo-600 border border-slate-200 rounded-xl font-bold text-xs text-green-700 shadow-sm flex items-center justify-between transition-all focus:outline-none cursor-pointer">
             <div class="flex items-center gap-3">
-              <i data-lucide="sliders" class="w-4 h-4 text-indigo-500"></i>
+              <i data-lucide="sliders" class="w-4 h-4 text-green-600"></i>
               <span>General Setup</span>
             </div>
             <i data-lucide="chevron-right" class="w-4 h-4 text-indigo-400"></i>
@@ -67,7 +67,7 @@
           <div id="tab-content-general" class="space-y-6 animate-fade-in">
             <div class="border-b border-slate-100 pb-4">
               <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
-                <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i>
+                <i data-lucide="sliders" class="w-5 h-5 text-green-700"></i>
                 <span>General PG Rules Setup</span>
               </h3>
               <p class="text-xs text-slate-400 mt-1">Configure PG building identities, helpline contact info, and security curfew guidelines.</p>
@@ -77,28 +77,28 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Host Portal Name</label>
-                  <input type="text" id="setting-pg-name" required value="Pleasant Homes PG" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                  <input type="text" id="setting-pg-name" required value="Pleasant Homes PG" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-green-500 transition-colors">
                 </div>
                 <div>
                   <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Warden Name</label>
-                  <input type="text" id="setting-warden" required value="Suresh Nair" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                  <input type="text" id="setting-warden" required value="Suresh Nair" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-green-500 transition-colors">
                 </div>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Contact Help Email</label>
-                  <input type="email" id="setting-email" required value="office@pleasanthomes.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                  <input type="email" id="setting-email" required value="office@pleasanthomes.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-green-500 transition-colors">
                 </div>
                 <div>
                   <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Emergency Helpline</label>
-                  <input type="text" id="setting-helpline" required value="+91 98765 43210" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                  <input type="text" id="setting-helpline" required value="+91 98765 43210" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-green-500 transition-colors">
                 </div>
               </div>
 
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Gate Curfew Hours</label>
-                <input type="text" id="setting-curfew" required value="10:30 PM" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-850 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                <input type="text" id="setting-curfew" required value="10:30 PM" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-850 text-sm focus:bg-white focus:border-green-500 transition-colors">
                 <p class="text-[10px] text-slate-400 mt-1">Tenant curfew alerts trigger in the tenant application after this hour.</p>
               </div>
 
@@ -106,30 +106,94 @@
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">PG Amenities Provided</label>
                 <div class="flex flex-wrap gap-2.5">
-                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/50 text-indigo-700 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
-                    <input type="checkbox" checked class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
+                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-green-50/50 text-green-800 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked class="rounded border-indigo-300 text-green-700 focus:ring-green-500">
                     <span>High-Speed WiFi</span>
                   </label>
-                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/50 text-indigo-700 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
-                    <input type="checkbox" checked class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
+                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-green-50/50 text-green-800 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked class="rounded border-indigo-300 text-green-700 focus:ring-green-500">
                     <span>AC Rooms</span>
                   </label>
                   <label class="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer transition-colors">
-                    <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                    <input type="checkbox" class="rounded border-slate-300 text-green-700 focus:ring-green-500">
                     <span>Hot Water / Geyser</span>
                   </label>
-                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/50 text-indigo-700 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
-                    <input type="checkbox" checked class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
+                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-green-50/50 text-green-800 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked class="rounded border-indigo-300 text-green-700 focus:ring-green-500">
                     <span>24/7 CCTV Security</span>
                   </label>
-                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/50 text-indigo-700 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
-                    <input type="checkbox" checked class="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500">
+                  <label class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-green-50/50 text-green-800 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked class="rounded border-indigo-300 text-green-700 focus:ring-green-500">
                     <span>Daily Housekeeping</span>
                   </label>
                   <label class="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer transition-colors">
-                    <input type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                    <input type="checkbox" class="rounded border-slate-300 text-green-700 focus:ring-green-500">
                     <span>Gymnasium</span>
                   </label>
+                </div>
+              </div>
+
+              <!-- Theme & Appearance -->
+              <div class="pt-2">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">Theme &amp; Appearance</label>
+                <div class="grid grid-cols-2 gap-3" id="theme-selector-grid">
+
+                  <!-- Pleasant Green -->
+                  <label class="relative flex flex-col gap-2 p-3.5 rounded-2xl border-2 border-transparent cursor-pointer transition-all hover:scale-[1.02] theme-option-card" data-theme="theme-green" style="background:linear-gradient(135deg,#f7fbf4,#eaf6d6); border-color: rgba(125,194,66,0.4);">
+                    <input type="radio" name="ui-theme" value="theme-green" class="sr-only" onchange="window.UI && window.UI.applyTheme(this.value)">
+                    <div class="flex gap-1.5 h-6">
+                      <span style="flex:1;border-radius:6px;background:#111c14;"></span>
+                      <span style="flex:3;border-radius:6px;background:#f7fbf4;border:1px solid #e2e8f0;"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-[11px] font-bold text-green-800">Pleasant Green</span>
+                      <span class="w-4 h-4 rounded-full border-2 border-green-500 theme-check-indicator flex items-center justify-center"></span>
+                    </div>
+                    <p class="text-[9px] text-green-600 leading-tight">Default. Fresh leaf palette</p>
+                  </label>
+
+                  <!-- Warm Sandal -->
+                  <label class="relative flex flex-col gap-2 p-3.5 rounded-2xl border-2 border-transparent cursor-pointer transition-all hover:scale-[1.02] theme-option-card" data-theme="theme-sandal" style="background:linear-gradient(135deg,#fbf8f4,#f0d5b8);">
+                    <input type="radio" name="ui-theme" value="theme-sandal" class="sr-only" onchange="window.UI && window.UI.applyTheme(this.value)">
+                    <div class="flex gap-1.5 h-6">
+                      <span style="flex:1;border-radius:6px;background:#3d1f0a;"></span>
+                      <span style="flex:3;border-radius:6px;background:#fbf8f4;border:1px solid #e8d5c0;"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-[11px] font-bold text-amber-900">Warm Sandal</span>
+                      <span class="w-4 h-4 rounded-full border-2 border-amber-600 theme-check-indicator flex items-center justify-center"></span>
+                    </div>
+                    <p class="text-[9px] text-amber-700 leading-tight">Earthy tan warm tones</p>
+                  </label>
+
+                  <!-- Clean Slate -->
+                  <label class="relative flex flex-col gap-2 p-3.5 rounded-2xl border-2 border-transparent cursor-pointer transition-all hover:scale-[1.02] theme-option-card" data-theme="theme-slate" style="background:linear-gradient(135deg,#f8fafc,#e0e7ff);">
+                    <input type="radio" name="ui-theme" value="theme-slate" class="sr-only" onchange="window.UI && window.UI.applyTheme(this.value)">
+                    <div class="flex gap-1.5 h-6">
+                      <span style="flex:1;border-radius:6px;background:#1e1b4b;"></span>
+                      <span style="flex:3;border-radius:6px;background:#f8fafc;border:1px solid #c7d2fe;"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-[11px] font-bold text-indigo-900">Clean Slate</span>
+                      <span class="w-4 h-4 rounded-full border-2 border-indigo-500 theme-check-indicator flex items-center justify-center"></span>
+                    </div>
+                    <p class="text-[9px] text-indigo-600 leading-tight">Minimal cool indigo</p>
+                  </label>
+
+                  <!-- Deep Ocean -->
+                  <label class="relative flex flex-col gap-2 p-3.5 rounded-2xl border-2 border-transparent cursor-pointer transition-all hover:scale-[1.02] theme-option-card" data-theme="theme-ocean" style="background:linear-gradient(135deg,#0b0f19,#0c2a3e);">
+                    <input type="radio" name="ui-theme" value="theme-ocean" class="sr-only" onchange="window.UI && window.UI.applyTheme(this.value)">
+                    <div class="flex gap-1.5 h-6">
+                      <span style="flex:1;border-radius:6px;background:#020712;"></span>
+                      <span style="flex:3;border-radius:6px;background:#0f172a;border:1px solid rgba(14,165,233,0.3);"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-[11px] font-bold text-sky-300">Deep Ocean</span>
+                      <span class="w-4 h-4 rounded-full border-2 border-sky-400 theme-check-indicator flex items-center justify-center"></span>
+                    </div>
+                    <p class="text-[9px] text-sky-500 leading-tight">Premium dark mode</p>
+                  </label>
+
                 </div>
               </div>
 
@@ -143,7 +207,7 @@
           <div id="tab-content-finance" class="space-y-6 hidden animate-fade-in">
             <div class="border-b border-slate-100 pb-4">
               <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
-                <i data-lucide="credit-card" class="w-5 h-5 text-indigo-600"></i>
+                <i data-lucide="credit-card" class="w-5 h-5 text-green-700"></i>
                 <span>Financial & Billing Rules</span>
               </h3>
               <p class="text-xs text-slate-400 mt-1">Define monthly rent cycles, late fines, default billing policies, and deposit refunds.</p>
@@ -153,12 +217,12 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Rent Due Date</label>
-                  <input type="number" id="setting-due-day" required value="5" min="1" max="28" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                  <input type="number" id="setting-due-day" required value="5" min="1" max="28" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-green-500 transition-colors">
                   <p class="text-[10px] text-slate-400 mt-1">Calendar day of the month rent invoices expire.</p>
                 </div>
                 <div>
                   <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Late Payment Fine (₹)</label>
-                  <input type="number" id="setting-fine" required value="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-indigo-500 transition-colors">
+                  <input type="number" id="setting-fine" required value="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-805 text-sm focus:bg-white focus:border-green-500 transition-colors">
                   <p class="text-[10px] text-slate-400 mt-1">Penalty added to overdue rent invoices.</p>
                 </div>
               </div>
@@ -185,7 +249,7 @@
           <div id="tab-content-security" class="space-y-6 hidden animate-fade-in">
             <div class="border-b border-slate-100 pb-4">
               <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
-                <i data-lucide="shield" class="w-5 h-5 text-indigo-600"></i>
+                <i data-lucide="shield" class="w-5 h-5 text-green-700"></i>
                 <span>Security, Verification & KYC settings</span>
               </h3>
               <p class="text-xs text-slate-400 mt-1">Control background verification requirements, tenant confirmation checks, and alert channels.</p>
@@ -194,7 +258,7 @@
             <form id="settings-security-form" class="space-y-5">
               <div class="space-y-4">
                 <label class="flex items-start gap-3.5 p-4 border border-slate-150 rounded-xl hover:bg-slate-50/40 transition-colors cursor-pointer">
-                  <input type="checkbox" checked class="rounded border-slate-350 text-indigo-600 focus:ring-indigo-500 mt-0.5">
+                  <input type="checkbox" checked class="rounded border-slate-350 text-green-700 focus:ring-green-500 mt-0.5">
                   <div class="space-y-0.5">
                     <p class="text-xs font-bold text-slate-700">Require Aadhaar / Government KYC Verification</p>
                     <p class="text-[10px] text-slate-400">Strictly enforce documentation uploads when checking in a new occupant.</p>
@@ -202,7 +266,7 @@
                 </label>
 
                 <label class="flex items-start gap-3.5 p-4 border border-slate-150 rounded-xl hover:bg-slate-50/40 transition-colors cursor-pointer">
-                  <input type="checkbox" checked class="rounded border-slate-350 text-indigo-600 focus:ring-indigo-500 mt-0.5">
+                  <input type="checkbox" checked class="rounded border-slate-350 text-green-700 focus:ring-green-500 mt-0.5">
                   <div class="space-y-0.5">
                     <p class="text-xs font-bold text-slate-700">Resident OTP approval for Visitors</p>
                     <p class="text-[10px] text-slate-400">Require host tenant confirmation OTP before check-in approval of guests.</p>
@@ -210,7 +274,7 @@
                 </label>
 
                 <label class="flex items-start gap-3.5 p-4 border border-slate-150 rounded-xl hover:bg-slate-50/40 transition-colors cursor-pointer">
-                  <input type="checkbox" checked class="rounded border-slate-350 text-indigo-600 focus:ring-indigo-500 mt-0.5">
+                  <input type="checkbox" checked class="rounded border-slate-350 text-green-700 focus:ring-green-500 mt-0.5">
                   <div class="space-y-0.5">
                     <p class="text-xs font-bold text-slate-700">Send WhatsApp / Email Rent Alerts</p>
                     <p class="text-[10px] text-slate-400">Dispatch payment reminders to emergency contacts and tenants dynamically on invoices issuance.</p>
@@ -251,7 +315,7 @@
           // Reset first icon (inside flex container)
           const firstIcon = btn.querySelector('.flex svg, .flex i');
           if (firstIcon) {
-            firstIcon.classList.remove('text-indigo-500');
+            firstIcon.classList.remove('text-green-600');
             firstIcon.classList.add('text-slate-450');
           }
           // Reset second icon (chevron-right)
@@ -270,12 +334,12 @@
       // Highlight selected button
       const activeBtn = document.getElementById('tab-btn-' + tab);
       if (activeBtn) {
-        activeBtn.className = "w-full text-left px-5 py-3.5 bg-white border-l-4 border-l-indigo-600 border border-slate-200 rounded-xl font-bold text-xs text-indigo-600 shadow-sm flex items-center justify-between transition-all focus:outline-none cursor-pointer";
+        activeBtn.className = "w-full text-left px-5 py-3.5 bg-white border-l-4 border-l-indigo-600 border border-slate-200 rounded-xl font-bold text-xs text-green-700 shadow-sm flex items-center justify-between transition-all focus:outline-none cursor-pointer";
         
         const firstIcon = activeBtn.querySelector('.flex svg, .flex i');
         if (firstIcon) {
           firstIcon.classList.remove('text-slate-450');
-          firstIcon.classList.add('text-indigo-500');
+          firstIcon.classList.add('text-green-600');
         }
         const lastIcon = activeBtn.querySelector('.lucide-chevron-right, svg:last-child, i:last-child');
         if (lastIcon) {
@@ -300,6 +364,29 @@
       e.preventDefault();
       window.UI.toast('Security policies and KYC guidelines saved successfully!', 'success');
     });
+
+    // Theme card highlight sync
+    function syncThemeCards() {
+      const current = localStorage.getItem('ph_ui_theme') || 'theme-green';
+      document.querySelectorAll('.theme-option-card').forEach(card => {
+        const isActive = card.dataset.theme === current;
+        card.style.outline = isActive ? '2.5px solid rgba(125,194,66,0.7)' : 'none';
+        card.style.boxShadow = isActive ? '0 0 0 4px rgba(125,194,66,0.14)' : 'none';
+        const dot = card.querySelector('.theme-check-indicator');
+        if (dot) dot.innerHTML = isActive
+          ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width:10px;height:10px;color:#7DC242;"><path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" /></svg>'
+          : '';
+        // Sync radio checked state
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio) radio.checked = isActive;
+      });
+    }
+    // Run on page ready and after theme changes
+    document.addEventListener('DOMContentLoaded', syncThemeCards);
+    document.querySelectorAll('input[name="ui-theme"]').forEach(r => {
+      r.addEventListener('change', () => setTimeout(syncThemeCards, 50));
+    });
+    syncThemeCards();
   </script>
 </body>
 </html>

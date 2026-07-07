@@ -24,7 +24,7 @@ function getStayDuration(inStr, outStr) {
 
 // Initials Avatar Color Helper
 function getAvatarColorClass(name) {
-  if (!name) return 'bg-indigo-50 border-indigo-100 text-indigo-600';
+  if (!name) return 'bg-green-50 border-green-100 text-green-600';
   const char = name.trim().charAt(0).toUpperCase();
 
   if (['A', 'E', 'I', 'O', 'U'].includes(char)) {
@@ -193,7 +193,7 @@ async function loadTenants() {
                 <div>
                   <p class="font-bold text-slate-800 leading-none flex items-center gap-2">
                     <span>${tenant.name}</span>
-                    ${tenant.commonId || tenant.common_id ? `<span class="px-1.5 py-0.5 text-[9px] font-black text-indigo-600 bg-indigo-50 border border-indigo-100 rounded">${tenant.commonId || tenant.common_id}</span>` : ''}
+                    ${tenant.commonId || tenant.common_id ? `<span class="px-1.5 py-0.5 text-[9px] font-black text-green-600 bg-green-50 border border-green-100 rounded">${tenant.commonId || tenant.common_id}</span>` : ''}
                   </p>
                   <p class="text-[10px] text-slate-400 font-bold mt-1.5 flex items-center gap-1">
                     <span>✉ ${tenant.email}</span>
@@ -231,7 +231,7 @@ async function loadTenants() {
                     <i data-lucide="log-out" class="w-3 h-3"></i> Check Out
                   </button>
                 ` : ''}
-                <button onclick="editTenant('${tenant.id}')" class="p-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-400 hover:text-indigo-650 hover:text-indigo-600 transition-colors" title="Edit details">
+                <button onclick="editTenant('${tenant.id}')" class="p-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-400 hover:text-green-650 hover:text-green-600 transition-colors" title="Edit details">
                   <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
@@ -299,8 +299,8 @@ function showStep(step) {
     const indicator = document.getElementById(`step-indicator-${i}`);
     const badge = indicator.querySelector('span');
     if (i === step) {
-      indicator.className = "flex items-center gap-1.5 text-indigo-600 font-extrabold";
-      badge.className = "w-5 h-5 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center";
+      indicator.className = "flex items-center gap-1.5 text-green-600 font-extrabold";
+      badge.className = "w-5 h-5 rounded-full bg-green-50 border border-green-200 flex items-center justify-center";
     } else if (i < step) {
       indicator.className = "flex items-center gap-1.5 text-slate-500 font-bold";
       badge.className = "w-5 h-5 rounded-full bg-emerald-55 bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center";
@@ -403,7 +403,7 @@ async function handleDocUpload(e) {
   const iconEl = document.getElementById('doc-upload-icon');
   const zoneEl = document.getElementById('doc-upload-zone');
 
-  if (titleEl) titleEl.innerHTML = '<span class="text-indigo-650 text-indigo-600 animate-pulse">Uploading file...</span>';
+  if (titleEl) titleEl.innerHTML = '<span class="text-green-650 text-green-600 animate-pulse">Uploading file...</span>';
 
   try {
     const formData = new FormData();
@@ -717,8 +717,8 @@ function triggerDirectKycUpload(id) {
     const previewContainer = document.getElementById('detail-doc-preview-box');
     if (previewContainer) {
       previewContainer.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-6 text-indigo-650 text-indigo-600 gap-2 border border-dashed border-indigo-150 rounded-2xl bg-indigo-50/10">
-          <div class="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <div class="flex flex-col items-center justify-center py-6 text-green-650 text-green-600 gap-2 border border-dashed border-green-150 rounded-2xl bg-green-50/10">
+          <div class="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
           <p class="text-xs font-bold animate-pulse">Uploading new document to Supabase storage...</p>
         </div>
       `;
@@ -878,9 +878,9 @@ async function viewTenantDetail(id, event) {
       const isPdf = docUrl.split('?')[0].toLowerCase().endsWith('.pdf');
       previewBox.innerHTML = `
         <div class="space-y-3">
-          <div class="flex items-center justify-between p-3 bg-indigo-50/40 border border-indigo-100 rounded-2xl">
+          <div class="flex items-center justify-between p-3 bg-green-50/40 border border-green-100 rounded-2xl">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-650">
+              <div class="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center text-green-650">
                 <i data-lucide="${isPdf ? 'file-text' : 'image'}" class="w-5 h-5"></i>
               </div>
               <div>
@@ -994,7 +994,7 @@ async function viewTenantDetail(id, event) {
     if (docUrl) {
       timelineHtml += `
         <div class="timeline-item">
-          <div class="timeline-icon-box bg-indigo-50 border border-indigo-100 text-indigo-600">
+          <div class="timeline-icon-box bg-green-50 border border-green-100 text-green-600">
             <i data-lucide="shield-check" class="w-4 h-4"></i>
           </div>
           <div>

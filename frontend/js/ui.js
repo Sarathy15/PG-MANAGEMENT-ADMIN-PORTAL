@@ -73,42 +73,49 @@ window.UI = {
     const links = document.querySelectorAll('.sidebar-link');
     links.forEach(link => {
       const href = link.getAttribute('href');
-      if (href && (currentPath.includes(href) || (href.includes('properties.html') && currentPath.includes('property-detail.html')))) {
-        link.classList.add('bg-slate-100', 'text-indigo-600', 'font-semibold');
-        link.classList.remove('text-slate-600');
+      const isMatch = href && (
+        currentPath.includes(href) ||
+        (href.includes('properties.html') && currentPath.includes('property-detail.html'))
+      );
+      if (isMatch) {
+        link.classList.add('active-page');
+        link.classList.remove('bg-slate-100', 'text-green-600', 'text-slate-600', 'font-semibold');
       } else {
-        link.classList.remove('bg-slate-100', 'text-indigo-600', 'font-semibold');
+        link.classList.remove('active-page', 'bg-slate-100', 'text-green-600', 'font-semibold');
       }
     });
   },
 
   initHeaderDropdowns: function() {
     const profileBtn = document.getElementById('user-menu-button');
-    const dropdown = document.getElementById('user-menu-dropdown');
-    
+    const dropdown   = document.getElementById('user-menu-dropdown');
+
+    const showEl  = (el) => { if(el) el.style.display = 'block'; };
+    const hideEl  = (el) => { if(el) el.style.display = 'none'; };
+    const toggleEl = (el) => { if(el) el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none'; };
+
     if (profileBtn && dropdown) {
       profileBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        dropdown.classList.toggle('hidden');
-        const notifDropdown = document.getElementById('notification-dropdown');
-        if (notifDropdown) notifDropdown.classList.add('hidden');
+        toggleEl(dropdown);
+        hideEl(document.getElementById('notification-dropdown'));
       });
     }
 
-    const notifBtn = document.getElementById('notification-button');
+    const notifBtn      = document.getElementById('notification-button');
     const notifDropdown = document.getElementById('notification-dropdown');
     if (notifBtn && notifDropdown) {
       notifBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        notifDropdown.classList.toggle('hidden');
-        if (dropdown) dropdown.classList.add('hidden');
+        toggleEl(notifDropdown);
+        hideEl(dropdown);
         this.loadHeaderNotifications();
       });
     }
 
     document.addEventListener('click', () => {
-      if (dropdown) dropdown.classList.add('hidden');
-      if (notifDropdown) notifDropdown.classList.add('hidden');
+      hideEl(dropdown);
+      hideEl(notifDropdown);
     });
 
     const logoutBtn = document.getElementById('logout-button');
@@ -204,7 +211,7 @@ window.UI = {
                 <p class="text-[9px] text-slate-400 mt-1 font-semibold">${new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
               </div>
               ${!n.is_read ? `
-                <button onclick="window.UI.dismissNotification('${n.id}', event)" class="p-1 hover:bg-slate-200 rounded-lg text-slate-450 hover:text-indigo-600 transition-colors" title="Mark as read">
+                <button onclick="window.UI.dismissNotification('${n.id}', event)" class="p-1 hover:bg-slate-200 rounded-lg text-slate-450 hover:text-green-600 transition-colors" title="Mark as read">
                   <i data-lucide="check" class="w-3.5 h-3.5"></i>
                 </button>
               ` : ''}
@@ -253,7 +260,7 @@ window.UI = {
           <div id="custom-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm items-center justify-center z-[100] hidden">
             <div class="bg-white rounded-2xl max-w-sm w-full mx-4 overflow-hidden shadow-2xl border border-slate-100 transform transition-all duration-300 scale-95 opacity-0" id="custom-confirm-box">
               <div class="p-6">
-                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
+                <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center mb-4">
                   <i data-lucide="help-circle" class="w-6 h-6"></i>
                 </div>
                 <h3 class="font-extrabold text-base text-slate-800" id="custom-confirm-title">Confirm Action</h3>
@@ -300,5 +307,44 @@ window.UI = {
         if (e.target === modal) cleanup(false);
       };
     });
+  },
+
+  /* -----------------------------------------------
+     THEME SYSTEM
+     initTheme  — reads localStorage → applies class
+     applyTheme — saves + applies chosen theme
+  ----------------------------------------------- */
+  THEME_KEY: 'ph_ui_theme',
+  VALID_THEMES: ['theme-green', 'theme-sandal', 'theme-slate', 'theme-ocean'],
+
+  initTheme: function() {
+    const saved = localStorage.getItem(this.THEME_KEY) || 'theme-green';
+    this.applyTheme(saved, false);
+  },
+
+  applyTheme: function(theme, save = true) {
+    const body = document.body;
+    // Remove any existing theme class
+    this.VALID_THEMES.forEach(t => body.classList.remove(t));
+    // Apply the chosen theme
+    if (this.VALID_THEMES.includes(theme)) {
+      body.classList.add(theme);
+    } else {
+      body.classList.add('theme-green');
+      theme = 'theme-green';
+    }
+    if (save) {
+      localStorage.setItem(this.THEME_KEY, theme);
+    }
+    // Sync any theme selector radio buttons on the page
+    const radios = document.querySelectorAll('input[name="ui-theme"]');
+    radios.forEach(r => { r.checked = r.value === theme; });
   }
 };
+
+// Auto-initialize theme immediately (before render) to prevent flash
+(function() {
+  const saved = localStorage.getItem('ph_ui_theme') || 'theme-green';
+  const valid = ['theme-green','theme-sandal','theme-slate','theme-ocean'];
+  if (valid.includes(saved)) document.body.classList.add(saved);
+})();

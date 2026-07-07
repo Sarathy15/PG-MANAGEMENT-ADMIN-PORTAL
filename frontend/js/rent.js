@@ -156,7 +156,7 @@ async function loadRentLedger() {
             <td class="px-6 py-4">
               <div class="font-bold text-slate-800">${invoice.tenantName}</div>
               ${invoice.tenantPhone ? `<div class="text-[10px] text-slate-400 font-semibold mt-0.5 flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3 text-slate-400"></i> <span>${invoice.tenantPhone}</span></div>` : ''}
-              <div class="text-[10px] text-indigo-500 font-bold mt-0.5 flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3 text-indigo-400"></i> <span>Check-in: ${formattedCheckin}</span></div>
+              <div class="text-[10px] text-green-500 font-bold mt-0.5 flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3 text-green-400"></i> <span>Check-in: ${formattedCheckin}</span></div>
               <div class="text-[10px] text-amber-500 font-bold mt-0.5 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3 text-amber-400"></i> <span>Next Due: ${nextPayDate}</span></div>
             </td>
             <td class="px-6 py-4">Room ${invoice.roomNumber}</td>
@@ -165,7 +165,7 @@ async function loadRentLedger() {
             <td class="px-6 py-4">
               <div class="font-bold text-slate-800">₹${(Number(invoice.amount) + Number(invoice.electricityAmount || 0) + Number(invoice.miscAmount || 0)).toLocaleString()}</div>
               <div class="text-[9px] text-slate-400 font-semibold mt-0.5">Rent: ₹${Number(invoice.amount).toLocaleString()} | Elec: ₹${Number(invoice.electricityAmount || 0).toLocaleString()} | Misc: ₹${Number(invoice.miscAmount || 0).toLocaleString()}</div>
-              ${invoice.notes ? `<div class="text-[9.5px] text-indigo-500 font-bold mt-0.5 flex items-center gap-1"><span class="bg-indigo-50 text-indigo-600 px-1 py-0.5 rounded text-[8px] uppercase font-extrabold tracking-wider border border-indigo-100/50">Note</span> <span>${invoice.notes}</span></div>` : ''}
+              ${invoice.notes ? `<div class="text-[9.5px] text-green-500 font-bold mt-0.5 flex items-center gap-1"><span class="bg-green-50 text-green-600 px-1 py-0.5 rounded text-[8px] uppercase font-extrabold tracking-wider border border-green-100/50">Note</span> <span>${invoice.notes}</span></div>` : ''}
             </td>
             <td class="px-6 py-4">${statusBadge}</td>
             <td class="px-6 py-4 text-right">${actionBtn}</td>
@@ -196,7 +196,7 @@ window.setPayMode = async function(mode) {
     gpayBtn.className = "py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 w-full";
     qrContainer.classList.add('hidden');
   } else {
-    gpayBtn.className = "py-2.5 bg-indigo-650 bg-indigo-600 border border-indigo-600 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-100 w-full";
+    gpayBtn.className = "py-2.5 bg-indigo-650 bg-indigo-600 border border-green-600 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-100 w-full";
     cashBtn.className = "py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 w-full";
     
     try {

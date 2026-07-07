@@ -35,7 +35,7 @@ async function loadDashboardData() {
         noticesList.innerHTML = `<p class="text-xs text-slate-400">No active announcements publishings.</p>`;
       } else {
         noticesList.innerHTML = stats.notices.map(notice => `
-          <div class="border-l-2 border-indigo-500 pl-3">
+          <div class="border-l-2 border-green-500 pl-3">
             <h4 class="text-xs font-bold text-slate-800">${notice.title}</h4>
             <p class="text-[11px] text-slate-500 mt-0.5 line-clamp-2">${notice.content}</p>
             <span class="text-[9px] text-slate-400 font-medium block mt-1">${notice.date}</span>

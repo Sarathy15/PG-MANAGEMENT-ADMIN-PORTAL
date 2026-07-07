@@ -46,8 +46,8 @@
     }
 
     .saas-stat-card:hover {
-      border-color: rgba(99, 102, 241, 0.2);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.05);
+      border-color: rgba(125, 194, 66, 0.2);
+      box-shadow: 0 4px 12px rgba(125, 194, 66, 0.05);
       transform: translateY(-1.5px);
     }
 
@@ -134,7 +134,7 @@
       <!-- Quick Stats Row -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="saas-stat-card">
-          <div class="saas-stat-icon bg-indigo-50 border border-indigo-100 text-indigo-600">
+          <div class="saas-stat-icon bg-green-50 border border-green-200 text-green-700">
             <i data-lucide="users" class="w-5 h-5"></i>
           </div>
           <div>
@@ -180,7 +180,7 @@
               <i data-lucide="search" class="w-4 h-4"></i>
             </span>
             <input type="text" id="search-tenant" placeholder="Search name, phone, room, ID..."
-              class="w-full bg-slate-50 border border-slate-250/70 focus:border-indigo-400 rounded-xl pl-9 pr-4 py-2.5 text-slate-700 text-xs font-semibold focus:ring-0 transition-all">
+              class="w-full bg-slate-50 border border-slate-250/70 focus:border-green-400 rounded-xl pl-9 pr-4 py-2.5 text-slate-700 text-xs font-semibold focus:ring-0 transition-all">
           </div>
 
           <!-- Status sliding tabs -->
@@ -222,7 +222,7 @@
 
           <!-- Reset Filter -->
           <button onclick="resetFilters()"
-            class="text-xs text-slate-550 hover:text-indigo-600 font-bold px-3 py-2 flex items-center gap-1 transition-colors">
+            class="text-xs text-slate-550 hover:text-green-700 font-bold px-3 py-2 flex items-center gap-1 transition-colors">
             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset
           </button>
         </div>
@@ -271,9 +271,9 @@
       <!-- Stepper Progress Header -->
       <div
         class="py-3.5 border-b border-slate-50 flex items-center justify-between text-[10px] font-bold text-slate-450 uppercase tracking-widest px-3 bg-slate-50/50 rounded-2xl my-3">
-        <div id="step-indicator-1" class="flex items-center gap-1.5 text-indigo-600 font-extrabold">
+        <div id="step-indicator-1" class="flex items-center gap-1.5 text-green-700 font-extrabold">
           <span
-            class="w-5 h-5 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center">1</span>
+            class="w-5 h-5 rounded-full bg-green-50 border border-indigo-200 flex items-center justify-center">1</span>
           <span>Personal</span>
         </div>
         <div class="h-px bg-slate-200 flex-1 mx-3"></div>
@@ -302,17 +302,17 @@
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Full Name</label>
             <input type="text" id="tenant-name" placeholder="e.g. Rohan Sharma"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 transition-colors">
+              class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 transition-colors">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Email Address</label>
             <input type="email" id="tenant-email" placeholder="e.g. rohan@gmail.com"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 transition-colors">
+              class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 transition-colors">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Mobile Number</label>
             <input type="text" id="tenant-phone" placeholder="e.g. +91 99988 77766"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 transition-colors">
+              class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 transition-colors">
           </div>
         </div>
 
@@ -321,7 +321,7 @@
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Select Room Unit</label>
             <select id="tenant-room-id"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 cursor-pointer">
+              class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 cursor-pointer">
               <!-- Loaded dynamically -->
             </select>
           </div>
@@ -329,17 +329,17 @@
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bed Number</label>
               <input type="number" id="tenant-bed-number" placeholder="e.g. 1"
-                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+                class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1.5">Rent (INR/mo)</label>
               <input type="number" id="tenant-rent" placeholder="8000"
-                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+                class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1.5">Deposit (INR)</label>
               <input type="number" id="tenant-deposit" placeholder="15000"
-                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+                class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
             </div>
           </div>
         </div>
@@ -350,7 +350,7 @@
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1.5">ID Proof Type</label>
               <select id="tenant-id-type"
-                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 cursor-pointer">
+                class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0 cursor-pointer">
                 <option value="Aadhaar Card">Aadhaar Card</option>
                 <option value="Passport">Passport</option>
                 <option value="PAN Card">PAN Card</option>
@@ -360,7 +360,7 @@
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1.5">ID Number</label>
               <input type="text" id="tenant-id-number" placeholder="e.g. 1234-5678-9012"
-                class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+                class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
             </div>
           </div>
           <!-- Premium Document Upload File Area -->
@@ -394,7 +394,7 @@
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Check-In Date</label>
             <input type="date" id="tenant-checkin"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
+              class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-4 py-3.5 text-slate-800 text-sm focus:ring-0">
           </div>
         </div>
 
@@ -452,7 +452,7 @@
             <div class="flex items-center justify-between">
               <span class="flex items-center gap-1.5"><i data-lucide="indian-rupee"
                   class="w-3.5 h-3.5 text-slate-400"></i> Rent</span>
-              <span id="detail-sidebar-rent" class="font-extrabold text-indigo-650 text-indigo-600">₹0/mo</span>
+              <span id="detail-sidebar-rent" class="font-extrabold text-indigo-650 text-green-700">₹0/mo</span>
             </div>
             <div class="flex items-center justify-between">
               <span class="flex items-center gap-1.5"><i data-lucide="shield-alert"
@@ -466,7 +466,7 @@
             <div class="flex items-center justify-between">
               <span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-3.5 h-3.5 text-slate-400"></i>
                 Common ID</span>
-              <span id="detail-common-id-val" class="text-indigo-600 font-extrabold bg-indigo-50 border border-indigo-105 border-indigo-100 px-2 py-0.5 rounded">—</span>
+              <span id="detail-common-id-val" class="text-green-700 font-extrabold bg-green-50 border border-indigo-105 border-green-200 px-2 py-0.5 rounded">—</span>
             </div>
             <div class="flex items-center justify-between">
               <span class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400"></i>
@@ -531,7 +531,7 @@
               <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between">
                 <span class="text-[9px] uppercase font-black text-slate-400 flex items-center gap-1.5"><i
                     data-lucide="indian-rupee" class="w-3 h-3"></i> Rent</span>
-                <p id="detail-card-rent" class="text-lg font-black text-indigo-600 mt-2">₹0/mo</p>
+                <p id="detail-card-rent" class="text-lg font-black text-green-700 mt-2">₹0/mo</p>
               </div>
               <!-- Deposit Sub-card -->
               <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between">
@@ -650,8 +650,8 @@
       <div class="w-full bg-slate-50 rounded-2xl p-4 my-5 border border-slate-100/80">
         <span class="text-[9px] uppercase font-black tracking-wider text-slate-400">Share Common ID with Tenant</span>
         <div class="flex items-center justify-between bg-white border border-slate-200/80 rounded-xl px-4 py-3 mt-2">
-          <span id="success-common-id" class="text-lg font-black text-indigo-600 tracking-wider">PG-XXX</span>
-          <button id="success-copy-btn" onclick="copySuccessCommonId()" class="p-1.5 hover:bg-slate-50 rounded-lg text-slate-450 hover:text-indigo-600 transition-colors" title="Copy to clipboard">
+          <span id="success-common-id" class="text-lg font-black text-green-700 tracking-wider">PG-XXX</span>
+          <button id="success-copy-btn" onclick="copySuccessCommonId()" class="p-1.5 hover:bg-slate-50 rounded-lg text-slate-450 hover:text-green-700 transition-colors" title="Copy to clipboard">
             <i data-lucide="copy" class="w-4 h-4"></i>
           </button>
         </div>

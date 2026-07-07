@@ -106,13 +106,13 @@ async function loadPropertyDetail(id) {
     const floorContainer = document.getElementById('floor-list-container') || document.getElementById('floor-summary-container');
     if (floorContainer) {
       if (roomSummary.length === 0) {
-        floorContainer.innerHTML = `<p class="text-xs text-slate-400 font-bold italic">No rooms registered yet. <a href="/room-management.html" class="text-indigo-650 underline">Add rooms</a></p>`;
+        floorContainer.innerHTML = `<p class="text-xs text-slate-400 font-bold italic">No rooms registered yet. <a href="/room-management.html" class="text-green-650 underline">Add rooms</a></p>`;
       } else {
         floorContainer.innerHTML = roomSummary.map(f => `
-          <div class="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-100 rounded-xl hover:border-indigo-200 hover:bg-indigo-50/20 cursor-pointer transition-all"
+          <div class="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-100 rounded-xl hover:border-green-200 hover:bg-green-50/20 cursor-pointer transition-all"
                onclick="openFloorRooms(${f.floor})">
             <div class="flex items-center gap-2.5">
-              <span class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 text-[10px] font-extrabold flex items-center justify-center">${f.floor === 0 ? 'G' : f.floor}</span>
+              <span class="w-8 h-8 rounded-xl bg-green-50 border border-green-100 text-green-600 text-[10px] font-extrabold flex items-center justify-center">${f.floor === 0 ? 'G' : f.floor}</span>
               <span class="text-sm font-bold text-slate-800">${f.label}</span>
             </div>
             <div class="flex items-center gap-4 text-xs font-bold">
@@ -156,7 +156,7 @@ async function loadPropertyDetail(id) {
       } else {
         tenantContainer.innerHTML = recentlyJoined.map(t => `
           <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-650 text-xs font-extrabold flex items-center justify-center shrink-0">
+            <span class="w-8 h-8 rounded-full bg-green-100 text-green-650 text-xs font-extrabold flex items-center justify-center shrink-0">
               ${(t.name || 'T').charAt(0).toUpperCase()}
             </span>
             <div>
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else if (props.length === 0) {
         document.getElementById('property-detail-main').innerHTML = `
           <div class="flex flex-col items-center justify-center py-32 text-center">
-            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4">
+            <div class="w-14 h-14 rounded-2xl bg-green-50 text-green-500 flex items-center justify-center mb-4">
               <i data-lucide="building" class="w-7 h-7"></i>
             </div>
             <h3 class="text-lg font-extrabold text-slate-800">No Properties Yet</h3>

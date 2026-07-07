@@ -32,7 +32,7 @@ async function loadNotices() {
       grid.innerHTML = filtered.map(notice => {
         let isGlobal = notice.propertyId === 'all' || !notice.propertyId;
         let scopeBadge = isGlobal 
-          ? `<span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Global Broadcast</span>`
+          ? `<span class="bg-green-50 text-green-600 border border-green-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Global Broadcast</span>`
           : `<span class="bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Property Specific</span>`;
         
         let catBadge = '';
@@ -56,7 +56,7 @@ async function loadNotices() {
           catClass = 'border-l-4 border-l-rose-500';
           iconName = 'alert-triangle';
         } else {
-          catBadge = `<span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">📢 General</span>`;
+          catBadge = `<span class="bg-green-50 text-green-600 border border-green-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">📢 General</span>`;
           catClass = 'border-l-4 border-l-indigo-500';
           iconName = 'megaphone';
         }
@@ -86,7 +86,7 @@ async function loadNotices() {
  
             <div class="pt-4 border-t border-slate-100/60 flex items-center justify-between">
               <span class="text-[10px] text-slate-400 font-semibold flex items-center gap-1">
-                <i data-lucide="user" class="w-3.5 h-3.5 text-indigo-500"></i> Posted by Warden
+                <i data-lucide="user" class="w-3.5 h-3.5 text-green-500"></i> Posted by Warden
               </span>
               <button onclick="deleteNotice('${notice.id}')" class="text-xs font-bold text-rose-500 hover:text-rose-600 transition-colors flex items-center gap-1 focus:outline-none cursor-pointer">
                 <i data-lucide="trash" class="w-3.5 h-3.5"></i> Delete Broadcast

@@ -83,7 +83,7 @@ async function loadVisitorLogs() {
             <td class="px-6 py-4.5">
               <div>
                 <p class="text-slate-800">${log.purpose}</p>
-                <p class="text-[10px] text-indigo-600 mt-0.5">Relation: ${log.relation}</p>
+                <p class="text-[10px] text-green-600 mt-0.5">Relation: ${log.relation}</p>
               </div>
             </td>
             <td class="px-6 py-4.5 text-slate-500">${log.checkInTime.substring(0, 16).replace('T', ' ')}</td>
