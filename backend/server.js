@@ -265,6 +265,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(frontendRoot, 'login.html'));
 });
 
+// Health Check / Uptime Monitor Endpoints
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'UP', timestamp: new Date().toISOString() });
+});
+app.head('/health', (req, res) => {
+  res.status(200).end();
+});
+
 // Route Mounts
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/dashboard', require('./routes/dashboard'));
