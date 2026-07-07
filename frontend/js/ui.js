@@ -56,6 +56,15 @@ window.UI = {
           headerContainer.innerHTML = await response.text();
           this.initHeaderDropdowns();
           this.initPropertySelector();
+
+          // Hydrate date pill (inline scripts in innerHTML don't execute)
+          const datePill = document.getElementById('header-date-text');
+          if (datePill) {
+            const d = new Date();
+            datePill.textContent = d.toLocaleDateString('en-US', {
+              weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+            });
+          }
         }
       }
       

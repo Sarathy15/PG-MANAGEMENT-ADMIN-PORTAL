@@ -78,7 +78,7 @@
       border-radius: 9px;
     ">
       <i data-lucide="calendar" style="width:13px;height:13px;color:#7DC242;"></i>
-      <span id="header-date-text">Loading…</span>
+      <span id="header-date-text" data-date-pill="true"></span>
     </div>
 
     <!-- Divider -->
@@ -212,13 +212,3 @@
   </div>
 </header>
 
-<script>
-  // Hydrate date
-  (function() {
-    const el = document.getElementById('header-date-text');
-    if (el) {
-      const d = new Date();
-      el.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    }
-  })();
-</script>
