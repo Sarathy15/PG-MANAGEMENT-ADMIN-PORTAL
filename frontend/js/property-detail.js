@@ -224,12 +224,22 @@ function openFloorRooms(floor) {
 window.openFloorRooms = openFloorRooms;
 
 function triggerEditProperty() {
+  const user = window.Auth.getCurrentUser();
+  if (user && user.role === 'staff') {
+    window.UI.toast('Only admin can edit property', 'error');
+    return;
+  }
   if (!currentPropertyId) return;
   window.location.href = `/properties.html?edit=${currentPropertyId}`;
 }
 window.triggerEditProperty = triggerEditProperty;
 
 async function triggerDeleteProperty() {
+  const user = window.Auth.getCurrentUser();
+  if (user && user.role === 'staff') {
+    window.UI.toast('Only admin can edit property', 'error');
+    return;
+  }
   if (!currentPropertyId) return;
   if (!confirm('Are you absolutely sure you want to delete this property? This will also remove all associated rooms and tenant references.')) return;
   try {

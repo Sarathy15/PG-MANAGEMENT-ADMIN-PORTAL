@@ -40,11 +40,18 @@ window.UI = {
 
   hydrateHeaderAndSidebar: async function() {
     try {
+      const currentUser = window.Auth.getCurrentUser();
+      const isStaff = currentUser && currentUser.role === 'staff';
+
       const sidebarContainer = document.getElementById('sidebar-container');
       if (sidebarContainer) {
         const response = await fetch('/components/sidebar.html?v=' + Date.now());
         if (response.ok) {
-          sidebarContainer.innerHTML = await response.text();
+          let html = await response.text();
+          if (isStaff) {
+            html = html.replace(/<a href="\/settings.html"[\s\S]*?<\/a>/, '');
+          }
+          sidebarContainer.innerHTML = html;
           this.highlightActiveSidebar();
         }
       }
@@ -53,7 +60,11 @@ window.UI = {
       if (headerContainer) {
         const response = await fetch('/components/header.html?v=' + Date.now());
         if (response.ok) {
-          headerContainer.innerHTML = await response.text();
+          let html = await response.text();
+          if (isStaff) {
+            html = html.replace(/<a href="\/settings.html"[\s\S]*?<\/a>/, '');
+          }
+          headerContainer.innerHTML = html;
           this.initHeaderDropdowns();
           this.initPropertySelector();
 

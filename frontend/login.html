@@ -106,30 +106,33 @@
       <form id="login-form" style="display:flex;flex-direction:column;gap:1rem;">
         <div>
           <label for="email" class="inp-label">Email Address</label>
-          <input type="email" id="email" class="inp" required placeholder="admin@pg.com"
+          <input type="email" id="email" class="inp" required placeholder="pleasanthomes@pg.com"
             onfocus="this.classList.add('focused')" onblur="this.classList.remove('focused')">
         </div>
         <div>
           <label for="password" class="inp-label">Password</label>
-          <input type="password" id="password" class="inp" required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+          <div style="position: relative;">
+            <input type="password" id="password" class="inp" required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" style="padding-right: 2.75rem;">
+            <button type="button" id="toggle-password" style="
+              position: absolute;
+              right: 0.875rem;
+              top: 50%;
+              transform: translateY(-50%);
+              background: none;
+              border: none;
+              cursor: pointer;
+              color: #94a3b8;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+            ">
+              <i data-lucide="eye" style="width: 18px; height: 18px;"></i>
+            </button>
+          </div>
         </div>
         <button type="submit" class="btn-primary">Sign In &rarr;</button>
       </form>
-
-      <!-- Demo accounts -->
-      <div style="margin-top:1.75rem;padding-top:1.25rem;border-top:1px solid #f1f5f9;">
-        <p style="font-size:.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;text-align:center;margin-bottom:.75rem;">Demo Accounts</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;">
-          <button class="demo-btn" onclick="fillAndSubmit('admin@pg.com','admin123')">
-            <p style="font-size:.75rem;font-weight:700;color:#374151;">Property Admin</p>
-            <p style="font-size:.625rem;color:#94a3b8;margin-top:2px;">admin123</p>
-          </button>
-          <button class="demo-btn" onclick="fillAndSubmit('staff@pgms.com','staff123')">
-            <p style="font-size:.75rem;font-weight:700;color:#374151;">Staff Member</p>
-            <p style="font-size:.625rem;color:#94a3b8;margin-top:2px;">staff123</p>
-          </button>
-        </div>
-      </div>
     </div>
 
   </div>
@@ -139,6 +142,25 @@
   <script src="/js/state.js"></script>
   <script>
     lucide.createIcons();
+
+    // Toggle password visibility
+    const togglePasswordBtn = document.getElementById('toggle-password');
+    const passwordInput = document.getElementById('password');
+    if (togglePasswordBtn && passwordInput) {
+      togglePasswordBtn.addEventListener('click', function() {
+        const isPassword = passwordInput.getAttribute('type') === 'password';
+        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+        
+        // Update Lucide icon
+        const icon = togglePasswordBtn.querySelector('i');
+        if (icon) {
+          icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+          if (window.lucide) {
+            window.lucide.createIcons();
+          }
+        }
+      });
+    }
 
     // Already authenticated as admin?
     if (window.Auth && window.Auth.isAuthenticated()) {

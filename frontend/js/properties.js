@@ -9,6 +9,14 @@ async function loadProperties() {
   const grid = document.getElementById('properties-grid');
   if (!grid) return;
 
+  // If staff user, hide add property buttons in header
+  const user = window.Auth.getCurrentUser();
+  const isStaff = user && user.role === 'staff';
+  if (isStaff) {
+    const addBtns = document.querySelectorAll('button[onclick="openAddPropertyWizard()"]');
+    addBtns.forEach(btn => btn.style.display = 'none');
+  }
+
   try {
     const data = await window.apiRequest('/properties');
     allPropertiesData = Array.isArray(data) ? data : (data.data || []);
@@ -21,9 +29,11 @@ async function loadProperties() {
           </div>
           <h3 class="text-lg font-extrabold text-slate-800">No Properties Yet</h3>
           <p class="text-sm text-slate-400 mt-2">Start by registering your first PG property.</p>
+          ${isStaff ? '' : `
           <button onclick="openAddPropertyWizard()" class="mt-6 bg-indigo-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-md shadow-indigo-100">
             + Add First Property
           </button>
+          `}
         </div>`;
       if (window.lucide) window.lucide.createIcons();
       return;
@@ -35,7 +45,7 @@ async function loadProperties() {
     // If came from property-detail with ?edit=id, open edit modal
     const params = new URLSearchParams(window.location.search);
     const editId = params.get('edit');
-    if (editId) {
+    if (editId && !isStaff) {
       const prop = allPropertiesData.find(p => String(p.id) === String(editId));
       if (prop) setTimeout(() => openEditPropertyWizard(prop), 200);
     }
@@ -52,6 +62,19 @@ function buildPropertyCard(p) {
   const statusColor = p.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
   const amenitiesArr = Array.isArray(p.amenities) ? p.amenities : (p.amenities ? String(p.amenities).split(',').map(a => a.trim()) : []);
 
+  const currentUser = window.Auth.getCurrentUser();
+  const isStaff = currentUser && currentUser.role === 'staff';
+  const actionButtons = isStaff ? '' : `
+        <div class="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onclick="event.stopPropagation(); openEditPropertyWizard(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="bg-white text-slate-600 p-1.5 rounded-lg shadow hover:bg-green-50 hover:text-green-600 text-[11px] font-bold transition-all" title="Edit">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          </button>
+          <button onclick="event.stopPropagation(); deleteProperty('${p.id}', '${(p.propertyName || p.name || '').replace(/'/g, "\\'")}')" class="bg-white text-slate-600 p-1.5 rounded-lg shadow hover:bg-rose-50 hover:text-rose-600 text-[11px] font-bold transition-all" title="Delete">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+  `;
+
   return `
     <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all group cursor-pointer" onclick="openPropertyDetail('${p.id}')">
       <div class="relative h-40 overflow-hidden">
@@ -61,14 +84,7 @@ function buildPropertyCard(p) {
           <span class="text-[9px] font-extrabold uppercase tracking-widest bg-indigo-600 text-white px-2.5 py-1 rounded-full">${p.propertyType || 'PG'}</span>
           <span class="text-[9px] font-extrabold uppercase tracking-widest ${statusColor} px-2.5 py-1 rounded-full">${p.status || 'active'}</span>
         </div>
-        <div class="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onclick="event.stopPropagation(); openEditPropertyWizard(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="bg-white text-slate-600 p-1.5 rounded-lg shadow hover:bg-green-50 hover:text-green-600 text-[11px] font-bold transition-all" title="Edit">
-            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-          </button>
-          <button onclick="event.stopPropagation(); deleteProperty('${p.id}', '${(p.propertyName || p.name || '').replace(/'/g, "\\'")}')" class="bg-white text-slate-600 p-1.5 rounded-lg shadow hover:bg-rose-50 hover:text-rose-600 text-[11px] font-bold transition-all" title="Delete">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
+        ${actionButtons}
       </div>
       <div class="p-5 space-y-3">
         <div>
@@ -119,6 +135,11 @@ const STEP_TITLES = [
 ];
 
 function openAddPropertyWizard() {
+  const user = window.Auth.getCurrentUser();
+  if (user && user.role === 'staff') {
+    window.UI.toast('Only admin can edit property', 'error');
+    return;
+  }
   wizardMode = 'create';
   editingPropertyId = null;
   resetWizard();
@@ -145,6 +166,11 @@ function openAddPropertyWizard() {
 window.openAddPropertyWizard = openAddPropertyWizard;
 
 async function openEditPropertyWizard(propData) {
+  const user = window.Auth.getCurrentUser();
+  if (user && user.role === 'staff') {
+    window.UI.toast('Only admin can edit property', 'error');
+    return;
+  }
   const p = typeof propData === 'string' ? JSON.parse(propData) : propData;
   wizardMode = 'edit';
   editingPropertyId = p.id;
@@ -691,6 +717,11 @@ async function submitPropertyWizard() {
 
 // ─── DELETE ───────────────────────────────────────────────────────────────────
 async function deleteProperty(id, name) {
+  const user = window.Auth.getCurrentUser();
+  if (user && user.role === 'staff') {
+    window.UI.toast('Only admin can edit property', 'error');
+    return;
+  }
   if (!confirm(`Delete "${name}"? All rooms and tenant references will be removed.`)) return;
   try {
     await window.apiRequest(`/properties/${id}`, { method: 'DELETE' });

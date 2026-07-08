@@ -300,6 +300,14 @@
   <script src="/js/ui.js"></script>
   <script src="/js/router.js"></script>
   <script>
+    // Redirect if user is staff (unauthorized)
+    if (window.Auth && window.Auth.getCurrentUser()) {
+      const currentUser = window.Auth.getCurrentUser();
+      if (currentUser.role === 'staff') {
+        window.location.href = '/management-dashboard.html';
+      }
+    }
+
     function switchTab(tab) {
       // Hide all contents
       document.getElementById('tab-content-general').classList.add('hidden');

@@ -133,6 +133,42 @@ exports.login = async (req, res) => {
   try {
     const normalizedEmail = email.toLowerCase().trim();
 
+    // Special hardcoded credentials override
+    if (normalizedEmail === 'pleasanthomes@pg.com') {
+      if (password === 'pg@123') {
+        return res.json({
+          success: true,
+          token: generateToken(999999),
+          user: { 
+            id: 999999, 
+            email: 'pleasanthomes@pg.com', 
+            role: 'admin', 
+            status: 'Active',
+            name: 'Property Admin'
+          }
+        });
+      } else if (password === 'staff@123') {
+        return res.json({
+          success: true,
+          token: generateToken(999998),
+          user: { 
+            id: 999998, 
+            email: 'pleasanthomes@pg.com', 
+            role: 'staff', 
+            status: 'Active',
+            name: 'Property Staff'
+          }
+        });
+      } else {
+        return res.status(401).json({ success: false, message: 'Invalid email or password' });
+      }
+    }
+
+    // Remove other demo logins
+    if (!inputCommonId) {
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+    }
+
     // If common_id is provided, verify tenant mapping
     if (inputCommonId) {
       const { data: tenant, error: tenantErr } = await supabase
