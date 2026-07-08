@@ -13,8 +13,18 @@
   <link rel="stylesheet" href="/css/app.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/mobile.css">
 </head>
 <body class="min-h-screen flex overflow-hidden">
+
+  <!-- Mobile Splash Screen (only shows on mobile) -->
+  <div id="mobile-splash">
+    <div class="splash-logo-wrap">
+      <img src="/assets/logo.png?v=1.0.2" alt="Pleasant Homes">
+    </div>
+    <p class="splash-tagline">PG Management Portal</p>
+    <div class="splash-spinner"></div>
+  </div>
   <!-- Page Loader Splash -->
   <div id="page-loader-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f8fafc; z-index: 999999; display: flex; align-items: center; justify-content: center; transition: opacity 0.25s ease-out, visibility 0.25s ease-out;">
     <div style="width: 40px; height: 40px; border: 3.5px solid rgba(125, 194, 66, 0.12); border-top-color: #7DC242; border-radius: 50%; animation: loader-spin 0.6s linear infinite;"></div>
@@ -317,5 +327,6 @@
   <script src="/js/ui.js"></script>
   <script src="/js/router.js"></script>
   <script src="/js/dashboard.js"></script>
+  <script src="/js/mobile.js"></script>
 </body>
 </html>

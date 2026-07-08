@@ -1,0 +1,145 @@
+<!-- ══════════════════════════════════════════════════════
+     PLEASANT HOMES — Mobile Shell
+     Drawer sidebar + mobile header bar + bottom nav
+     Injected by mobile.js on screens < 768px
+     ══════════════════════════════════════════════════════ -->
+
+<!-- Backdrop Overlay -->
+<div id="mobile-sidebar-overlay" onclick="closeMobileDrawer()"></div>
+
+<!-- Slide-in Drawer -->
+<div id="mobile-sidebar-drawer">
+  <button id="mobile-drawer-close" onclick="closeMobileDrawer()">
+    <i data-lucide="x" style="width:16px;height:16px;"></i>
+  </button>
+
+  <!-- Logo -->
+  <div class="mob-drawer-logo">
+    <img src="/assets/logo.png?v=1.0.2" alt="Pleasant Homes">
+  </div>
+
+  <!-- Nav -->
+  <nav class="scrollbar-hide">
+    <p class="mob-nav-section">Main Menu</p>
+    <a href="/management-dashboard.html" class="mob-nav-link">
+      <i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="/properties.html" class="mob-nav-link">
+      <i data-lucide="building-2" style="width:18px;height:18px;"></i>
+      <span>Properties</span>
+    </a>
+    <a href="/room-management.html" class="mob-nav-link">
+      <i data-lucide="door-closed" style="width:18px;height:18px;"></i>
+      <span>Rooms</span>
+    </a>
+    <a href="/tenants.html" class="mob-nav-link">
+      <i data-lucide="users" style="width:18px;height:18px;"></i>
+      <span>Tenants</span>
+    </a>
+
+    <p class="mob-nav-section">Finance & Ops</p>
+    <a href="/rent.html" class="mob-nav-link">
+      <i data-lucide="indian-rupee" style="width:18px;height:18px;"></i>
+      <span>Rent & Invoices</span>
+    </a>
+    <a href="/staff.html" class="mob-nav-link">
+      <i data-lucide="briefcase" style="width:18px;height:18px;"></i>
+      <span>Staff</span>
+    </a>
+    <a href="/visitors.html" class="mob-nav-link">
+      <i data-lucide="contact" style="width:18px;height:18px;"></i>
+      <span>Visitor Logs</span>
+    </a>
+
+    <p class="mob-nav-section">Services</p>
+    <a href="/complaints.html" class="mob-nav-link">
+      <i data-lucide="message-square-warning" style="width:18px;height:18px;"></i>
+      <span>Complaints</span>
+    </a>
+    <a href="/maintenance.html" class="mob-nav-link">
+      <i data-lucide="wrench" style="width:18px;height:18px;"></i>
+      <span>Maintenance</span>
+    </a>
+    <a href="/notices.html" class="mob-nav-link">
+      <i data-lucide="megaphone" style="width:18px;height:18px;"></i>
+      <span>Notices</span>
+    </a>
+
+    <p class="mob-nav-section">System</p>
+    <a href="/reports.html" class="mob-nav-link">
+      <i data-lucide="file-bar-chart" style="width:18px;height:18px;"></i>
+      <span>Reports</span>
+    </a>
+    <a href="/settings.html" class="mob-nav-link">
+      <i data-lucide="settings" style="width:18px;height:18px;"></i>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <!-- User Footer -->
+  <div class="mob-drawer-footer">
+    <div class="mob-avatar">
+      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar" id="mob-drawer-avatar">
+    </div>
+    <div style="flex:1; min-width:0;">
+      <p id="mob-drawer-name" style="font-size:0.8125rem;font-weight:700;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Admin</p>
+      <p id="mob-drawer-role" style="font-size:0.6rem;font-weight:600;color:#7DC242;text-transform:uppercase;letter-spacing:0.06em;">Property Manager</p>
+    </div>
+    <button class="mob-logout" onclick="window.Auth && window.Auth.logout()">
+      <i data-lucide="log-out" style="width:16px;height:16px;"></i>
+    </button>
+  </div>
+
+  <div class="mob-glow"></div>
+</div>
+
+<!-- Mobile Header Bar -->
+<header class="mob-header" id="mob-header-bar">
+  <!-- Hamburger -->
+  <button class="mob-hamburger" id="mob-hamburger-btn" onclick="openMobileDrawer()">
+    <i data-lucide="menu" style="width:20px;height:20px;color:#334155;"></i>
+  </button>
+
+  <!-- Logo (centred) -->
+  <div class="mob-header-logo">
+    <img src="/assets/logo.png?v=1.0.2" alt="Pleasant Homes Logo">
+  </div>
+
+  <!-- Right actions -->
+  <div class="mob-header-actions">
+    <!-- Notification -->
+    <button class="mob-icon-btn" id="mob-notif-btn" onclick="window.UI && window.UI.toggleNotificationDropdown && window.UI.toggleNotificationDropdown()">
+      <i data-lucide="bell" style="width:18px;height:18px;color:#334155;"></i>
+      <span class="mob-notif-badge" id="mob-notif-dot" style="display:none;"></span>
+    </button>
+    <!-- Avatar -->
+    <div class="mob-avatar-btn" id="mob-avatar-btn" onclick="window.location.href='/settings.html'">
+      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Profile" id="mob-header-avatar">
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Bottom Navigation -->
+<nav id="mob-bottom-nav">
+  <a href="/management-dashboard.html" class="mob-nav-item" data-page="management-dashboard">
+    <i data-lucide="layout-dashboard" style="width:22px;height:22px;"></i>
+    <span>Home</span>
+  </a>
+  <a href="/tenants.html" class="mob-nav-item" data-page="tenants">
+    <i data-lucide="users" style="width:22px;height:22px;"></i>
+    <span>Tenants</span>
+  </a>
+  <a href="/rent.html" class="mob-nav-item" data-page="rent">
+    <i data-lucide="indian-rupee" style="width:22px;height:22px;"></i>
+    <span>Rent</span>
+  </a>
+  <a href="/visitors.html" class="mob-nav-item" data-page="visitors">
+    <i data-lucide="contact" style="width:22px;height:22px;"></i>
+    <span>Visitors</span>
+  </a>
+  <a href="/room-management.html" class="mob-nav-item" data-page="room-management">
+    <i data-lucide="door-closed" style="width:22px;height:22px;"></i>
+    <span>Rooms</span>
+  </a>
+</nav>
