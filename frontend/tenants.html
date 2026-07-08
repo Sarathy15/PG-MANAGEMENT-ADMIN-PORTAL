@@ -101,6 +101,12 @@
 </head>
 
 <body class="bg-slate-50 min-h-screen flex overflow-hidden">
+  <!-- Page Loader Splash -->
+  <div id="page-loader-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f8fafc; z-index: 999999; display: flex; align-items: center; justify-content: center; transition: opacity 0.25s ease-out, visibility 0.25s ease-out;">
+    <div style="width: 40px; height: 40px; border: 3.5px solid rgba(125, 194, 66, 0.12); border-top-color: #7DC242; border-radius: 50%; animation: loader-spin 0.6s linear infinite;"></div>
+    <style>@keyframes loader-spin { to { transform: rotate(360deg); } }</style>
+    <script>(function(){const fade=()=>{const el=document.getElementById('page-loader-overlay');if(el){el.style.opacity='0';el.style.visibility='hidden';setTimeout(()=>el.remove(),250);}};document.addEventListener('DOMContentLoaded',fade);window.addEventListener('load',fade);setTimeout(fade,1200);})();</script>
+  </div>
 
   <div id="sidebar-container" class="h-screen sticky top-0 hidden md:block"></div>
 

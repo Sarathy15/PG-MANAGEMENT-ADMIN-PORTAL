@@ -77,7 +77,7 @@ async function loadDashboardData() {
       if (!stats.recentActivity || stats.recentActivity.length === 0) {
         logsList.innerHTML = `<p class="text-xs text-slate-400">No system events logged.</p>`;
       } else {
-        logsList.innerHTML = stats.recentActivity.slice(0, 5).map(log => `
+        logsList.innerHTML = stats.recentActivity.slice(0, 3).map(log => `
           <div class="flex items-center justify-between py-1 border-b border-slate-100 last:border-0">
             <span class="truncate max-w-[180px]" title="${log.details}">[${log.action}] ${log.details}</span>
             <span class="text-[9px] text-slate-400 flex-shrink-0">${log.date.substring(5, 16)}</span>

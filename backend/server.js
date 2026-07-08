@@ -214,7 +214,6 @@ app.use((req, res, next) => {
 
     // Apply mapper based on URL patterns only if request is successful
     try {
-      console.log("[DEBUG MAPPER] url:", url, "status:", res.statusCode, "isArray:", Array.isArray(data), "data:", JSON.stringify(data));
       if (res.statusCode < 400 && !(body && body.success === false)) {
         if (url.includes('/api/v1/properties')) {
           if (url.includes('/detail')) {

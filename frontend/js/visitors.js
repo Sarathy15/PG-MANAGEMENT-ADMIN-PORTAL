@@ -48,7 +48,7 @@ async function loadVisitorLogs() {
         
         if (!log.otpVerified) {
           badge = `<span class="bg-rose-50 text-rose-600 border border-rose-100 text-[9px] px-2.5 py-0.5 rounded-full font-bold">❌ OTP Unverified</span>`;
-          checkoutBtn = `<button onclick="openOtpVerificationModal('${log.id}', '${log.otp}')" class="px-2.5 py-1 text-[10px] font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-all shadow-sm">Verify OTP</button>`;
+          checkoutBtn = `<button onclick="openOtpVerificationModal('${log.id}')" class="px-2.5 py-1 text-[10px] font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-all shadow-sm">Verify OTP</button>`;
         } else if (log.approvalStatus === 'Pending Resident Approval') {
           badge = `<span class="bg-amber-50 text-amber-600 border border-amber-100 text-[9px] px-2.5 py-0.5 rounded-full font-bold">🟡 Pending Resident Approval</span>`;
           checkoutBtn = `
@@ -207,12 +207,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let currentVerifyingVisitorId = null;
-let currentVerifyingOtp = null;
 
-function openOtpVerificationModal(id, otp) {
+function openOtpVerificationModal(id) {
   currentVerifyingVisitorId = id;
-  currentVerifyingOtp = otp;
-  document.getElementById('simulated-otp-text').textContent = `Simulated OTP: ${otp}`;
   document.getElementById('verify-otp-input').value = '';
   window.UI.showModal('otp-modal');
 }
@@ -220,7 +217,6 @@ function openOtpVerificationModal(id, otp) {
 function closeOtpModal() {
   window.UI.hideModal('otp-modal');
   currentVerifyingVisitorId = null;
-  currentVerifyingOtp = null;
 }
 
 async function submitVerifyOtp() {

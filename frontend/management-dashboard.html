@@ -15,6 +15,12 @@
   <link rel="stylesheet" href="/css/animations.css">
 </head>
 <body class="min-h-screen flex overflow-hidden">
+  <!-- Page Loader Splash -->
+  <div id="page-loader-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f8fafc; z-index: 999999; display: flex; align-items: center; justify-content: center; transition: opacity 0.25s ease-out, visibility 0.25s ease-out;">
+    <div style="width: 40px; height: 40px; border: 3.5px solid rgba(125, 194, 66, 0.12); border-top-color: #7DC242; border-radius: 50%; animation: loader-spin 0.6s linear infinite;"></div>
+    <style>@keyframes loader-spin { to { transform: rotate(360deg); } }</style>
+    <script>(function(){const fade=()=>{const el=document.getElementById('page-loader-overlay');if(el){el.style.opacity='0';el.style.visibility='hidden';setTimeout(()=>el.remove(),250);}};document.addEventListener('DOMContentLoaded',fade);window.addEventListener('load',fade);setTimeout(fade,1200);})();</script>
+  </div>
 
   <!-- Sidebar -->
   <div id="sidebar-container" class="h-screen sticky top-0 hidden md:block"></div>
@@ -38,49 +44,69 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 stagger-grid">
 
         <!-- Occupancy Rate -->
-        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #7DC242;">
-          <div>
-            <span style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Occupancy Rate</span>
-            <h3 class="font-heading text-3xl font-bold text-slate-900 mt-1" id="stat-occupancy">—</h3>
-            <span style="font-size:0.75rem;color:#64748b;margin-top:2px;display:block;" id="stat-beds-occupied">— beds occupied</span>
+        <div class="bento-card p-6 flex items-center justify-between" style="background:linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); color:#1e293b; border-radius:24px; border:none; min-height:140px; position:relative; overflow:hidden; box-shadow: 0 10px 30px rgba(22,163,74,0.05); transition: all 0.3s ease;">
+          <!-- SVG Wave Background -->
+          <svg style="position: absolute; bottom: 0; right: 0; width: 140px; height: 90px; pointer-events: none; opacity: 0.15; z-index: 0;" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 90C40 60 80 80 140 45V90H0Z" fill="#16a34a"/>
+            <path d="M0 90C50 70 95 60 140 70V90H0Z" fill="#16a34a" opacity="0.5"/>
+          </svg>
+          <div style="position:relative; z-index:1;">
+            <span style="font-size:0.75rem;font-weight:600;color:#065f46;letter-spacing:0.02em;font-family:'Inter',sans-serif;">Occupancy Rate</span>
+            <h3 class="font-heading text-3xl font-extrabold text-slate-900 mt-1" id="stat-occupancy">—</h3>
+            <span style="font-size:0.75rem;color:#065f46;margin-top:4px;display:block;font-family:'Inter',sans-serif;" id="stat-beds-occupied">— beds occupied</span>
           </div>
-          <div class="stat-icon" style="background:linear-gradient(135deg,#f2fbea,#e4f5c8);color:#5fa832;">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full" style="background:rgba(22,163,74,0.1); color:#16a34a; position:relative; z-index:1; flex-shrink:0;">
             <i data-lucide="percent" class="w-5 h-5"></i>
           </div>
         </div>
 
         <!-- Total Rooms -->
-        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #3b82f6;">
-          <div>
-            <span style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Total Rooms</span>
-            <h3 class="font-heading text-3xl font-bold text-slate-900 mt-1" id="stat-rooms">—</h3>
-            <span style="font-size:0.75rem;color:#64748b;margin-top:2px;display:block;">Active across units</span>
+        <div class="bento-card p-6 flex items-center justify-between" style="background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color:#1e293b; border-radius:24px; border:none; min-height:140px; position:relative; overflow:hidden; box-shadow: 0 10px 30px rgba(59,130,246,0.05); transition: all 0.3s ease;">
+          <!-- SVG Wave Background -->
+          <svg style="position: absolute; bottom: 0; right: 0; width: 140px; height: 90px; pointer-events: none; opacity: 0.15; z-index: 0;" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 90C40 60 80 80 140 45V90H0Z" fill="#3b82f6"/>
+            <path d="M0 90C50 70 95 60 140 70V90H0Z" fill="#3b82f6" opacity="0.5"/>
+          </svg>
+          <div style="position:relative; z-index:1;">
+            <span style="font-size:0.75rem;font-weight:600;color:#1e40af;letter-spacing:0.02em;font-family:'Inter',sans-serif;">Total Rooms</span>
+            <h3 class="font-heading text-3xl font-extrabold text-slate-900 mt-1" id="stat-rooms">—</h3>
+            <span style="font-size:0.75rem;color:#1e40af;margin-top:4px;display:block;font-family:'Inter',sans-serif;">Active across units</span>
           </div>
-          <div class="stat-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);color:#3b82f6;">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full" style="background:rgba(59,130,246,0.1); color:#3b82f6; position:relative; z-index:1; flex-shrink:0;">
             <i data-lucide="door-closed" class="w-5 h-5"></i>
           </div>
         </div>
 
         <!-- Collected Revenue -->
-        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #10b981;">
-          <div>
-            <span style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Collected Revenue</span>
-            <h3 class="font-heading text-3xl font-bold text-emerald-600 mt-1" id="stat-revenue">—</h3>
-            <span style="font-size:0.75rem;color:#64748b;margin-top:2px;display:block;">This month's ledger</span>
+        <div class="bento-card p-6 flex items-center justify-between" style="background:linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); color:#1e293b; border-radius:24px; border:none; min-height:140px; position:relative; overflow:hidden; box-shadow: 0 10px 30px rgba(13,148,136,0.05); transition: all 0.3s ease;">
+          <!-- SVG Wave Background -->
+          <svg style="position: absolute; bottom: 0; right: 0; width: 140px; height: 90px; pointer-events: none; opacity: 0.15; z-index: 0;" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 90C40 60 80 80 140 45V90H0Z" fill="#0d9488"/>
+            <path d="M0 90C50 70 95 60 140 70V90H0Z" fill="#0d9488" opacity="0.5"/>
+          </svg>
+          <div style="position:relative; z-index:1;">
+            <span style="font-size:0.75rem;font-weight:600;color:#0f766e;letter-spacing:0.02em;font-family:'Inter',sans-serif;">Collected Revenue</span>
+            <h3 class="font-heading text-3xl font-extrabold text-slate-900 mt-1" id="stat-revenue">—</h3>
+            <span style="font-size:0.75rem;color:#0f766e;margin-top:4px;display:block;font-family:'Inter',sans-serif;">This month's ledger</span>
           </div>
-          <div class="stat-icon" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:#10b981;">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full" style="background:rgba(13,148,136,0.1); color:#0d9488; position:relative; z-index:1; flex-shrink:0;">
             <i data-lucide="indian-rupee" class="w-5 h-5"></i>
           </div>
         </div>
 
         <!-- Pending Rent -->
-        <div class="bento-card p-5 flex items-center justify-between" style="border-top:3px solid #ef4444;">
-          <div>
-            <span style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Pending Rent</span>
-            <h3 class="font-heading text-3xl font-bold text-red-500 mt-1" id="stat-pending">—</h3>
-            <span style="font-size:0.75rem;color:#64748b;margin-top:2px;display:block;">Outstanding dues</span>
+        <div class="bento-card p-6 flex items-center justify-between" style="background:linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); color:#1e293b; border-radius:24px; border:none; min-height:140px; position:relative; overflow:hidden; box-shadow: 0 10px 30px rgba(225,29,72,0.05); transition: all 0.3s ease;">
+          <!-- SVG Wave Background -->
+          <svg style="position: absolute; bottom: 0; right: 0; width: 140px; height: 90px; pointer-events: none; opacity: 0.15; z-index: 0;" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 90C40 60 80 80 140 45V90H0Z" fill="#ef4444"/>
+            <path d="M0 90C50 70 95 60 140 70V90H0Z" fill="#ef4444" opacity="0.5"/>
+          </svg>
+          <div style="position:relative; z-index:1;">
+            <span style="font-size:0.75rem;font-weight:600;color:#9f1239;letter-spacing:0.02em;font-family:'Inter',sans-serif;">Pending Rent</span>
+            <h3 class="font-heading text-3xl font-extrabold text-slate-900 mt-1" id="stat-pending">—</h3>
+            <span style="font-size:0.75rem;color:#9f1239;margin-top:4px;display:block;font-family:'Inter',sans-serif;">Outstanding dues</span>
           </div>
-          <div class="stat-icon" style="background:linear-gradient(135deg,#fef2f2,#fecaca);color:#ef4444;">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full" style="background:rgba(239,68,68,0.1); color:#ef4444; position:relative; z-index:1; flex-shrink:0;">
             <i data-lucide="alert-circle" class="w-5 h-5"></i>
           </div>
         </div>
@@ -134,6 +160,38 @@
             </div>
             <div style="width:100%;height:10px;background:#f1f5f9;border-radius:99px;overflow:hidden;">
               <div id="dash-occupancy-bar" style="height:100%;background:linear-gradient(90deg,#7DC242,#a8e063);border-radius:99px;transition:width 0.6s ease;width:0%;"></div>
+            </div>
+          </div>
+
+          <!-- Facilities & Status Indicators Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 border-t border-b border-dashed border-slate-100 my-1">
+            <div class="flex items-center gap-2">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: #16a34a; flex-shrink: 0;"></div>
+              <div class="flex flex-col">
+                <span style="font-size: 0.6875rem; font-weight: 600; color: #475569; line-height: 1.1; font-family:'Inter',sans-serif;">WiFi Status</span>
+                <span style="font-size: 0.5625rem; color: #94a3b8; font-family:'Inter',sans-serif;">High speed active</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6; flex-shrink: 0;"></div>
+              <div class="flex flex-col">
+                <span style="font-size: 0.6875rem; font-weight: 600; color: #475569; line-height: 1.1; font-family:'Inter',sans-serif;">AC Systems</span>
+                <span style="font-size: 0.5625rem; color: #94a3b8; font-family:'Inter',sans-serif;">Central active</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: #eab308; flex-shrink: 0;"></div>
+              <div class="flex flex-col">
+                <span style="font-size: 0.6875rem; font-weight: 600; color: #475569; line-height: 1.1; font-family:'Inter',sans-serif;">Power Backup</span>
+                <span style="font-size: 0.5625rem; color: #94a3b8; font-family:'Inter',sans-serif;">Generator ready</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: #06b6d4; flex-shrink: 0;"></div>
+              <div class="flex flex-col">
+                <span style="font-size: 0.6875rem; font-weight: 600; color: #475569; line-height: 1.1; font-family:'Inter',sans-serif;">CCTV System</span>
+                <span style="font-size: 0.5625rem; color: #94a3b8; font-family:'Inter',sans-serif;">Live feed online</span>
+              </div>
             </div>
           </div>
 
