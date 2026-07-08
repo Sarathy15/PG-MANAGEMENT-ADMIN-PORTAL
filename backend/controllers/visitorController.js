@@ -1,9 +1,7 @@
 exports.getVisitors = async (req, res) => {
   try {
     const { propertyId, tenantId } = req.query;
-    let query = supabase
-      .from('visitors')
-      .order('entry_time', { ascending: false });
+    let query = supabase.from('visitors');
     
     if (tenantId) {
       query = query
@@ -17,6 +15,8 @@ exports.getVisitors = async (req, res) => {
       query = query
         .select('*, tenants(full_name, room_id, property_id, rooms(room_number), properties(property_name))');
     }
+    
+    query = query.order('entry_time', { ascending: false });
     const { data, error } = await query;
     if (error) throw new Error(error.message);
 
@@ -133,13 +133,13 @@ exports.verifyOTP = async (req, res) => {
 
     const { data, error: updateError } = await supabase
       .from('visitors')
-      .update({ otp_verified: true })
+      .update({ otp_verified: true, approval_status: 'Approved' })
       .eq('id', id)
       .select()
       .single();
     if (updateError) throw new Error(updateError.message);
 
-    res.json({ success: true, message: 'OTP verified successfully', data });
+    res.json({ success: true, message: 'OTP verified and visitor approved successfully', data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

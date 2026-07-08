@@ -234,7 +234,7 @@ async function submitVerifyOtp() {
       method: 'POST',
       body: JSON.stringify({ otp: enteredOtp })
     });
-    window.UI.toast('OTP Verified! Resident approval pending.', 'success');
+    window.UI.toast('OTP Verified and Visitor Approved!', 'success');
     closeOtpModal();
     loadVisitorLogs();
   } catch (err) {

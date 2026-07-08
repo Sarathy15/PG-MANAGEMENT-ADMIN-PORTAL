@@ -3,9 +3,7 @@ const { logAudit } = require('../utils/auditLogger');
 exports.getComplaints = async (req, res) => {
   try {
     const { propertyId, tenantId } = req.query;
-    let query = supabase
-      .from('complaints')
-      .order('created_at', { ascending: false });
+    let query = supabase.from('complaints');
       
     if (tenantId) {
       query = query
@@ -19,6 +17,8 @@ exports.getComplaints = async (req, res) => {
       query = query
         .select('*, tenants(full_name, property_id, room_id, rooms(room_number), properties(property_name))');
     }
+    
+    query = query.order('created_at', { ascending: false });
     const { data, error } = await query;
     if (error) throw new Error(error.message);
 

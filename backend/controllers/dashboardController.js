@@ -120,6 +120,7 @@ exports.getSummary = async (req, res) => {
       recentCompQuery = supabase
         .from('complaints')
         .select('*, tenants!inner(full_name, property_id, rooms(room_number))')
+        .neq('status', 'resolved')
         .eq('tenants.property_id', propertyId)
         .order('created_at', { ascending: false })
         .limit(5);
@@ -127,6 +128,7 @@ exports.getSummary = async (req, res) => {
       recentCompQuery = supabase
         .from('complaints')
         .select('*, tenants(full_name, rooms(room_number))')
+        .neq('status', 'resolved')
         .order('created_at', { ascending: false })
         .limit(5);
     }
@@ -136,6 +138,13 @@ exports.getSummary = async (req, res) => {
     if (propertyId) {
       noticeQuery = noticeQuery.eq('property_id', propertyId);
     }
+
+    // 10. Audit logs
+    let auditQuery = supabase
+      .from('audit_logs')
+      .select('*')
+      .order('date', { ascending: false })
+      .limit(5);
 
     // Run all queries in parallel
     const [
@@ -147,7 +156,8 @@ exports.getSummary = async (req, res) => {
       rentsRes,
       visitorsRes,
       recentCompRes,
-      noticesRes
+      noticesRes,
+      auditRes
     ] = await Promise.all([
       propQuery,
       roomQuery,
@@ -157,7 +167,8 @@ exports.getSummary = async (req, res) => {
       rentQuery,
       visitorQuery,
       recentCompQuery,
-      noticeQuery
+      noticeQuery,
+      auditQuery
     ]);
 
     // Check errors
@@ -170,6 +181,7 @@ exports.getSummary = async (req, res) => {
     if (visitorsRes.error) throw new Error(visitorsRes.error.message);
     if (recentCompRes.error) throw new Error(recentCompRes.error.message);
     if (noticesRes.error) throw new Error(noticesRes.error.message);
+    if (auditRes.error) throw new Error(auditRes.error.message);
 
     const properties = propertiesRes.data || [];
     const rooms = roomsRes.data || [];
@@ -180,6 +192,7 @@ exports.getSummary = async (req, res) => {
     const visitorsToday = visitorsRes.count || 0;
     const compList = recentCompRes.data || [];
     const noticeList = noticesRes.data || [];
+    const auditList = auditRes.data || [];
 
     // Aggregations
     const totalBeds = properties.reduce((sum, p) => sum + (p.total_beds || 0), 0);
@@ -216,6 +229,12 @@ exports.getSummary = async (req, res) => {
       status: n.status === 'Active' ? 'Published' : 'Draft'
     }));
 
+    const recentActivity = auditList.map(log => ({
+      action: log.action || '',
+      details: log.details || '',
+      date: log.date || new Date().toISOString()
+    }));
+
     res.json({
       success: true,
       data: {
@@ -226,7 +245,7 @@ exports.getSummary = async (req, res) => {
         totalRevenue: paidAmount,
         pendingRent: dueAmount,
         activeComplaints,
-        recentActivity: [],
+        recentActivity,
         recentComplaints,
         visitorCount: visitorsToday,
         notices
