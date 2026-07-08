@@ -261,6 +261,18 @@ app.use('/uploads', express.static(uploadsDir));
 // Serve frontend files from /frontend folder
 const frontendRoot = path.join(__dirname, '..', 'frontend');
 app.use(express.static(frontendRoot));
+
+// Clean URLs handler to match Vercel's cleanUrls routing locally
+app.use((req, res, next) => {
+  if (req.path.indexOf('.') === -1 && !req.path.startsWith('/api/')) {
+    const filePath = path.join(frontendRoot, req.path + '.html');
+    if (fs.existsSync(filePath)) {
+      return res.sendFile(filePath);
+    }
+  }
+  next();
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(frontendRoot, 'login.html'));
 });
