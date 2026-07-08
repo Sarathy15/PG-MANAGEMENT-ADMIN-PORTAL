@@ -13,18 +13,35 @@ exports.getRents = async (req, res) => {
     if (propertyId) {
       tenantQuery = tenantQuery.eq('property_id', propertyId);
     }
-    const { data: activeTenants, error: tenantError } = await tenantQuery;
-    if (tenantError) throw new Error(tenantError.message);
 
     // 2. Fetch rent payments
     let rentQuery = supabase
-      .from('rent_payments')
-      .select('*, tenants(full_name, phone, checkin_date, property_id, room_id, rooms(room_number))');
+      .from('rent_payments');
+      
+    if (propertyId) {
+      rentQuery = rentQuery
+        .select('*, tenants!inner(full_name, phone, checkin_date, property_id, room_id, rooms(room_number))')
+        .eq('tenants.property_id', propertyId);
+    } else {
+      rentQuery = rentQuery
+        .select('*, tenants(full_name, phone, checkin_date, property_id, room_id, rooms(room_number))');
+    }
+
     if (month && month !== 'all') {
       rentQuery = rentQuery.eq('billing_period', targetMonth);
     }
-    const { data: rentPayments, error: rentError } = await rentQuery;
-    if (rentError) throw new Error(rentError.message);
+
+    // Run queries in parallel
+    const [tenantRes, rentRes] = await Promise.all([
+      tenantQuery,
+      rentQuery
+    ]);
+
+    if (tenantRes.error) throw new Error(tenantRes.error.message);
+    if (rentRes.error) throw new Error(rentRes.error.message);
+
+    const activeTenants = tenantRes.data || [];
+    const rentPayments = rentRes.data || [];
 
     const hasPaymentForTargetMonth = new Set();
     const mapped = [];

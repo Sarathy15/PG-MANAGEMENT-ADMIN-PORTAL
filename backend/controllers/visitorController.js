@@ -3,16 +3,19 @@ exports.getVisitors = async (req, res) => {
     const { propertyId, tenantId } = req.query;
     let query = supabase
       .from('visitors')
-      .select('*, tenants(full_name, room_id, property_id, rooms(room_number), properties(property_name))')
       .order('entry_time', { ascending: false });
     
     if (tenantId) {
-      query = query.eq('tenant_id', tenantId);
+      query = query
+        .select('*, tenants(full_name, room_id, property_id, rooms(room_number), properties(property_name))')
+        .eq('tenant_id', tenantId);
     } else if (propertyId) {
-      const { data: ids } = await supabase.from('tenants').select('id').eq('property_id', propertyId);
-      const tenantIds = (ids || []).map(t => t.id);
-      if (tenantIds.length > 0) query = query.in('tenant_id', tenantIds);
-      else return res.json({ success: true, data: [] });
+      query = query
+        .select('*, tenants!inner(full_name, room_id, property_id, rooms(room_number), properties(property_name))')
+        .eq('tenants.property_id', propertyId);
+    } else {
+      query = query
+        .select('*, tenants(full_name, room_id, property_id, rooms(room_number), properties(property_name))');
     }
     const { data, error } = await query;
     if (error) throw new Error(error.message);

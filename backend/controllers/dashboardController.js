@@ -67,133 +67,154 @@ exports.getSummary = async (req, res) => {
     // 1. Properties
     let propQuery = supabase.from('properties').select('id, total_rooms, total_beds, occupied_beds, vacant_beds');
     if (propertyId) propQuery = propQuery.eq('id', propertyId);
-    const { data: properties } = await propQuery;
-    const totalProperties = (properties || []).length;
-
-    // Aggregate beds from properties
-    const totalBeds = (properties || []).reduce((sum, p) => sum + (p.total_beds || 0), 0);
-    const occupiedBeds = (properties || []).reduce((sum, p) => sum + (p.occupied_beds || 0), 0);
-    const occupancyRate = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
 
     // 2. Rooms
     let roomQuery = supabase.from('rooms').select('id, occupied_beds, capacity');
     if (propertyId) roomQuery = roomQuery.eq('property_id', propertyId);
-    const { data: rooms } = await roomQuery;
-    const totalRooms = (rooms || []).length;
-    const occupiedRooms = (rooms || []).filter(r => (r.occupied_beds || 0) > 0).length;
-    const vacantRooms = totalRooms - occupiedRooms;
-
-    // Get tenant IDs for this property (for sub-filters)
-    let tenantIds = null;
-    if (propertyId) {
-      const { data: tenants } = await supabase.from('tenants').select('id').eq('property_id', propertyId);
-      tenantIds = (tenants || []).map(t => t.id);
-    }
 
     // 3. Active Tenants
     let tenantQuery = supabase.from('tenants').select('id', { count: 'exact' }).eq('status', 'active');
     if (propertyId) tenantQuery = tenantQuery.eq('property_id', propertyId);
-    const { count: totalTenants } = await tenantQuery;
 
     // 4. Active Staff
     let staffQuery = supabase.from('staff').select('id', { count: 'exact' }).eq('active_status', 'Active');
     if (propertyId) staffQuery = staffQuery.eq('property_id', propertyId);
-    const { count: totalStaff } = await staffQuery;
 
     // 5. Active Complaints
-    let activeComplaints = 0;
-    if (!propertyId || (tenantIds && tenantIds.length > 0)) {
-      let compQuery = supabase.from('complaints').select('id', { count: 'exact' }).eq('status', 'in_progress');
-      if (propertyId && tenantIds) {
-        compQuery = compQuery.in('tenant_id', tenantIds);
-      }
-      const { count } = await compQuery;
-      activeComplaints = count || 0;
+    let compQuery;
+    if (propertyId) {
+      compQuery = supabase.from('complaints').select('id, tenants!inner(property_id)', { count: 'exact' }).eq('status', 'in_progress').eq('tenants.property_id', propertyId);
+    } else {
+      compQuery = supabase.from('complaints').select('id', { count: 'exact' }).eq('status', 'in_progress');
     }
 
     // 6. Revenue
-    let rents = [];
-    if (!propertyId || (tenantIds && tenantIds.length > 0)) {
-      let rentQuery = supabase.from('rent_payments').select('amount, payment_status, due_date');
-      if (propertyId && tenantIds) {
-        rentQuery = rentQuery.in('tenant_id', tenantIds);
-      }
-      const { data } = await rentQuery;
-      rents = data || [];
+    let rentQuery;
+    if (propertyId) {
+      rentQuery = supabase.from('rent_payments').select('amount, payment_status, due_date, tenants!inner(property_id)').eq('tenants.property_id', propertyId);
+    } else {
+      rentQuery = supabase.from('rent_payments').select('amount, payment_status, due_date');
     }
-
-    const paidAmount = rents.filter(r => r.payment_status && r.payment_status.toLowerCase() === 'paid').reduce((acc, r) => acc + Number(r.amount || 0), 0);
-    const expectedAmount = rents.reduce((acc, r) => acc + Number(r.amount || 0), 0);
-    const dueAmount = Math.max(0, expectedAmount - paidAmount);
-    const overdueCount = rents.filter(r => (!r.payment_status || r.payment_status.toLowerCase() !== 'paid') && r.due_date && new Date(r.due_date) < new Date()).length;
-    const collectionRate = expectedAmount > 0 ? Math.round((paidAmount / expectedAmount) * 100) : 100;
 
     // 7. Visitors
-    let visitorsToday = 0;
-    if (!propertyId || (tenantIds && tenantIds.length > 0)) {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const tomorrowStart = new Date(todayStart);
-      tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const tomorrowStart = new Date(todayStart);
+    tomorrowStart.setDate(tomorrowStart.getDate() + 1);
 
-      let visitorQuery = supabase.from('visitors').select('id', { count: 'exact' })
+    let visitorQuery;
+    if (propertyId) {
+      visitorQuery = supabase.from('visitors').select('id, tenants!inner(property_id)', { count: 'exact' })
+        .gte('entry_time', todayStart.toISOString())
+        .lt('entry_time', tomorrowStart.toISOString())
+        .eq('tenants.property_id', propertyId);
+    } else {
+      visitorQuery = supabase.from('visitors').select('id', { count: 'exact' })
         .gte('entry_time', todayStart.toISOString())
         .lt('entry_time', tomorrowStart.toISOString());
-      if (propertyId && tenantIds) {
-        visitorQuery = visitorQuery.in('tenant_id', tenantIds);
-      }
-      const { count: visitorCount } = await visitorQuery;
-      visitorsToday = visitorCount || 0;
     }
 
-    // Fetch recent complaints
-    let recentComplaints = [];
-    try {
-      const { data: compList } = await supabase
+    // 8. Recent complaints
+    let recentCompQuery;
+    if (propertyId) {
+      recentCompQuery = supabase
+        .from('complaints')
+        .select('*, tenants!inner(full_name, property_id, rooms(room_number))')
+        .eq('tenants.property_id', propertyId)
+        .order('created_at', { ascending: false })
+        .limit(5);
+    } else {
+      recentCompQuery = supabase
         .from('complaints')
         .select('*, tenants(full_name, rooms(room_number))')
         .order('created_at', { ascending: false })
         .limit(5);
-      if (compList) {
-        recentComplaints = compList.map(c => ({
-          id: String(c.id),
-          tenantId: String(c.tenant_id),
-          tenantName: c.tenants?.full_name || 'Unknown',
-          roomNumber: c.tenants?.rooms?.room_number || '—',
-          title: c.title,
-          description: c.description,
-          category: c.category || 'Other',
-          priority: c.priority || 'Medium',
-          status: c.status === 'resolved' ? 'Resolved' : c.status === 'in_progress' ? 'In Progress' : 'Pending',
-          comments: c.comments || [],
-          date: c.created_at ? c.created_at.substring(0, 10) : ''
-        }));
-      }
-    } catch (err) {
-      console.error(err);
     }
 
-    // Fetch recent notices
-    let notices = [];
-    try {
-      const { data: noticeList } = await supabase
-        .from('notices')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(3);
-      if (noticeList) {
-        notices = noticeList.map(n => ({
-          id: String(n.id),
-          title: n.title,
-          content: n.content,
-          audience: n.target_audience === 'All Tenants' ? 'Tenants' : n.target_audience === 'All Staff' ? 'Staff' : 'All',
-          date: n.publish_date,
-          status: n.status === 'Active' ? 'Published' : 'Draft'
-        }));
-      }
-    } catch (err) {
-      console.error(err);
+    // 9. Recent notices
+    let noticeQuery = supabase.from('notices').select('*').order('created_at', { ascending: false }).limit(3);
+    if (propertyId) {
+      noticeQuery = noticeQuery.eq('property_id', propertyId);
     }
+
+    // Run all queries in parallel
+    const [
+      propertiesRes,
+      roomsRes,
+      tenantsRes,
+      staffRes,
+      complaintsRes,
+      rentsRes,
+      visitorsRes,
+      recentCompRes,
+      noticesRes
+    ] = await Promise.all([
+      propQuery,
+      roomQuery,
+      tenantQuery,
+      staffQuery,
+      compQuery,
+      rentQuery,
+      visitorQuery,
+      recentCompQuery,
+      noticeQuery
+    ]);
+
+    // Check errors
+    if (propertiesRes.error) throw new Error(propertiesRes.error.message);
+    if (roomsRes.error) throw new Error(roomsRes.error.message);
+    if (tenantsRes.error) throw new Error(tenantsRes.error.message);
+    if (staffRes.error) throw new Error(staffRes.error.message);
+    if (complaintsRes.error) throw new Error(complaintsRes.error.message);
+    if (rentsRes.error) throw new Error(rentsRes.error.message);
+    if (visitorsRes.error) throw new Error(visitorsRes.error.message);
+    if (recentCompRes.error) throw new Error(recentCompRes.error.message);
+    if (noticesRes.error) throw new Error(noticesRes.error.message);
+
+    const properties = propertiesRes.data || [];
+    const rooms = roomsRes.data || [];
+    const totalTenants = tenantsRes.count || 0;
+    const totalStaff = staffRes.count || 0;
+    const activeComplaints = complaintsRes.count || 0;
+    const rents = rentsRes.data || [];
+    const visitorsToday = visitorsRes.count || 0;
+    const compList = recentCompRes.data || [];
+    const noticeList = noticesRes.data || [];
+
+    // Aggregations
+    const totalBeds = properties.reduce((sum, p) => sum + (p.total_beds || 0), 0);
+    const occupiedBeds = properties.reduce((sum, p) => sum + (p.occupied_beds || 0), 0);
+    const occupancyRate = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
+
+    const totalRooms = rooms.length;
+    const occupiedRooms = rooms.filter(r => (r.occupied_beds || 0) > 0).length;
+
+    const paidAmount = rents.filter(r => r.payment_status && r.payment_status.toLowerCase() === 'paid').reduce((acc, r) => acc + Number(r.amount || 0), 0);
+    const expectedAmount = rents.reduce((acc, r) => acc + Number(r.amount || 0), 0);
+    const dueAmount = Math.max(0, expectedAmount - paidAmount);
+
+    const recentComplaints = compList.map(c => ({
+      id: String(c.id),
+      tenantId: String(c.tenant_id),
+      tenantName: c.tenants?.full_name || 'Unknown',
+      roomNumber: c.tenants?.rooms?.room_number || '—',
+      title: c.title,
+      description: c.description,
+      category: c.category || 'Other',
+      priority: c.priority || 'Medium',
+      status: c.status === 'resolved' ? 'Resolved' : c.status === 'in_progress' ? 'In Progress' : 'Pending',
+      comments: c.comments || [],
+      date: c.created_at ? c.created_at.substring(0, 10) : ''
+    }));
+
+    const notices = noticeList.map(n => ({
+      id: String(n.id),
+      title: n.title,
+      content: n.content,
+      audience: n.target_audience === 'All Tenants' ? 'Tenants' : n.target_audience === 'All Staff' ? 'Staff' : 'All',
+      date: n.publish_date,
+      status: n.status === 'Active' ? 'Published' : 'Draft'
+    }));
 
     res.json({
       success: true,
