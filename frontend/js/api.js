@@ -24,6 +24,10 @@ window.apiRequest = async function(endpoint, options = {}) {
     });
     
     if (response.status === 401) {
+      if (endpoint === '/auth/login') {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.message || 'Invalid email or password');
+      }
       // Clear session if invalid or unauthorized
       localStorage.removeItem('pg_token');
       localStorage.removeItem('pg_user');
