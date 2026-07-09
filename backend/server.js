@@ -171,7 +171,7 @@ app.use((req, res, next) => {
         checkInTime: v.entry_time || v.checkInTime || '',
         checkOutTime: v.exit_time || v.checkOutTime || null,
         purpose: v.purpose || '',
-        status: v.status || 'Approved',
+        status: v.status || 'inside',
         otp: v.otp || '',
         otpVerified: v.otp_verified || false,
         approvalStatus: v.approval_status || 'Pending Resident Approval',

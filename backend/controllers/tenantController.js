@@ -450,7 +450,6 @@ exports.updateTenant = async (req, res) => {
 
     if (isNewStatusCheckout && isOldStatusActive) {
       updateData.checkout_date = new Date().toISOString().split('T')[0];
-      updateData.room_id = null;
       const { data: room } = await supabase.from('rooms').select('*').eq('id', oldTenant.room_id).single();
       if (room) {
         const newOcc = Math.max(0, (room.occupied_beds || 0) - 1);
@@ -582,7 +581,6 @@ exports.checkoutTenant = async (req, res) => {
       .from('tenants')
       .update({ 
         status: 'checked_out', 
-        room_id: null,
         checkout_date: new Date().toISOString().split('T')[0]
       })
       .eq('id', req.params.id)

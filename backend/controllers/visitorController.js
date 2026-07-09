@@ -71,8 +71,8 @@ exports.createVisitor = async (req, res) => {
         exit_time: checkOutTime || null,
         status: status || 'inside',
         otp: otp,
-        otp_verified: true,
-        approval_status: 'Approved'
+        otp_verified: req.body.otpVerified !== undefined ? req.body.otpVerified : (req.body.otp_verified !== undefined ? req.body.otp_verified : false),
+        approval_status: req.body.approvalStatus || req.body.approval_status || 'Pending Resident Approval'
       }])
       .select()
       .single();
@@ -133,7 +133,7 @@ exports.verifyOTP = async (req, res) => {
 
     const { data, error: updateError } = await supabase
       .from('visitors')
-      .update({ otp_verified: true, approval_status: 'Approved' })
+      .update({ otp_verified: true, approval_status: 'Approved', status: 'inside' })
       .eq('id', id)
       .select()
       .single();
@@ -149,9 +149,16 @@ exports.approveVisitor = async (req, res) => {
   try {
     const { status } = req.body; // 'Approved' or 'Rejected'
     const { id } = req.params;
+    const updateData = { approval_status: status || 'Approved' };
+    if (status === 'Approved') {
+      updateData.status = 'inside';
+    } else if (status === 'Rejected') {
+      updateData.status = 'Rejected';
+    }
+
     const { data, error } = await supabase
       .from('visitors')
-      .update({ approval_status: status || 'Approved' })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();

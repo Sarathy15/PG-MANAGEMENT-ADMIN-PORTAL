@@ -438,4 +438,18 @@ body.theme-ocean .bg-green-50 {
   background-color: rgba(125, 194, 66, 0.08) !important;
 }
 
+/* Screen reader only utility class to visually hide elements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+
 

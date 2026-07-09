@@ -127,7 +127,10 @@ const initialState = {
       visitor_phone: '9876543213',
       purpose: 'Family Visit',
       entry_time: new Date().toISOString(),
-      status: 'approved'
+      status: 'inside',
+      otp: '1234',
+      otp_verified: false,
+      approval_status: 'Pending Resident Approval'
     }
   ],
   rent_payments: [

@@ -1,6 +1,35 @@
 // Visitors Directory Controller
 let visitorLogs = [];
 
+function formatLocalTime(isoString) {
+  if (!isoString) return '—';
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+  } catch (e) {
+    return isoString;
+  }
+}
+
+function formatLocalTimeOnly(isoString) {
+  if (!isoString) return '—';
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${hh}:${min}`;
+  } catch (e) {
+    return isoString;
+  }
+}
+
 async function loadVisitorLogs() {
   const tbody = document.getElementById('visitor-table-body');
   if (!tbody) return;
@@ -58,12 +87,12 @@ async function loadVisitorLogs() {
             </div>
           `;
         } else if (log.approvalStatus === 'Approved') {
-          if (log.status === 'inside' || log.status === 'Checked In') {
+          if (log.status === 'inside' || log.status === 'Checked In' || log.status === 'Approved' || log.status === 'approved') {
             badge = `<span class="bg-emerald-50 text-emerald-600 border border-emerald-100 text-[9px] px-2.5 py-0.5 rounded-full font-bold">🟢 Approved & Inside</span>`;
             checkoutBtn = `<button onclick="checkoutVisitor('${log.id}')" class="px-2.5 py-1 text-[10px] font-bold border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-all shadow-sm">Check Out</button>`;
           } else {
             badge = `<span class="bg-slate-50 text-slate-500 border border-slate-100 text-[9px] px-2.5 py-0.5 rounded-full font-bold">Checked Out</span>`;
-            checkoutBtn = `<span class="text-[10px] text-slate-400">Out: ${log.checkOutTime ? log.checkOutTime.substring(11, 16) : '—'}</span>`;
+            checkoutBtn = `<span class="text-[10px] text-slate-400">Out: ${formatLocalTimeOnly(log.checkOutTime)}</span>`;
           }
         } else {
           badge = `<span class="bg-rose-50 text-rose-600 border border-rose-100 text-[9px] px-2.5 py-0.5 rounded-full font-bold">🔴 Entry Rejected</span>`;
@@ -71,7 +100,7 @@ async function loadVisitorLogs() {
         }
         
         return `
-          <tr class="hover:bg-slate-50/50 transition-colors">
+          <tr id="visitor-row-${log.id}" class="hover:bg-slate-50/50 transition-colors">
             <td class="px-6 py-4.5 font-bold text-slate-800">${log.name}</td>
             <td class="px-6 py-4.5 text-slate-500">${log.phone}</td>
             <td class="px-6 py-4.5">
@@ -86,8 +115,8 @@ async function loadVisitorLogs() {
                 <p class="text-[10px] text-green-600 mt-0.5">Relation: ${log.relation}</p>
               </div>
             </td>
-            <td class="px-6 py-4.5 text-slate-500">${log.checkInTime.substring(0, 16).replace('T', ' ')}</td>
-            <td class="px-6 py-4.5 text-slate-500">${log.checkOutTime ? log.checkOutTime.substring(0, 16).replace('T', ' ') : '—'}</td>
+            <td class="px-6 py-4.5 text-slate-500">${formatLocalTime(log.checkInTime)}</td>
+            <td class="px-6 py-4.5 text-slate-500">${formatLocalTime(log.checkOutTime)}</td>
             <td class="px-6 py-4.5">${badge}</td>
             <td class="px-6 py-4.5 text-right flex items-center justify-end gap-2">
               ${checkoutBtn}
@@ -225,16 +254,99 @@ async function submitVerifyOtp() {
     window.UI.toast('Please enter the OTP code', 'warning');
     return;
   }
+
+  const verifyBtn = document.getElementById('verify-otp-btn');
+  const visitorId = currentVerifyingVisitorId;
+  const row = document.getElementById('visitor-row-' + visitorId);
+  let originalBadgeHtml = '';
+  let originalActionsHtml = '';
+  let badgeTd = null;
+  let actionsTd = null;
+
+  if (row) {
+    const tds = row.querySelectorAll('td');
+    if (tds.length >= 8) {
+      badgeTd = tds[6];
+      actionsTd = tds[7];
+      originalBadgeHtml = badgeTd.innerHTML;
+      originalActionsHtml = actionsTd.innerHTML;
+      
+      // Update badge to "Verifying..."
+      badgeTd.innerHTML = `<span class="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[9px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 w-max animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping"></span> Verifying...</span>`;
+      // Clear verify button or show verifying state
+      actionsTd.innerHTML = `<span class="text-[10px] text-slate-400 italic">Verifying OTP...</span>`;
+    }
+  }
+
+  // Update modal button state to Verifying
+  let originalBtnText = 'Verify & Approve';
+  let originalBtnClass = 'w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-100 transition-colors';
+  
+  if (verifyBtn) {
+    verifyBtn.disabled = true;
+    verifyBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Verifying...`;
+    verifyBtn.className = 'w-full py-2.5 bg-indigo-500 text-white rounded-xl text-sm font-semibold shadow-md flex items-center justify-center cursor-not-allowed';
+  }
+
   try {
-    await window.apiRequest(`/visitors/${currentVerifyingVisitorId}/verify-otp`, {
+    await window.apiRequest(`/visitors/${visitorId}/verify-otp`, {
       method: 'POST',
       body: JSON.stringify({ otp: enteredOtp })
     });
+    
+    // Update button to success
+    if (verifyBtn) {
+      verifyBtn.innerHTML = `🟢 Approved!`;
+      verifyBtn.className = 'w-full py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold shadow-md transition-colors';
+    }
+
+    // Success: show approved on the row
+    if (badgeTd) {
+      badgeTd.innerHTML = `<span class="bg-emerald-50 text-emerald-600 border border-emerald-100 text-[9px] px-2.5 py-0.5 rounded-full font-bold">🟢 Approved & Inside</span>`;
+    }
+    if (actionsTd) {
+      actionsTd.innerHTML = `
+        <button onclick="checkoutVisitor('${visitorId}')" class="px-2.5 py-1 text-[10px] font-bold border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-all shadow-sm">Check Out</button>
+        <button onclick="deleteVisitorLog('${visitorId}')" class="p-1 border border-slate-200 hover:bg-slate-50 rounded-lg text-slate-400 hover:text-rose-500 transition-colors" title="Delete log">
+          <i data-lucide="trash" class="w-4 h-4"></i>
+        </button>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+    }
+    
     window.UI.toast('OTP Verified and Visitor Approved!', 'success');
-    closeOtpModal();
-    loadVisitorLogs();
+
+    // Wait a brief moment to show success in modal, then close
+    setTimeout(() => {
+      closeOtpModal();
+      loadVisitorLogs();
+    }, 850);
   } catch (err) {
+    // Update button to failure
+    if (verifyBtn) {
+      verifyBtn.innerHTML = `❌ Invalid OTP!`;
+      verifyBtn.className = 'w-full py-2.5 bg-rose-600 text-white rounded-xl text-sm font-semibold shadow-md transition-colors';
+    }
+
+    // Failure (Invalid OTP) on the row
+    if (badgeTd) {
+      badgeTd.innerHTML = `<span class="bg-rose-50 text-rose-600 border border-rose-100 text-[9px] px-2.5 py-0.5 rounded-full font-bold">❌ Invalid OTP</span>`;
+    }
+    if (actionsTd) {
+      actionsTd.innerHTML = originalActionsHtml;
+      if (window.lucide) window.lucide.createIcons();
+    }
+
     window.UI.toast(err.message || 'OTP Verification failed', 'error');
+
+    // Restore button in modal after 1.8 seconds so they can edit
+    setTimeout(() => {
+      if (verifyBtn) {
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = originalBtnText;
+        verifyBtn.className = originalBtnClass;
+      }
+    }, 1800);
   }
 }
 
