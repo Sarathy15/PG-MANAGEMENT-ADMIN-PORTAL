@@ -200,6 +200,20 @@
 
 /* ── MOBILE HEADER ──────────────────────────────────────── */
 @media (max-width: 767px) {
+  /* Prevent layout shift and side-by-side flex issue on mobile */
+  body {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+  }
+
+  #mob-shell-root {
+    display: block !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+  }
+
   /* Hide desktop sidebar */
   #sidebar-container { display: none !important; }
 
@@ -299,22 +313,28 @@
 
   /* ── MOBILE PAGE LAYOUT ─────────────────────────────── */
   .flex-1.flex.flex-col.min-w-0.overflow-y-auto.h-screen {
-    height: 100dvh !important;
+    height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
   }
 
   main {
-    padding: 1rem !important;
+    padding: 1.25rem !important;
+    padding-bottom: 90px !important; /* ensures no bottom nav overlap */
   }
 
   /* ── MOBILE KPI STAT CARDS ──────────────────────────── */
-  .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4 {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.625rem !important;
+  .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+    grid-template-columns: 1fr !important; /* Stack vertically for premium readability */
+    gap: 0.875rem !important;
   }
 
   /* Compact KPI cards on mobile */
   .bento-card {
-    border-radius: 18px !important;
+    border-radius: 20px !important;
+    padding: 1.25rem !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.03) !important;
+    border: 1px solid rgba(226, 232, 240, 0.6) !important;
   }
 
   /* ── MOBILE QUICK ACTIONS ───────────────────────────── */
