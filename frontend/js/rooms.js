@@ -133,18 +133,21 @@ async function loadRooms() {
           const acText = room.acType === 'AC' ? 'AC' : 'Non-AC';
           
           return `
-            <div onclick="openRoomDetails('${room.id}')" class="bento-card p-6 flex flex-col justify-between space-y-4 cursor-pointer hover:border-green-200/50 hover:shadow-md transition-all duration-300">
+            <div onclick="openRoomDetails('${room.id}')" class="bento-card group p-6 flex flex-col justify-between space-y-4 cursor-pointer hover:border-green-200/50 hover:shadow-md transition-all duration-300">
               <div>
                 <div class="flex items-center justify-between">
                   <div>
                     <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Floor ${room.floor} • Unit • ${acText}</span>
-                    <h3 class="text-lg font-black text-slate-900 mt-0.5">Room ${room.roomNumber}</h3>
+                    <h3 class="text-lg font-black text-slate-900 mt-0.5 flex items-center gap-1.5">
+                      Room ${room.roomNumber}
+                      <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 group-hover:text-green-650 transition-all duration-300"></i>
+                    </h3>
                   </div>
                   ${statusDropdown}
                 </div>
 
                 <!-- Occupancy bar -->
-                <div class="pt-4 space-y-1.5" onclick="event.stopPropagation()">
+                <div class="pt-4 space-y-1.5">
                   <div class="flex justify-between items-center text-[10px] font-extrabold text-slate-450 uppercase tracking-wider">
                     <span>Occupancy</span>
                     <span class="text-slate-800">${room.occupiedBeds} / ${room.totalBeds} Beds</span>

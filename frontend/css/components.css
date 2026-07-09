@@ -363,3 +363,21 @@ tbody tr:hover {
 .quick-action-link:hover {
   transform: translateX(4px);
 }
+
+/* ------------------------------------
+   SIDEBAR & LOADER FIXES (Prevents layout shift & flashing)
+   ------------------------------------ */
+#sidebar-container {
+  width: 256px;
+  background: linear-gradient(180deg, #111c14 0%, #080c12 100%);
+  flex-shrink: 0;
+  border-right: 1px solid rgba(125, 194, 66, 0.15);
+}
+
+@media (min-width: 768px) {
+  #page-loader-overlay {
+    left: 256px !important;
+    width: calc(100vw - 256px) !important;
+  }
+}
+
