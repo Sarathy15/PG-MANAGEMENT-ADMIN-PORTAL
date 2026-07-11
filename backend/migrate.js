@@ -82,6 +82,7 @@ async function runMigration() {
       { name: 'Add room_number to rooms', sql: `ALTER TABLE rooms ADD COLUMN IF NOT EXISTS room_number TEXT` },
       { name: 'Add electricity_amount to rent_payments', sql: `ALTER TABLE rent_payments ADD COLUMN IF NOT EXISTS electricity_amount NUMERIC(10, 2) DEFAULT 0` },
       { name: 'Add misc_amount to rent_payments', sql: `ALTER TABLE rent_payments ADD COLUMN IF NOT EXISTS misc_amount NUMERIC(10, 2) DEFAULT 0` },
+      { name: 'Add security_deposit to rent_payments', sql: `ALTER TABLE rent_payments ADD COLUMN IF NOT EXISTS security_deposit NUMERIC(10, 2) DEFAULT 0` },
       { name: 'Add notes to rent_payments', sql: `ALTER TABLE rent_payments ADD COLUMN IF NOT EXISTS notes TEXT` },
       { name: 'Add otp to visitors', sql: `ALTER TABLE visitors ADD COLUMN IF NOT EXISTS otp TEXT` },
       { name: 'Add otp_verified to visitors', sql: `ALTER TABLE visitors ADD COLUMN IF NOT EXISTS otp_verified BOOLEAN DEFAULT false` },

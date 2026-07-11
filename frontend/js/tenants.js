@@ -3,6 +3,7 @@ let allTenants = [];
 let allRooms = [];
 let activeStatusFilter = 'all';
 let currentStep = 1;
+let lastCreatedTenant = null;
 
 // Date formatting helper
 function formatDate(dStr) {
@@ -437,6 +438,7 @@ window.handleDocUpload = handleDocUpload;
 function openAddTenantModal() {
   resetStepper();
   document.getElementById('tenant-modal-title').textContent = "New Occupant Registration";
+  document.getElementById('submit-step-btn').textContent = "Continue to Initial Payment";
   document.getElementById('tenant-checkin').value = new Date().toISOString().substring(0, 10);
   window.UI.showModal('tenant-modal');
 }
@@ -458,6 +460,7 @@ async function editTenant(id) {
   resetStepper();
 
   document.getElementById('tenant-modal-title').textContent = "Edit Occupant Profile";
+  document.getElementById('submit-step-btn').textContent = "Save Changes";
 
   document.getElementById('tenant-id').value = tenant.id;
   document.getElementById('tenant-name').value = tenant.name || tenant.full_name || '';
@@ -505,17 +508,186 @@ async function editTenant(id) {
 window.editTenant = editTenant;
 
 async function checkoutTenant(id) {
-  if (await window.UI.confirm('Confirm checkout for this occupant? This frees their room bed and closes their billing cycle.', 'Occupant Check-Out')) {
+  const tenant = allTenants.find(t => String(t.id) === String(id));
+  if (!tenant) {
+    window.UI.toast('Tenant record not found', 'error');
+    return;
+  }
+
+  // Set temporary loading states in the checkout modal
+  document.getElementById('checkout-detail-name').textContent = tenant.name || tenant.full_name || '';
+  document.getElementById('checkout-detail-common-id').textContent = tenant.commonId || tenant.common_id || '—';
+  document.getElementById('checkout-detail-phone').textContent = tenant.phone || '—';
+
+  // Set avatar
+  const avatarEl = document.getElementById('checkout-detail-avatar');
+  if (avatarEl) {
+    avatarEl.className = `w-10 h-10 rounded-full font-black text-sm flex items-center justify-center text-white avatar-pill ${getAvatarColorClass(tenant.name)}`;
+    avatarEl.textContent = tenant.name.trim().charAt(0).toUpperCase();
+  }
+
+  // Allocated Room
+  const roomName = tenant.roomNumber ? `Room ${tenant.roomNumber}` : 'No Room';
+  const bedLetter = tenant.bedNumber ? `Bed ${String.fromCharCode(64 + tenant.bedNumber)}` : 'No Bed';
+  document.getElementById('checkout-detail-room-bed').textContent = tenant.roomNumber ? `${roomName} • ${bedLetter}` : 'No Room Allocated';
+
+  // Dates
+  document.getElementById('checkout-detail-checkin').textContent = formatDate(tenant.checkInDate || tenant.checkin_date);
+  document.getElementById('checkout-detail-duration').textContent = getStayDuration(tenant.checkInDate || tenant.checkin_date, new Date().toISOString().split('T')[0]);
+
+  // Financials
+  document.getElementById('checkout-detail-rent').textContent = `₹${Number(tenant.rentAmount || tenant.rent_amount || 0).toLocaleString('en-IN')}/mo`;
+  document.getElementById('checkout-detail-deposit').textContent = `₹${Number(tenant.depositAmount || tenant.security_deposit || 0).toLocaleString('en-IN')}`;
+
+  // Clear history rows & show loading in dues alert
+  document.getElementById('checkout-rent-history-rows').innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-400 font-semibold">Loading rent history...</td></tr>`;
+  document.getElementById('checkout-detail-dues-alert').innerHTML = `<span class="text-xs text-slate-400 font-semibold">Loading dues info...</span>`;
+  document.getElementById('checkout-detail-dues-alert').className = "w-full flex items-center gap-2.5 p-3 rounded-2xl border border-slate-200 bg-slate-50";
+
+  // Show modal first so user sees it loading
+  window.UI.showModal('checkout-detail-modal');
+  if (window.lucide) window.lucide.createIcons();
+
+  // Wire up confirmation button immediately but keep it disabled or updated
+  const confirmBtn = document.getElementById('checkout-detail-confirm-btn');
+  confirmBtn.disabled = true;
+  confirmBtn.className = "px-5 py-2.5 bg-slate-200 text-slate-400 rounded-xl text-xs font-black cursor-not-allowed flex items-center gap-1.5 transition-all";
+
+  let tenantRents = [];
+  let pendingDuesTotal = 0;
+  try {
+    const allRents = await window.apiRequest('/rents?month=all');
+    const rawRentsData = allRents.data || allRents || [];
+    
+    // Normalize raw data fields consistently
+    const rentsData = rawRentsData.map(r => {
+      const statusRaw = r.paymentStatus || r.payment_status || 'pending';
+      let status = 'Pending';
+      if (statusRaw.toLowerCase() === 'paid') status = 'Paid';
+      else if (statusRaw.toLowerCase() === 'overdue') status = 'Overdue';
+      
+      return {
+        ...r,
+        tenantId: r.tenantId || r.tenant_id,
+        amount: Number(r.amount || 0),
+        electricityAmount: Number(r.electricityAmount || r.electricity_amount || 0),
+        miscAmount: Number(r.miscAmount || r.misc_amount || 0),
+        securityDeposit: Number(r.securityDeposit || r.security_deposit || 0),
+        month: r.billing_period || r.month || '',
+        status: status,
+        dueDate: r.dueDate || r.due_date || '',
+        paidDate: r.paidDate || r.paid_date || ''
+      };
+    });
+
+    tenantRents = rentsData.filter(r => String(r.tenantId) === String(tenant.id));
+    
+    // Sort newest first by billing period month
+    tenantRents.sort((a, b) => b.month.localeCompare(a.month));
+
+    // Calculate total dues
+    tenantRents.forEach(r => {
+      if (r.status.toLowerCase() !== 'paid') {
+        pendingDuesTotal += (r.amount + r.electricityAmount + r.miscAmount + r.securityDeposit);
+      }
+    });
+
+    // Populate Rent History Rows (4 columns compact layout)
+    let historyRowsHtml = '';
+    if (tenantRents.length === 0) {
+      historyRowsHtml = `
+        <tr>
+          <td colspan="4" class="px-4 py-4 text-center text-slate-400 font-semibold">No rent payments recorded.</td>
+        </tr>
+      `;
+    } else {
+      historyRowsHtml = tenantRents.map(r => {
+        const monthName = r.month ? new Date(r.month + '-02').toLocaleDateString('default', { month: 'short', year: 'numeric' }) : '—';
+        const totalAmt = r.amount + r.electricityAmount + r.miscAmount + r.securityDeposit;
+        
+        let statusBadge = '';
+        if (r.status === 'Paid') {
+          statusBadge = `<span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded text-[9px] font-black uppercase">Paid</span>`;
+        } else if (r.status === 'Overdue') {
+          statusBadge = `<span class="px-1.5 py-0.5 bg-rose-50 text-rose-700 border border-rose-100 rounded text-[9px] font-black uppercase">Overdue</span>`;
+        } else {
+          statusBadge = `<span class="px-1.5 py-0.5 bg-rose-50 text-rose-700 border border-rose-100 rounded text-[9px] font-black uppercase">Pending</span>`;
+        }
+        
+        const paidDateFormatted = r.paidDate ? formatDate(r.paidDate) : '—';
+        
+        return `
+          <tr class="hover:bg-slate-50/50 transition-colors">
+            <td class="px-4 py-2 font-extrabold text-slate-800">${monthName}</td>
+            <td class="px-4 py-2 text-slate-700">₹${totalAmt.toLocaleString('en-IN')}</td>
+            <td class="px-4 py-2 text-slate-550 text-slate-500">${paidDateFormatted}</td>
+            <td class="px-4 py-2 text-right">${statusBadge}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+    document.getElementById('checkout-rent-history-rows').innerHTML = historyRowsHtml;
+
+    // Populate Dues Alert
+    const alertEl = document.getElementById('checkout-detail-dues-alert');
+    if (pendingDuesTotal > 0) {
+      alertEl.className = "w-full flex items-center gap-2.5 p-3 rounded-2xl border border-rose-200 bg-rose-50 text-rose-700";
+      alertEl.innerHTML = `
+        <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500 shrink-0"></i>
+        <div class="leading-none text-left">
+          <p class="font-extrabold text-[11px]">Pending Dues Detected</p>
+          <p class="text-[10px] font-bold text-rose-500 mt-1">Total outstanding: ₹${pendingDuesTotal.toLocaleString('en-IN')}</p>
+        </div>
+      `;
+    } else {
+      alertEl.className = "w-full flex items-center gap-2.5 p-3 rounded-2xl border border-emerald-250 border-emerald-200 bg-emerald-50 text-emerald-700";
+      alertEl.innerHTML = `
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-555 text-emerald-550 text-emerald-500 shrink-0"></i>
+        <div class="leading-none text-left">
+          <p class="font-extrabold text-[11px]">All Dues Settled</p>
+          <p class="text-[10px] font-bold text-emerald-600 mt-1">No pending dues on record</p>
+        </div>
+      `;
+    }
+  } catch (err) {
+    console.error("Failed to load rent history for checkout view:", err);
+    document.getElementById('checkout-rent-history-rows').innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-rose-500 font-semibold">Failed to load rent history</td></tr>`;
+    document.getElementById('checkout-detail-dues-alert').innerHTML = `<span class="text-xs text-rose-500 font-semibold">Failed to load dues</span>`;
+  }
+
+  // Enable button after load complete
+  confirmBtn.disabled = false;
+  confirmBtn.className = "px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-black shadow-md shadow-rose-100 flex items-center gap-1.5 transition-all cursor-pointer";
+  confirmBtn.onclick = async () => {
+    // If there are pending dues, warn the user but allow them to proceed
+    if (pendingDuesTotal > 0) {
+      if (!confirm(`Warning: This occupant has pending dues of ₹${pendingDuesTotal.toLocaleString('en-IN')}. Are you sure you want to proceed with check-out?`)) {
+        return;
+      }
+    }
+
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = `<span class="animate-pulse">Processing...</span>`;
+
     try {
-      await window.apiRequest(`/tenants/${id}/checkout`, { method: 'POST' });
+      await window.apiRequest(`/tenants/${tenant.id}/checkout`, { method: 'POST' });
       window.UI.toast('Tenant checked-out successfully', 'success');
+      window.UI.hideModal('checkout-detail-modal');
       loadTenants();
       populateRoomsDropdown();
     } catch (err) {
       window.UI.toast(err.message || 'Checkout failed', 'error');
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = `<i data-lucide="log-out" class="w-3.5 h-3.5"></i> Confirm Check-Out`;
+      if (window.lucide) window.lucide.createIcons();
     }
+  };
+
+  if (window.lucide) {
+    window.lucide.createIcons();
   }
 }
+window.checkoutTenant = checkoutTenant;
 
 async function deleteTenant(id) {
   if (await window.UI.confirm('Are you absolutely sure you want to delete this tenant record? This action is irreversible.', 'Delete Tenant Record')) {
@@ -634,15 +806,12 @@ document.getElementById('tenant-form').addEventListener('submit', async (e) => {
         body: JSON.stringify(payload)
       });
       window.UI.toast('Tenant checked-in successfully!', 'success');
-      const cid = createdTenant.commonId || createdTenant.common_id || 'PG-001';
-      const cidEl = document.getElementById('success-common-id');
-      if (cidEl) cidEl.textContent = cid;
-      window.UI.showModal('success-id-modal');
-      if (window.lucide) window.lucide.createIcons();
+      lastCreatedTenant = createdTenant.data || createdTenant;
+      closeTenantModal();
+      loadTenants();
+      populateRoomsDropdown();
+      setTimeout(openInitialPaymentModal, 250);
     }
-    closeTenantModal();
-    loadTenants();
-    populateRoomsDropdown();
   } catch (err) {
     stepperLoader.classList.add('hidden');
     stepperActions.classList.remove('hidden');
@@ -1074,3 +1243,170 @@ function closeSuccessIdModal() {
   window.UI.hideModal('success-id-modal');
 }
 window.closeSuccessIdModal = closeSuccessIdModal;
+
+function openInitialPaymentModal() {
+  if (!lastCreatedTenant) {
+    window.UI.toast('No occupant record cached to collect rent.', 'error');
+    return;
+  }
+
+  // Close success ID modal
+  window.UI.hideModal('success-id-modal');
+
+  // Populate IDs
+  document.getElementById('init-tenant-id').value = lastCreatedTenant.id;
+  
+  const billingPeriodVal = new Date().toISOString().substring(0, 7);
+  document.getElementById('init-billing-period').value = billingPeriodVal;
+  
+  const checkinDateVal = lastCreatedTenant.checkInDate || lastCreatedTenant.checkin_date || new Date().toISOString().split('T')[0];
+  document.getElementById('init-due-date').value = checkinDateVal;
+
+  // Pre-fill fields
+  document.getElementById('init-amount').value = lastCreatedTenant.rentAmount || lastCreatedTenant.rent_amount || 0;
+  
+  const depositInput = document.getElementById('init-deposit');
+  const depositPaid = !!(lastCreatedTenant.depositPaid || lastCreatedTenant.deposit_paid);
+  let depositLabel = depositInput.previousElementSibling;
+
+  if (depositPaid) {
+    depositInput.value = lastCreatedTenant.security_deposit || lastCreatedTenant.depositAmount || 0;
+    depositInput.readOnly = true;
+    depositInput.classList.add('bg-slate-100/80', 'text-slate-400');
+    if (depositLabel) {
+      depositLabel.innerHTML = 'Security Deposit (₹) <span class="ml-1 bg-emerald-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider">Completed</span>';
+    }
+  } else {
+    depositInput.value = lastCreatedTenant.security_deposit || lastCreatedTenant.depositAmount || 0;
+    depositInput.readOnly = false;
+    depositInput.classList.remove('bg-slate-100/80', 'text-slate-400');
+    if (depositLabel) {
+      depositLabel.innerHTML = 'Security Deposit (₹)';
+    }
+  }
+
+  document.getElementById('init-electricity').value = 0;
+  document.getElementById('init-misc').value = 0;
+  document.getElementById('init-notes').value = "Initial Check-in Rent & Deposit";
+
+  // Pre-fill tenant details block
+  const roomNum = lastCreatedTenant.roomNumber || lastCreatedTenant.room || '—';
+  document.getElementById('init-tenant-details').innerHTML = `
+    <div class="flex justify-between"><span>Tenant:</span> <span class="text-slate-900 font-extrabold">${lastCreatedTenant.name || lastCreatedTenant.full_name}</span></div>
+    <div class="flex justify-between"><span>Room:</span> <span class="text-slate-900 font-extrabold">Room ${roomNum}</span></div>
+    <div class="flex justify-between"><span>Billing Month:</span> <span class="text-slate-900 font-extrabold">${new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</span></div>
+  `;
+
+  // Calculator
+  const updateInitVal = () => {
+    const rent = Number(document.getElementById('init-amount').value || 0);
+    const deposit = depositPaid ? 0 : Number(depositInput.value || 0);
+    const elec = Number(document.getElementById('init-electricity').value || 0);
+    const misc = Number(document.getElementById('init-misc').value || 0);
+    const total = rent + deposit + elec + misc;
+    document.getElementById('init-total-val').innerText = `₹${total.toLocaleString()}`;
+    
+    // Update QR if active
+    if (currentInitPaymentMethod === 'UPI') {
+      const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=pleasanthomes@okaxis&pn=Pleasant%20Homes%20PG&cu=INR';
+      document.getElementById('init-qr-img').src = `${qrUrl}&am=${total}`;
+    }
+  };
+  document.getElementById('init-amount').oninput = updateInitVal;
+  depositInput.oninput = updateInitVal;
+  document.getElementById('init-electricity').oninput = updateInitVal;
+  document.getElementById('init-misc').oninput = updateInitVal;
+  updateInitVal();
+
+  // Set default payment mode to UPI
+  setInitPayMode('UPI');
+
+  // Show Modal
+  window.UI.showModal('initial-payment-modal');
+  if (window.lucide) window.lucide.createIcons();
+}
+window.openInitialPaymentModal = openInitialPaymentModal;
+
+let currentInitPaymentMethod = 'UPI';
+function setInitPayMode(mode) {
+  currentInitPaymentMethod = mode;
+  const cashBtn = document.getElementById('init-pay-mode-cash');
+  const gpayBtn = document.getElementById('init-pay-mode-gpay');
+  const qrContainer = document.getElementById('init-qr-container');
+
+  if (mode === 'Cash') {
+    cashBtn.className = "py-2.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 w-full";
+    gpayBtn.className = "py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 w-full";
+    qrContainer.classList.add('hidden');
+  } else {
+    cashBtn.className = "py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 w-full";
+    gpayBtn.className = "py-2.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 w-full";
+    
+    // Set QR code url
+    const rent = Number(document.getElementById('init-amount').value || 0);
+    const elec = Number(document.getElementById('init-electricity').value || 0);
+    const misc = Number(document.getElementById('init-misc').value || 0);
+    const total = rent + elec + misc;
+    
+    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=pleasanthomes@okaxis&pn=Pleasant%20Homes%20PG&cu=INR';
+    document.getElementById('init-qr-img').src = `${qrUrl}&am=${total}`;
+    qrContainer.classList.remove('hidden');
+  }
+}
+window.setInitPayMode = setInitPayMode;
+
+// Bind submit listener for initial form
+document.addEventListener('DOMContentLoaded', () => {
+  const initForm = document.getElementById('initial-payment-form');
+  if (initForm) {
+    initForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const tenantId = document.getElementById('init-tenant-id').value;
+      const billingPeriod = document.getElementById('init-billing-period').value;
+      const dueDate = document.getElementById('init-due-date').value;
+      const amount = Number(document.getElementById('init-amount').value || 0);
+      const depositPaid = !!(lastCreatedTenant && (lastCreatedTenant.depositPaid || lastCreatedTenant.deposit_paid));
+      const depositAmount = depositPaid ? 0 : Number(document.getElementById('init-deposit').value || 0);
+      const electricityAmount = Number(document.getElementById('init-electricity').value || 0);
+      const miscAmount = Number(document.getElementById('init-misc').value || 0);
+      const notes = document.getElementById('init-notes').value;
+
+      const transactionId = "TXN-" + Math.floor(100000 + Math.random() * 900000);
+
+      try {
+        await window.apiRequest('/rents', {
+          method: 'POST',
+          body: JSON.stringify({
+            tenantId,
+            amount,
+            electricityAmount,
+            miscAmount,
+            securityDeposit: depositAmount,
+            dueDate,
+            paymentStatus: 'paid',
+            paymentMethod: currentInitPaymentMethod,
+            transactionId,
+            notes
+          })
+        });
+
+        window.UI.toast('First rent payment recorded successfully! ✅', 'success');
+        window.UI.hideModal('initial-payment-modal');
+        loadTenants();
+        populateRoomsDropdown();
+
+        // Show Common ID Success Modal now!
+        if (lastCreatedTenant) {
+          const cid = lastCreatedTenant.commonId || lastCreatedTenant.common_id || 'PG-001';
+          const cidEl = document.getElementById('success-common-id');
+          if (cidEl) cidEl.textContent = cid;
+          window.UI.showModal('success-id-modal');
+          if (window.lucide) window.lucide.createIcons();
+        }
+      } catch (err) {
+        window.UI.toast(err.message || 'Payment recording failed', 'error');
+      }
+    });
+  }
+});

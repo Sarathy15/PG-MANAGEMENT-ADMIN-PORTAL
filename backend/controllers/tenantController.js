@@ -34,11 +34,22 @@ exports.getTenants = async (req, res) => {
     const { data, error } = await query;
     if (error) throw new Error(error.message);
 
+    const { data: paidPayments } = await supabase
+      .from('rent_payments')
+      .select('tenant_id')
+      .eq('payment_status', 'paid')
+      .gt('security_deposit', 0);
+    
+    const paidTenantIds = new Set((paidPayments || []).map(p => p.tenant_id));
+
     const mapped = (data || []).map((t) => {
       const idProofType = t.aadhaar_number ? 'Aadhaar Card' : (t.pan_number ? 'PAN Card' : 'Aadhaar Card');
       const idProofNumber = t.aadhaar_number || t.pan_number || '';
+      const depositPaid = paidTenantIds.has(t.id);
       return {
         ...t,
+        depositPaid,
+        deposit_paid: depositPaid,
         tenantName: t.full_name,
         full_name: t.full_name,
         phone: t.phone,
@@ -72,7 +83,7 @@ exports.getTenant = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('tenants')
-      .select('*, properties(property_name), rooms(room_number, monthly_rent)')
+      .select('*, properties(property_name, address, owner_phone, email), rooms(room_number, monthly_rent)')
       .eq('id', req.params.id)
       .single();
     if (error || !data) return res.status(404).json({ success: false, message: 'Tenant not found' });
@@ -80,10 +91,22 @@ exports.getTenant = async (req, res) => {
     const idProofType = data.aadhaar_number ? 'Aadhaar Card' : (data.pan_number ? 'PAN Card' : 'Aadhaar Card');
     const idProofNumber = data.aadhaar_number || data.pan_number || '';
 
+    const { data: depositPay } = await supabase
+      .from('rent_payments')
+      .select('id')
+      .eq('tenant_id', req.params.id)
+      .eq('payment_status', 'paid')
+      .gt('security_deposit', 0)
+      .limit(1)
+      .maybeSingle();
+    const depositPaid = !!depositPay;
+
     res.json({
       success: true,
       data: {
         ...data,
+        depositPaid,
+        deposit_paid: depositPaid,
         full_name: data.full_name,
         property_name: data.properties?.property_name || 'Unknown',
         room_number: data.rooms?.room_number || '—',
@@ -315,7 +338,47 @@ exports.createTenant = async (req, res) => {
       `Registered and checked in tenant ${tenantName} to Room ${room?.room_number || 'Unassigned'}`
     );
 
-    res.status(201).json({ success: true, data: tenant });
+    // Fetch full tenant details with joins for consistent client representation
+    const { data: fullTenant, error: fetchError } = await supabase
+      .from('tenants')
+      .select('*, properties(property_name, address, owner_phone, email), rooms(room_number, monthly_rent)')
+      .eq('id', tenant.id)
+      .single();
+
+    if (fetchError || !fullTenant) {
+      res.status(201).json({ success: true, data: tenant });
+      return;
+    }
+
+    const idProofTypeResolved = fullTenant.aadhaar_number ? 'Aadhaar Card' : (fullTenant.pan_number ? 'PAN Card' : 'Aadhaar Card');
+    const idProofNumberResolved = fullTenant.aadhaar_number || fullTenant.pan_number || '';
+
+    const mappedTenant = {
+      ...fullTenant,
+      tenantName: fullTenant.full_name,
+      full_name: fullTenant.full_name,
+      phone: fullTenant.phone,
+      property: fullTenant.properties?.property_name || 'Unknown',
+      property_name: fullTenant.properties?.property_name || 'Unknown',
+      room: fullTenant.rooms?.room_number || '—',
+      room_number: fullTenant.rooms?.room_number || '—',
+      propertyId: fullTenant.property_id,
+      roomId: fullTenant.room_id,
+      security_deposit: fullTenant.security_deposit || 0,
+      rent_amount: fullTenant.rooms?.monthly_rent || 0,
+      rentAmount: fullTenant.rooms?.monthly_rent || 0,
+      idProofType: idProofTypeResolved,
+      id_proof_type: idProofTypeResolved,
+      idProofNumber: idProofNumberResolved,
+      id_proof_number: idProofNumberResolved,
+      emergencyContact: {
+        name: fullTenant.emergency_contact_name || '',
+        relation: 'Parent',
+        phone: fullTenant.emergency_contact_phone || ''
+      }
+    };
+
+    res.status(201).json({ success: true, data: mappedTenant });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

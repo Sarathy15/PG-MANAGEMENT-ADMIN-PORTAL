@@ -1,5 +1,19 @@
 const supabase = require('../config/supabase');
 
+async function generateInvoiceId(billingPeriod) {
+  const yy = billingPeriod.substring(2, 4);
+  const mm = billingPeriod.substring(5, 7);
+  const prefix = 'INV' + yy + mm;
+  
+  const { data: countRes } = await supabase
+    .from('rent_payments')
+    .select('receipt_number')
+    .like('receipt_number', `${prefix}%`);
+    
+  const nextCount = (countRes ? countRes.length : 0) + 1;
+  return prefix + String(nextCount).padStart(2, '0');
+}
+
 exports.getRents = async (req, res) => {
   try {
     const { propertyId, month } = req.query;
@@ -59,6 +73,7 @@ exports.getRents = async (req, res) => {
         amount: Number(pay.amount || 0),
         electricityAmount: Number(pay.electricity_amount || 0),
         miscAmount: Number(pay.misc_amount || 0),
+        securityDeposit: Number(pay.security_deposit || 0),
         tenantId: pay.tenant_id,
         paymentStatus: pay.payment_status,
         dueDate: pay.due_date,
@@ -88,6 +103,7 @@ exports.getRents = async (req, res) => {
           amount: rentAmount,
           electricity_amount: 0,
           misc_amount: 0,
+          security_deposit: 0,
           due_date: dueDate,
           paid_date: null,
           payment_status: 'pending',
@@ -99,6 +115,7 @@ exports.getRents = async (req, res) => {
           room: tenant.rooms?.room_number || '—',
           electricityAmount: 0,
           miscAmount: 0,
+          securityDeposit: 0,
           tenantId: tenant.id,
           paymentStatus: 'pending',
           dueDate: dueDate,
@@ -129,7 +146,7 @@ exports.getRent = async (req, res) => {
       .single();
     if (error) return res.status(400).json({ success: false, message: error.message });
     if (!data) return res.status(404).json({ success: false, message: 'Rent record not found' });
-    res.json({ success: true, data: { ...data, tenant: data.tenants?.full_name || 'Unknown', room: data.tenants?.rooms?.room_number || '—', electricityAmount: Number(data.electricity_amount || 0), miscAmount: Number(data.misc_amount || 0) } });
+    res.json({ success: true, data: { ...data, tenant: data.tenants?.full_name || 'Unknown', room: data.tenants?.rooms?.room_number || '—', electricityAmount: Number(data.electricity_amount || 0), miscAmount: Number(data.misc_amount || 0), securityDeposit: Number(data.security_deposit || 0) } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -137,9 +154,61 @@ exports.getRent = async (req, res) => {
 
 exports.createRent = async (req, res) => {
   try {
-    const { tenantId, amount, electricityAmount, miscAmount, dueDate, paymentStatus, paymentMethod, transactionId } = req.body;
-      const finalStatus = (paymentStatus || 'pending').toLowerCase();
-      const paidDate = finalStatus === 'paid' ? new Date().toISOString().split('T')[0] : null;
+    const { tenantId, amount, electricityAmount, miscAmount, securityDeposit, dueDate, paymentStatus, paymentMethod, transactionId } = req.body;
+    const finalStatus = (paymentStatus || 'pending').toLowerCase();
+    const paidDate = finalStatus === 'paid' ? new Date().toISOString().split('T')[0] : null;
+    const billingPeriod = dueDate ? dueDate.substring(0, 7) : new Date().toISOString().substring(0, 7);
+
+    // Check if an invoice for this tenant and billing period already exists
+    const { data: existingPay, error: findError } = await supabase
+      .from('rent_payments')
+      .select('id')
+      .eq('tenant_id', tenantId)
+      .eq('billing_period', billingPeriod)
+      .limit(1)
+      .maybeSingle();
+
+    let finalReceiptNumber = transactionId || null;
+    if (finalStatus === 'paid') {
+      let hasValidInvoice = false;
+      if (existingPay) {
+        const { data: currentRec } = await supabase
+          .from('rent_payments')
+          .select('receipt_number')
+          .eq('id', existingPay.id)
+          .single();
+        if (currentRec && /^INV\d{6}$/.test(currentRec.receipt_number || '')) {
+          hasValidInvoice = true;
+          finalReceiptNumber = currentRec.receipt_number;
+        }
+      }
+      if (!hasValidInvoice) {
+        finalReceiptNumber = await generateInvoiceId(billingPeriod);
+      }
+    }
+
+    let resultData;
+    if (existingPay) {
+      const { data, error } = await supabase
+        .from('rent_payments')
+        .update({
+          amount: Number(amount),
+          electricity_amount: Number(electricityAmount || 0),
+          misc_amount: Number(miscAmount || 0),
+          security_deposit: Number(securityDeposit || 0),
+          due_date: dueDate,
+          paid_date: paidDate,
+          payment_status: finalStatus,
+          payment_method: paymentMethod || 'UPI',
+          receipt_number: finalReceiptNumber,
+          notes: req.body.notes || ''
+        })
+        .eq('id', existingPay.id)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      resultData = data;
+    } else {
       const { data, error } = await supabase
         .from('rent_payments')
         .insert([{
@@ -147,23 +216,27 @@ exports.createRent = async (req, res) => {
           amount: Number(amount),
           electricity_amount: Number(electricityAmount || 0),
           misc_amount: Number(miscAmount || 0),
+          security_deposit: Number(securityDeposit || 0),
           due_date: dueDate,
           paid_date: paidDate,
           payment_status: finalStatus,
           payment_method: paymentMethod || 'UPI',
-          receipt_number: transactionId || null,
-          billing_period: dueDate ? dueDate.substring(0, 7) : null
+          receipt_number: finalReceiptNumber,
+          billing_period: billingPeriod,
+          notes: req.body.notes || ''
         }])
         .select()
         .single();
       if (error) throw new Error(error.message);
-  
-      // Sync tenant paymentStatus
-      if (paymentStatus) {
-        await supabase.from('tenants').update({ payment_status: finalStatus }).eq('id', tenantId);
-      }
+      resultData = data;
+    }
 
-    res.status(201).json({ success: true, data });
+    // Sync tenant paymentStatus
+    if (paymentStatus) {
+      await supabase.from('tenants').update({ payment_status: finalStatus }).eq('id', tenantId);
+    }
+
+    res.status(201).json({ success: true, data: resultData });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -171,25 +244,49 @@ exports.createRent = async (req, res) => {
 
 exports.updateRent = async (req, res) => {
   try {
+    const rentId = Number(req.params.id);
+    const { data: rentRecord, error: fetchErr } = await supabase
+      .from('rent_payments')
+      .select('receipt_number, billing_period')
+      .eq('id', rentId)
+      .single();
+      
+    if (fetchErr || !rentRecord) {
+      return res.status(404).json({ success: false, message: 'Rent record not found' });
+    }
+
     const updateData = {};
+    let finalReceiptNumber = req.body.transactionId;
+
     if (req.body.paymentStatus !== undefined) {
       const finalStatus = req.body.paymentStatus.toLowerCase();
       updateData.payment_status = finalStatus;
       if (finalStatus === 'paid') {
         updateData.paid_date = new Date().toISOString().split('T')[0];
+        
+        // Generate custom invoice ID if not already generated
+        const currentReceipt = rentRecord.receipt_number || '';
+        const isValidInvoice = /^INV\d{6}$/.test(currentReceipt);
+        if (!isValidInvoice) {
+          finalReceiptNumber = await generateInvoiceId(rentRecord.billing_period || new Date().toISOString().substring(0, 7));
+        }
       }
     }
+    
+    if (finalReceiptNumber !== undefined) updateData.receipt_number = finalReceiptNumber;
+    else if (req.body.transactionId !== undefined) updateData.receipt_number = req.body.transactionId;
+
     if (req.body.paymentMethod !== undefined) updateData.payment_method = req.body.paymentMethod;
-    if (req.body.transactionId !== undefined) updateData.receipt_number = req.body.transactionId;
     if (req.body.amount !== undefined) updateData.amount = Number(req.body.amount);
     if (req.body.electricityAmount !== undefined) updateData.electricity_amount = Number(req.body.electricityAmount);
     if (req.body.miscAmount !== undefined) updateData.misc_amount = Number(req.body.miscAmount);
+    if (req.body.securityDeposit !== undefined) updateData.security_deposit = Number(req.body.securityDeposit);
     if (req.body.dueDate !== undefined) updateData.due_date = req.body.dueDate;
 
     const { data, error } = await supabase
       .from('rent_payments')
       .update(updateData)
-      .eq('id', Number(req.params.id))
+      .eq('id', rentId)
       .select()
       .single();
     if (error) return res.status(400).json({ success: false, message: error.message });

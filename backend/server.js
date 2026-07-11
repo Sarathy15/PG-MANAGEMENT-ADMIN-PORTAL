@@ -113,6 +113,8 @@ app.use((req, res, next) => {
           relation: t.emergency_contact_relation || 'Parent',
           phone: t.emergency_contact_phone || ''
         },
+        properties: t.properties || null,
+        rooms: t.rooms || null,
         status: t.status ? (t.status.toLowerCase() === 'checked_out' || t.status.toLowerCase() === 'checked out' ? 'Checked Out' : (t.status.charAt(0).toUpperCase() + t.status.slice(1))) : 'Active'
       };
     };
@@ -120,6 +122,7 @@ app.use((req, res, next) => {
     const mapRent = (r) => {
       if (!r) return r;
       const isSynth = String(r.id).startsWith('synthesized-');
+      const depositVal = Number(r.security_deposit || r.securityDeposit || 0);
       return {
         id: String(r.id),
         tenantId: String(r.tenant_id || r.tenantId),
@@ -129,7 +132,11 @@ app.use((req, res, next) => {
         amount: Number(r.amount || 0),
         electricityAmount: Number(r.electricity_amount || r.electricityAmount || 0),
         miscAmount: Number(r.misc_amount || r.miscAmount || 0),
+        securityDeposit: depositVal,
+        security_deposit: depositVal,
         status: r.payment_status ? (r.payment_status.charAt(0).toUpperCase() + r.payment_status.slice(1)) : 'Pending',
+        paymentStatus: r.payment_status || r.paymentStatus || 'pending',
+        payment_status: r.payment_status || r.paymentStatus || 'pending',
         dueDate: r.due_date || r.dueDate || '',
         paidDate: r.paid_date || r.paidDate || null,
         invoiceId: isSynth ? '—' : (r.receipt_number || r.invoiceId || `INV-${String(r.id).padStart(6, '0')}`),

@@ -420,9 +420,9 @@
             class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-150 transition-all">Next
             Step</button>
           <button type="submit" id="submit-step-btn"
-            class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-150 transition-all hidden w-full sm:w-auto">Complete
-            Check-In</button>
+            class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-150 transition-all hidden w-full sm:w-auto">Continue to Initial Payment</button>
         </div>
+      </form>
     </div>
   </div>
 
@@ -636,6 +636,113 @@
     </div>
   </div>
 
+  <!-- OCCUPANT CHECK-OUT DETAILS MODAL -->
+  <div id="checkout-detail-modal"
+    class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div
+      class="bg-white rounded-3xl w-full max-w-lg shadow-2xl border border-slate-200 overflow-hidden transform transition-all flex flex-col">
+
+      <!-- Modal Header -->
+      <div class="w-full bg-slate-50/50 border-b border-slate-100 p-5 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-base text-slate-900 leading-none">Occupant Check-Out Summary</h3>
+            <p class="text-[10px] text-slate-400 font-semibold mt-1">Verify details and dues before check-out</p>
+          </div>
+        </div>
+        <button type="button" onclick="window.UI.hideModal('checkout-detail-modal')"
+          class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-lg hover:bg-slate-50 flex items-center justify-center transition-colors">✕</button>
+      </div>
+
+      <!-- Main Body (Scrollable) -->
+      <div class="flex-1 overflow-y-auto p-5 space-y-4 max-h-[70vh]">
+        
+        <!-- Profile & Stay Info Card -->
+        <div class="bg-slate-50/50 rounded-2xl border border-slate-100 p-4 space-y-3">
+          <div class="flex items-center gap-3">
+            <div id="checkout-detail-avatar" class="w-10 h-10 rounded-full font-black text-sm flex items-center justify-center text-white bg-indigo-500 avatar-pill">T</div>
+            <div class="leading-tight">
+              <p id="checkout-detail-name" class="font-extrabold text-slate-800 text-sm">—</p>
+              <p id="checkout-detail-common-id" class="text-[10px] text-slate-400 font-bold mt-0.5">—</p>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100 text-xs font-bold text-slate-500">
+            <div>
+              <span class="text-[9px] uppercase tracking-wider text-slate-400 block mb-0.5">Room & Bed</span>
+              <span id="checkout-detail-room-bed" class="text-slate-800 font-extrabold">—</span>
+            </div>
+            <div>
+              <span class="text-[9px] uppercase tracking-wider text-slate-400 block mb-0.5">Stay Duration</span>
+              <span id="checkout-detail-duration" class="text-indigo-600 font-extrabold">—</span>
+            </div>
+            <div>
+              <span class="text-[9px] uppercase tracking-wider text-slate-400 block mb-0.5">Check-In Date</span>
+              <span id="checkout-detail-checkin" class="text-slate-800">—</span>
+            </div>
+            <div>
+              <span class="text-[9px] uppercase tracking-wider text-slate-400 block mb-0.5">Contact</span>
+              <span id="checkout-detail-phone" class="text-slate-800">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dues & Rent Alert Card -->
+        <div class="space-y-2">
+          <div id="checkout-detail-dues-alert" class="w-full flex items-center gap-2.5 p-3 rounded-2xl border">
+            <!-- Dynamically populated -->
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3 text-xs font-bold text-slate-500 p-2.5 bg-slate-50/30 rounded-xl border border-slate-100">
+            <div class="flex justify-between px-1">
+              <span>Monthly Rent:</span>
+              <span id="checkout-detail-rent" class="text-slate-800 font-extrabold">—</span>
+            </div>
+            <div class="flex justify-between px-1 border-l border-slate-200">
+              <span>Security Deposit:</span>
+              <span id="checkout-detail-deposit" class="text-slate-800 font-extrabold">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rent Payment History List (Compact) -->
+        <div class="space-y-2">
+          <h4 class="font-extrabold text-[11px] uppercase tracking-wider text-slate-400 flex items-center gap-1.5"><i data-lucide="history" class="w-3 h-3"></i> Rent & Payments History</h4>
+          <div class="border border-slate-100 rounded-2xl overflow-hidden bg-white max-h-[160px] overflow-y-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-50/80 border-b border-slate-100 text-[9px] uppercase font-black text-slate-400 tracking-wider">
+                  <th class="px-4 py-2">Month</th>
+                  <th class="px-4 py-2">Dues (Rent+Util)</th>
+                  <th class="px-4 py-2">Paid Date</th>
+                  <th class="px-4 py-2 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody id="checkout-rent-history-rows" class="text-slate-700 font-bold divide-y divide-slate-50">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky Footer actions -->
+      <div class="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 p-4 shrink-0 rounded-b-3xl">
+        <button type="button" onclick="window.UI.hideModal('checkout-detail-modal')"
+          class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-650 hover:text-slate-800 rounded-xl text-xs font-extrabold transition-all">
+          Cancel
+        </button>
+        <button type="button" id="checkout-detail-confirm-btn"
+          class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-black shadow-md shadow-rose-100 flex items-center gap-1.5 transition-all">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Confirm Check-Out
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TENANT REGISTRATION SUCCESS MODAL -->
   <div id="success-id-modal"
     class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
@@ -674,6 +781,94 @@
           Close & Complete
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- INITIAL RENT COLLECTION MODAL -->
+  <div id="initial-payment-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-slate-205 border-slate-200 overflow-y-auto max-h-[90vh] transform transition-all p-6 flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+            <i data-lucide="banknote" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-base text-slate-900 leading-none">Record First Payment</h3>
+            <p class="text-[10px] text-slate-400 font-semibold mt-1">Settle rent and utilities for check-in month</p>
+          </div>
+        </div>
+        <button onclick="window.UI.hideModal('initial-payment-modal')" class="text-slate-400 hover:text-slate-600 transition-colors w-7 h-7 rounded-lg hover:bg-slate-50 flex items-center justify-center">✕</button>
+      </div>
+      
+      <form id="initial-payment-form" class="space-y-4 flex-1">
+        <input type="hidden" id="init-tenant-id">
+        <input type="hidden" id="init-billing-period">
+        <input type="hidden" id="init-due-date">
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tenant Profile</label>
+          <div id="init-tenant-details" class="bg-slate-50 border border-slate-100 rounded-xl p-3.5 text-xs text-slate-700 font-bold space-y-1">
+            <!-- Dynamic fields -->
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Base Rent (₹)</label>
+            <input type="number" id="init-amount" required class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-3 py-2 text-slate-800 text-xs font-black focus:ring-0">
+          </div>
+          <div>
+            <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Security Deposit (₹)</label>
+            <input type="number" id="init-deposit" required class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-3 py-2 text-slate-800 text-xs font-black focus:ring-0">
+          </div>
+          <div>
+            <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Electricity (₹)</label>
+            <input type="number" id="init-electricity" value="0" min="0" class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:ring-0">
+          </div>
+          <div>
+            <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Misc Charges (₹)</label>
+            <input type="number" id="init-misc" value="0" min="0" class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:ring-0">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Billing Remarks</label>
+          <input type="text" id="init-notes" placeholder="e.g. Initial Check-in Rent & Deposit" class="w-full bg-slate-50 border border-slate-200 focus:border-green-400 rounded-xl px-3.5 py-2 text-slate-800 text-xs font-semibold focus:ring-0">
+        </div>
+
+        <!-- Total sum display -->
+        <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-3 flex items-center justify-between text-slate-700">
+          <span class="text-xs font-bold">Total Collected Amount</span>
+          <span id="init-total-val" class="text-base font-black text-emerald-700">₹0</span>
+        </div>
+
+        <!-- Payment Mode -->
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Payment Method</label>
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" id="init-pay-mode-cash" onclick="setInitPayMode('Cash')" class="py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+              <i data-lucide="banknote" class="w-3.5 h-3.5 text-slate-500"></i> Cash
+            </button>
+            <button type="button" id="init-pay-mode-gpay" onclick="setInitPayMode('UPI')" class="py-2.5 bg-indigo-50 border border-indigo-200 text-indigo-755 text-indigo-700 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5">
+              <i data-lucide="qr-code" class="w-3.5 h-3.5 text-indigo-600"></i> UPI QR
+            </button>
+          </div>
+        </div>
+
+        <!-- QR Code scanning container -->
+        <div id="init-qr-container" class="hidden flex flex-col items-center justify-center border border-dashed border-slate-200 rounded-xl p-3 bg-slate-50/50 space-y-1.5">
+          <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Scan QR Code to complete payment</p>
+          <div class="bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
+            <img id="init-qr-img" src="" class="w-28 h-28 object-contain">
+          </div>
+          <span class="text-[9px] text-green-600 font-bold">UPI ID: pleasanthomes@okaxis</span>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <button type="button" onclick="window.UI.hideModal('initial-payment-modal')" class="px-4 py-2.5 border border-slate-200 text-slate-550 hover:text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-50 transition-colors">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-100 transition-all">Confirm Payment</button>
+        </div>
+      </form>
     </div>
   </div>
 
